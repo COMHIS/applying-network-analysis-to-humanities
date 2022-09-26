@@ -1,5 +1,6 @@
 ---
-title: "Opening and Knitting an R Markdown File"
+title: "Applying Network Analysis to Humanities: Week 1"
+subtitle: "Opening and Knitting an R Markdown File"
 output:
   html_document:
     df_print: paged
