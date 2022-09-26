@@ -3,17 +3,175 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+# Introduction  
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+R is a programming language with a number of advanced packages for text mining. Unlike the previous tools, R requires you to use a 'command line interface', meaning you have to type code rather than use an graphical user interface. 
+
+This document won't teach you how to code, but it's intended to give you a flavour of the kind of things you can do with text and a progamming language. If you already know some R, then you can feel free to manipulate the examples in the code below. 
+
+A good place to start to learn R is the free book https://r4ds.had.co.nz/index.html, and if you want to learn how to use R for text mining specifically, https://www.tidytextmining.com/ is an excellent (also free) online book.
+
+This document you're reading is called an R Notebook: it's a special document which contains text *and* code. Anything within the gray block below is called a 'chunk'. On the right-hand side you'll see a little green triangle. Clicking that will run all the code in the chunk. 1 + 1 is very simple computer code which adds those two numbers together. Try clicking on the code. 
 
 ```{r}
-plot(cars)
+1+1
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+R runs the code, and displays the output underneath the chunk. This MyBinder R environment has loaded an individual 'container' for you to try out the code. Feel free to edit or add new code: no changes will be saved once we finish the session.
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+# Constructing a Network in R  
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+One of the easiest data formats to construct a network is an edge list: a simple dataframe with two columns, representing the connections between two nodes, one per row. It makes particular sense with correspondence data, which is often stored as a table of letters with a 'from' and a 'to'---more or less a ready-made edge list. In a correspondence dataset you might also have multiple sets of each of the edges (multiple letters between the same pair of individuals). You can add this to the edge list as an attribute called weight, which is simply another column.
 
+I use three R network libraries to do almost everything network-related, from analysis to visualisation: ```igraph```, ```tidygraph``` and ```ggraph```. My goal is to port everything to a format which is really easy to work with using existing my data analysis workflow. That format is known as 'tidy data', and it is a way of working with data which is easily transferable across a range of uses. It also means you need to learn very little new programming to do network analysis if you stay within this 'ecosystem'. 
+
+### Import Network Data with the Tidyverse
+
+The whole workflow uses four packages. The first is ```tidyverse```, a collection of various packages used for data wrangling and analytics.
+
+```{r message=FALSE, warning=FALSE}
+
+library(dplyr)
+library(magrittr)
+library(readr)
+library(stringr)
+
+```
+
+Next I need some network data. On the project this is generally a comma separated values file containing the information for one letter per row. We turn the raw letter data into an edge list in a standardised format, with the from/to information, a letter date, a place, and a unique identifier for the letter. Because the dataset is large and the same names are often used repeatedly, we use a unique ID number rather than people or place names when constructing the edge list. The nice thing about working within the tidyverse is that it's easy to then match the IDs back to actual names afterwards. 
+
+These edge lists can be turned into a network object using ```tidygraph``` and the function ```as_tbl_graph```. This function takes the first two columns in a dataset and turns them into the network graph, using any additional columns as attributes. We use two separate tables of data. First, an edge list, using unique, unambiguous numeric IDs for people and place names. Next, additional lookup tables, just with the unique ID, the person's name, and additional information, if you have it (which can be used to filter the network afterwards). 
+
+First load the two tables into R (I've created small sample tables to work with), which are available [here](https://raw.githubusercontent.com/networkingarchives/blog/master/2021/04/15/my-network-analysis-workflow/letters.csv) and [here](https://raw.githubusercontent.com/networkingarchives/blog/master/2021/04/15/my-network-analysis-workflow/letters.csv): 
+
+```{r}
+letters = read_csv("https://raw.githubusercontent.com/yann-ryan/dh_intro_gates/main/sample_letter_data_network.csv", col_types = cols(.default = "c"))
+
+```
+
+
+If you have multiple letters between individuals, you can sum them and use as a weight in the network, or you can ignore it. You can do this with ```tidyverse``` commands: ```group_by()``` and ```tally()```, changing the name of the new column to 'weight'. 
+
+```{r message=FALSE, warning=FALSE}
+
+edge_list = letters %>% 
+  group_by(author, recipient) %>% 
+  tally(name = 'weight')
+
+```
+
+### Turn the edge list into a tbl_graph
+
+Next transform the edge list into a network object called a tbl_graph, using [tidygraph](https://www.data-imaginist.com/2017/introducing-tidygraph/). A tbl_graph is a graph object which can be manipulated using tidyverse grammar. This means you can create a network and then use a range of standard data analysis functions on it as needed, without learning a whole new set of commands.
+
+First, load the tidygraph library. Use ```as_tbl_graph()``` to turn the edge list into a network. The first two columns will be taken as the from and to data, and any additional columns added as attributes. It'll automatically create a nodes table, too.
+
+```{r message=FALSE, warning=FALSE}
+library(tidygraph)
+
+sample_tbl_graph = edge_list %>% 
+  as_tbl_graph()
+
+sample_tbl_graph
+```
+The tbl_graph is an object with two tables, one for the edges and one for the nodes. You can access each of the tables using the function activate(nodes) or activate(edges). The active table has (active) after it. 
+
+```{r}
+
+sample_tbl_graph = sample_tbl_graph %>% 
+  activate(edges)
+
+sample_tbl_graph
+
+```
+Tidygraph allows you to perform calculations on the tbl_graph using ```mutate```, using standard igraph algorithms. So for example to calculate the degree of every node:
+
+```{r}
+sample_tbl_graph %>% 
+  activate(nodes) %>% 
+  mutate(degree = centrality_degree(mode = 'total'))
+```
+If you run standard functions meant to be used on a dataframe, they will happen to the active table. So if you wanted to filter just edges from ID 1, for example, you could use the ```filter``` verb from dplyr:
+
+
+```{r}
+sample_tbl_graph %>% filter(from ==1)
+```
+
+
+Maybe you only want to keep nodes with the title 'Sir'? Activate the nodes again with ```activate(nodes)```, join the people table, then use ```filter``` and ```str_detect``` to filter based on a regular expressions pattern. You'll see that it has filtered out unused edges now, too:
+
+
+```{r}
+sample_tbl_graph %>% 
+  activate(nodes)%>% 
+  filter(str_detect(name, "(?i)sir"))
+```
+
+Slightly more useful might be to filter based on some calculation you've made previously. The data format allows you to use dplyr pipes (%>%) to perform one calculation on the data, then pass that new dataframe along to the next function. It works really well with tidygraph. Here we calculate the degree scores first, then filter to include only nodes with a degree score over two:
+
+```{r}
+
+sample_tbl_graph %>% 
+  activate(nodes) %>% 
+  mutate(degree = centrality_degree(mode = 'total')) %>% 
+  filter(degree >2)
+
+```
+
+
+### Visualisation with ggraph
+
+The last step in the workflow is visualising the network. You can use igraph and standard R plotting libraries for this, but I use a package called [ggraph](https://github.com/thomasp85/ggraph), which uses the same language as ggplot (a very well-known visualisation library for R) and adds some special functions to visualise networks. To create a network diagram, first use the function ```ggraph``` on your tbl_graph, then add the special [ggraph geoms](https://ggplot2.tidyverse.org/reference/) ```geom_node_point()``` and ```geom_edge_link()```
+
+
+
+```{r}
+
+library(ggraph)
+
+sample_tbl_graph %>% ggraph('nicely') + geom_node_point() + geom_edge_link()
+
+
+```
+
+You can use the dplyr pipes to perform calculations, filter the data and then visualise it, all in one go:
+
+```{r}
+sample_tbl_graph %>% 
+  activate(nodes)%>% 
+  mutate(degree = centrality_degree(mode = 'total')) %>% 
+  filter(degree >2) %>% 
+  ggraph('nicely') + 
+  geom_node_point() + 
+  geom_edge_link()
+```  
+
+```geom_node_point()``` and ```geom_edge_link``` take aesthetics, just like regular ggplot geoms. You can calculate degree scores and then set the size of the nodes to the result:
+
+
+```{r}
+sample_tbl_graph %>% 
+  activate(nodes)%>% 
+  mutate(degree = centrality_degree(mode = 'total'))  %>% 
+  ggraph('nicely') + 
+  geom_node_point(aes(size = degree)) + 
+  geom_edge_link()
+```
+
+Add ```geom_node_text()``` to add text labels to your network. In a larger network, it can be helpful to only show labels belonging to the most-connected nodes. First, join the people table to the nodes table, then use ggraph, setting the ```label``` aesthetic. Another ```dplyr``` verb, ```if_else``` allows you to add conditions to the label command. Here, I've used if_else to return the label if the node's degree score is more than 10:
+
+```{r}
+
+sample_tbl_graph %>% 
+  activate(nodes)%>% 
+  mutate(degree = centrality_degree(mode = 'total'))  %>% 
+  ggraph('nicely') + 
+  geom_node_point(aes(size = degree)) + 
+  geom_node_text(aes(label = if_else(degree >10, name, NULL), size = degree), repel = TRUE) + 
+  geom_edge_link(alpha = .2)
+
+```
+# Next Steps
+
+If you have any familiarity with R, feel free to try some more code in the interactive environment!
