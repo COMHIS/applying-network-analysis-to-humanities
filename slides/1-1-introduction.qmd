@@ -4,21 +4,130 @@ format: revealjs
 editor: visual
 ---
 
-## Quarto
+## Basic Info on course
 
-Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+X weeks
 
-## Bullets
+## CSC Notebooks  
 
-When you click the **Render** button a document will be generated that includes:
+- How to log on, demo what to do (but explain we'll do this during practical parts)
 
--   Content authored with markdown
--   Output from executable code
+## Networks are everywhere.. but what are they?
 
-## Code
+-   We live in a 'networked world'
+-   The word 'network' is ubiquitous:
+-   Communication networks
+-   Transport networks
+-   Social networks
+-   Has a formal meaning in mathematics, social and physical sciences: a representation of the relations between entities
 
-When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+## Goals of this lecture
 
-```{r}
-1 + 1
-```
+-   The lecture will be a brief overview of the origins and concept of network analysis as it applies to humanities subjects.
+-   By the end you should:
+    -   Have a basic knowledge of network analysis and its key concepts
+    -   Understand key terminology such as nodes and edges
+    -   Understand some important network measurements and how to interpret them
+    -   Have a practical starting-point for the tools and methods needed to turn your own research into network data
+
+## Leonard Euler, graph theory, and the 'Königsberg Bridge Problem'
+
+-   Network analysis has its origins in 'graph theory', put forward by the 18th century mathematician Leonhard Euler.
+-   Trying to solve the 'Königsberg Bridge problem'
+
+![](images/Screenshot%202022-09-26%20at%2011.25.49.png)
+
+## From Graphs to Networks...
+
+-   Graphs can be used to represent 'things' (called nodes) and connections between them (called links or edges).
+-   Often represented as a 'network diagram, where the nodes are points and the edges lines.
+-   They have a few additional properties: they can be directed and weighted
+
+![](images/Screenshot%202022-09-26%20at%2011.27.17.png)
+
+## Directed Networks
+
+-   Directed networks are ones in which the information flows in a particular direction, from one node to another.
+
+![](images/Screenshot%202022-09-26%20at%2011.29.45.png)
+
+## Weighted Networks
+
+-   A weighted network is one where these is a measurement representing the strength of the ties between the nodes.
+
+![](images/Screenshot%202022-09-26%20at%2011.31.15.png)
+
+## Social Network Analysis
+
+-   Graph theory applied to systems of relations between people
+-   Eg. Mark Granovetter, 'Strength of Weak ties' (1973)
+-   Do we learn more from our distant acquaintances than our close friends?
+
+![](images/Screenshot%202022-09-26%20at%2011.33.01.png)
+
+## The 'New Science of Networks'
+
+-   Using network theory to understand and map very large complex systems such as the internet
+-   Papers by Barabasi (1999) and Watts & Strogatz (1998) shows that many real-world networks have a similar structure
+-   A small number of nodes with many connections, often called 'hubs', and many nodes with very few connections.
+
+## Small world
+
+-   Hubs make it easy to reach other parts of network even with a very few total connections
+-   This has been called the 'small-world' phenomenon, and helps to explain why everyone is so well-connected to everyone else!
+-   These types of networks are also resistant to failure but susceptible to targeted attack.
+
+![](images/Screenshot%202022-09-26%20at%2011.34.56.png)
+
+## Network Analysis and the Humanities
+
+-   Networks particularly suitable to humanities data, because we are in the business of relations
+-   In the past 20 years has been used to analyse historical social networks, archaeology, geographic networks, historical infrastructure, and others
+-   Also relevant to many other areas: even literary studies, art history etc.
+
+![](images/Screenshot%202022-09-26%20at%2011.35.49.png)
+
+## Almost anything can be a network..
+
+-   Almost anything can be represented as a network
+-   Network of words in a literary text, or characters in a play
+
+![](images/Screenshot%202022-09-26%20at%2011.36.43.png)
+
+## Constructing and Analysing Network Data: practical steps  
+
+-   Networks very commonly constructed from an ‘edge list’: a list of connections between pairs of nodes, often in a simple spreadsheet with two columns
+-   Data can be entered manually on a small scale
+-   Lots of existing humanities datasets available online, ready for network analysis
+-   A huge range of software available to visualise and analyse network data  
+
+## Network Visualisation  
+
+-   Often represented as a force-directed network
+-   Highly-connected groups of nodes are placed closely together
+-   Useful to get a sense of the overall ‘topology’, or map of a network, findings its centres, peripheries and separate clusters
+
+## Network Analysis Metrics  
+
+-   The metrics above can be used to highlight important nodes
+-   Think about the implications of each one for your own data and research
+  -   Eg high degree score in historical social network might indicate an important communicator; high degree in an archaeological network something else entirely.  
+  
+## Pitfalls of Network Analysis  
+
+-   Be careful in interpreting the results - particularly with messy data
+-   Some network types (such as bipartite) need additional steps in order to be able to analyse them accurately.
+-   Think about whether your network is representing a view of the world, or a view of the data used and its own agenda or history of collection!
+
+## Conclusions  
+
+-   Networks can be a powerful way to quantitatively assess related objects
+-   Easy to analyse with a variety tools
+-   Both visualisation and network metrics can be useful
+-   Think about how your own data might be represented as a network
+
+
+
+
+
+

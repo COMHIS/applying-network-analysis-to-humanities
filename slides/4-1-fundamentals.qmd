@@ -4,23 +4,30 @@ format: revealjs
 editor: visual
 ---
 
-## Quarto
+## Degree
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+-   Counts the number of connections to a particular node
+-   Can be directed and weighted
 
-## Running Code
+![](images/Screenshot%202022-09-26%20at%2011.42.32.png)
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+## Directed Degree
 
-```{r}
-1 + 1
-```
+![](images/Screenshot%202022-09-26%20at%2011.42.58.png)
 
-You can add options to executable code like this
+## Weighted Degree
 
-```{r}
-#| echo: false
-2 * 2
-```
+![](images/Screenshot%202022-09-26%20at%2011.43.37.png)
 
-The `echo: false` option disables the printing of code (only output is displayed).
+## Betweenness centrality
+
+-   First an algorithm calculates all the 'shortest paths' from every pair of nodes.
+-   A node scores highly for betweenness centrality if it is used on many of these paths
+
+![](images/Screenshot%202022-09-26%20at%2011.44.12.png)
+
+## Eigenvector centrality  
+
+-   Measures importance through a node’s connection to other important nodes
+-   Similar to the ‘PageRank’ system used by Google to rank search results by importance.
+
