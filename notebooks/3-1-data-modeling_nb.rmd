@@ -1,0 +1,81 @@
+
+
+---
+title: "Applying Network Analysis to Humanities: Week 3"
+subtitle: "Data Modeling"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+library(tidyverse)
+```
+
+## Conceptual Data Model
+
+The exercise for this lesson is to practice data modeling with the Tweetsets data that you acquired last week.
+The first task is to recognise entities from the data set. Write the names of two types of entities that you recognised from
+your data set to the empty places in the vector below:
+```{r}
+entities_in_data <- c("","")
+print(entities_in_data)
+```
+
+## Logical Data Model
+
+The next step is to recognise at least three attributes for each of these entitites. Write names of those attributes
+to the vectors below.
+```{r}
+entity_one_attributes <- c("","","")
+print(entity_one_attributes)
+```
+
+```{r}
+entity_two_attributes <- c("","","")
+print(entity_two_attributes)
+```
+
+## Practical Data Wrangling
+
+We will now put the data model to practice. First, download your Tweetsets data from the last week. Fill the missing parameter of the code block below to download the data set.
+```{r}
+# We have given the read_csv an additional parameter: col_types = c("user_id"="character","id"="character","retweet_id"="character","in_reply_to_status_id"="character","in_reply_to_user_id"="character","created_at"="character","quote_id"="character"). This ensures that R will not start thinking that the strings in the data are factors.
+#Keep the parameter, it helps the function to read the data in properly.
+tweet_data <- read_csv("Your data comes here",col_types = c("user_id"="character","id"="character","retweet_id"="character","in_reply_to_status_id"="character","in_reply_to_user_id"="character","created_at"="character","quote_id"="character"))
+
+```
+Next, create a table for one entity type, based on your logical data model. Do this to the table entity_type_1
+```{r}
+# Fill this
+entity_type_1 <-  tweet_data %>%   
+  
+print(paste0("One variable of this table is:",colnames(entity_type_1)))  
+```
+
+Next, create a table for another entity type, based on your logical data model.  Do this to the table entity_type_2
+```{r}
+# Fill this
+entity_type_2 <-  tweet_data %>%     
+print(paste0("One variable of this table is :",colnames(entity_type_2)))  
+```
+You can study the code in the course book example for help. The final thing is to check if these tables also satisfy
+the demand of relational data that each row is unique in terms of the unique identifier. If not, you do not have to fix
+that for the excercise, but try to think why it might have happened and what could be done. 
+
+```{r}
+# Fill in the code so the row below gives the number of unique primary keys in the table for entity 1.
+n_of_primary_keys_in_table_1 <- 
+  
+print(paste0("The number of rows is ",as.character(nrow(entity_type_1)),". The number of primary keys is ",as.character(n_of_primary_keys_in_table_1)))  
+```
+
+```{r}
+# Fill in the code so the row below gives the number of unique primary keys in the table for entity 2.
+n_of_primary_keys_in_table_2 <- 
+  
+print(paste0("The number of rows is ",as.character(nrow(entity_type_1)),". The number of primary keys is ",as.character(n_of_primary_keys_in_table_2)))  
+```
+
+## To return
+Knit the document and send the output.

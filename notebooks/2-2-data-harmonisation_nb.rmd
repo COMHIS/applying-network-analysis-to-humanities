@@ -1,0 +1,70 @@
+
+
+---
+title: "Applying Network Analysis to Humanities: Week 2"
+subtitle: "Data Harmonisation"
+output:
+  html_document:
+    df_print: paged
+---
+
+The exercise of this lesson uses regular expressions to solve a real data wrangling problem with the Tweetsets data. 
+```{r}
+library(tidyverse)
+```
+
+## Regular expression excercise
+When writing the material for this course, we noticed that the Twitter data that Tweetsets returns gives the dates in the following format:
+```{r}
+date_example <- "Fri Apr 06 01:28:26 +0000 2018"
+```
+
+We would like to have this information in the format day, month, year, and so we used regular expressions to extract
+the information that we wanted, and other R functions to turn it to the date data format. In fact, we made
+a little function of our own to do this. Now, you will replicate this step.
+
+It is your task to use regular expressions to extract the day and month (e.g jun 29, may 20) to the
+day_and_month variable of the function and year (e.g. 2018) to the year variable. You do not need to conver dates and months beyond the
+extraction, R can handle dates with both letters and numbers in it (e.g 29 jun 2018 is not an issue).
+
+If defining a function in R is a new thing to you, don't worry, we keep it simple. Function takes something as input (in our case the string x), and returns something as output (defined by the line return, that should be the last line in a simple function like this). 
+
+Here is a small example to get the idea of how self defined functions work when combined with the other tools that we have discussed.
+
+```{r}
+friday_detector <- function(x){
+  #This function takes the argument x, converts it to lower case, then detects "fri" from the input text, and replaces it
+  #with the anouncment: friday was removed from here.
+  x_without_friday <- x %>% tolower(.) %>% str_replace(.,pattern = "fri",replacement = "friday was removed from here")  
+  return(x_without_friday)
+}
+
+use_function_demo <- friday_detector(date_example)
+print(use_function_demo)
+
+```
+As you can see, after running the code chunk above, we are able to use the function like any of the pre-made functions of R that you have already used. You can modify the function in the chunk above to get a touch on how functions (and regular expressions) work. 
+
+Next, you should complete the function below by completing the lines day_and_month and year. We have already started by
+converting the input (a string with time information in the same structure as the string date_example) to lower case. Your task is to finish the function by piping the output forward to regular expressions in both lines. Try to find the right function and pieces of regular expression either from the cheat sheet or from the course book.
+
+
+```{r}
+polish_to_date <- function(x){
+day_and_month <- x %>% tolower(.) 
+year <- x %>% tolower(.)
+date <- paste(day_and_month,year,sep=" ") %>% as.Date(.,format="%b %d %Y")
+return(date)
+
+}
+
+```
+The chunk below should return the output 2018-04-06 if the function works as it should. You should be able to use the function as
+such to harmonise the time information (created_at variable) of your Tweetsets data.
+```{r}
+harmonised_date <- polish_to_date(date_example)
+print("Date harmonised:")
+print(harmonised_date)
+
+```
+Finally, knit this document and return the output to the course leader.

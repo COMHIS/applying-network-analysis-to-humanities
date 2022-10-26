@@ -1,0 +1,125 @@
+
+
+---
+title: "Applying Network Analysis to Humanities: Week 3"
+subtitle: "Working With Joins and First Network"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+
+
+This exercise is about getting a network out of the Twitter data set. Doing that, we will also practice the use of join and filter
+functions. The excercise combines linking and subsetting data with creating a network. 
+```{r}
+
+library(igraph)
+library(tidyverse)
+```
+
+  
+## Load in the data.
+
+Load the hydrated Twitter data in the data frame tweet_data. Each row has a tweet, along with information about the user, tweet content etc.
+
+```{r}
+# We have given the read_csv an additional parameter: col_types = c("user_id"="character","id"="character","retweet_id"="character","in_reply_to_status_id"="character","in_reply_to_user_id"="character","created_at"="character","quote_id"="character"). This ensures that R will not start thinking that the strings in the data are factors.
+#Keep the parameter, it helps the function to read the data in properly.
+tweet_data <- read_csv("Your data comes here",col_types = c("user_id"="character","id"="character","retweet_id"="character","in_reply_to_status_id"="character","in_reply_to_user_id"="character","created_at"="character","quote_id"="character"))
+
+```
+
+
+## Towards a network
+Next, we will go through a process of making a quotation network from your Twitter data set. The quotation network
+connects users to the users that they have quoted in Twitter. We will only cover individuals and tweets that belong to your data set. With these reservations, we start forming the network.
+
+The first step is simple. Select from your tweet data the id of each tweet (the field id) and the id of the user (user_id)
+to the table tweet_to_user_id 
+
+```{r}
+tweet_to_user_id <- "Do it here"
+
+```
+
+The next step has more parts, but we can break it to pieces. What we aim for is to connect quoted tweets to
+their users (to the extent that the quoted tweets and their ids can be found from the data set). You should 
+do these operations one by one, and after each step use the piping operator (%>%) to pass the output of the previous step to the next one as input. The end result should be saved to the data frame quoted_tweets_user_ids. 
+
+First, select from the tweet_data data frame the field quote_id, but so that it remains a data frame.
+Second, filter empty and missing values out of this data frame.
+Third, join the tweet_to_user_id data frame to this data frame by matching the quote_id of this data frame to the id variable
+of the tweet_to_user_id data frame. Make this so that the user_id remains part of the resulting data frame. 
+Fourth, filter the resulting data frame so that empty and missing values of the field user_id are removed.
+Fifth, rename (with the function rename of tidyverse, googling will provide examples of how the function is used) user_id to quote_user_id.
+
+
+```{r}
+quoted_tweets_user_ids <- "The five step come here"
+
+```
+
+Next, join the quoted_tweets_user_ids data frame to the tweet_data data frame
+
+```{r}
+
+tweet_data <- "join the quoted_tweets_user_ids to tweet_data"
+
+```
+
+## Creating a network
+
+We are very close to creating a network now, as we have connected quoters to those who are being quoted. For the edge list, we need to take several steps, but all of them are fortunately quite simple. It is once again recommended to pipe the output of each step to the next one.
+
+First, use the count function of tidyverse to the tweet_data data frame. Count the number of tweets per user id AND quote user id.
+Second, filter empty and missing quote_user_id's out of this data set.
+Third, filter away instances in which the quote_user_id and the user_id are the same (self-quoters)
+Save the end result of these steps to the tweet_data_edge_list.
+```{r}
+tweet_data_edge_list <- "the end result of piping these operations"
+```
+
+You now have an edge list! The next steps are just about creating a list (the node list) of users that either
+quote or are being quoted in your edge list. Below, we create a a data frame of quoters and those being quoted 
+in the edge list. You don't need to change the code in the chunk below, but can you think how it could have been
+done with joins?
+
+```{r}
+is_quoting_or_quoted <- unique(c(tweet_data_edge_list$user_id,tweet_data_edge_list$quote_user_id)) %>% as.data.frame(.)
+colnames(is_quoting_or_quoted) <- "user_id"
+```
+
+The final task is to get a node list with an attribute that tells how many tweets the user has in total in our data set.
+By breaking it to pieces and piping the output from previous step to the following, you should: 
+First, use the count function to count the number of tweets per user id in your data set (you can assume that each row is a tweet)
+Second, now having a data frame with one row per user (and another column with n, the number of tweets), use a join function
+(these were introduced last week) so that the list will only include those users that are also present in the is_quoting_or_quoted
+data frame.
+
+```{r}
+tweet_data_nodes <- "Final steps to node list here"
+
+```
+
+
+
+You are done, the only thing left is to create a network for you. Keep the below chunk as it is for the version you knit for return,
+but you could already start visualising the thing. Congratulations on your (possibly) first network!
+
+```{r}
+graph <- graph_from_data_frame(d=tweet_data_edge_list,vertices = tweet_data_nodes,directed = TRUE)
+
+
+edges <- E(graph)
+nodes <- V(graph)
+print("Number of nodes:")
+print(length(nodes))
+print("Number of edges:")
+print(length(edges))
+
+```
+
+## To return
+Knit the document and send the output.
