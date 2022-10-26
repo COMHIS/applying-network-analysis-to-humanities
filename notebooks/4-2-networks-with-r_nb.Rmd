@@ -146,5 +146,50 @@ Thinking back to your computational literacy course, what does this tell us abou
 
 ## Joining attributes to the table
 
+For the next series of tasks, you will merge additional node attributes to the network object, and use this to filter the network. 
 
+First, load your table of node attributes.
+
+```{r}
+nodes_df = read_csv('')
+```
+
+Next, merge this to your network object using `left_join()`. You'll need to fill in the `by = ` argument with the correct column names in the attributes dataset. The column for the node IDs in the network object is called `name`. See the class chapter for more specifics if you get stuck. 
+
+```{r}
+g1 = g1 %>% 
+  left_join(nodes_df, by = )
+```
+
+Now, filter your network using an appropriate attribute *before* you calculate the relevant network statistics. Save this as a dataframe called `filtered_network_nodes`. 
+
+```{r}
+filtered_network_nodes = g1 %>% 
+  filter() %>% # fill in the relevant filtering rule here
+  mutate(degree = centrality_degree(mode = 'in')) %>% 
+  mutate(between = centrality_betweenness(directed = TRUE)) %>% 
+  mutate(eigen = centrality_eigen(weights = NULL, directed = F)) %>% 
+  mutate(closeness = centrality_closeness(mode = 'in')) %>% 
+  as_tibble() # this command turns the nodes table of the network object into an ordinary dataframe.
+
+```
+
+As above, rank by the highest degree. Are there any major changes in rank in comparison to the network above, and what are they?
+
+## Community detection  
+
+Finally, calculate a set of groups for your network. We'll use the Louvain algorithm, with the command `group_louvain`. As above, this is added as a new column to the nodes table with `mutate`.
+
+```{r}
+g1 %>%
+  mutate(group = group_louvain()) 
+```
+
+In a final exercise, use ggplot to draw a bar chart of the distribution of nodes in each community. The function to generate the group labels is given, but you'll have to figure out the rest, adding commands using the `%>%` operator. The course book chapter for class 1, lesson 2, which introduces ggplot, should be helpful here. 
+
+```{r}
+g1 %>%
+  mutate(group = group_louvain()) 
+
+```
 

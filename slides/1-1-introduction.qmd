@@ -1,133 +1,735 @@
 ---
 title: "Introduction to Network Analysis"
-format: revealjs
+format: 
+  revealjs:
+    theme: default
 editor: visual
+title-slide-attributes:
+    data-background-video: "/Users/yannryan/Downloads/Charting culture.mp4"
+    data-background-size: "1.5"
+    data-background-opacity: ".5"
 ---
 
-## Basic Info on course
+# About this Course
 
-X weeks
+## Course Aims
 
-## CSC Notebooks  
+-   It focuses on **applied approaches** to network analysis and humanities data.
 
-- How to log on, demo what to do (but explain we'll do this during practical parts)
+-   Rather than cover network science in exhaustive detail, you'll learn how to **find**, **extract**, **clean**, **visualise**, and **analyse** humanities and cultural datasets from a network perspective.
 
-## Networks are everywhere.. but what are they?
+-   Additionally, we'll focus on the **problems** and **pitfalls** of using networks, specific to humanities data.
 
--   We live in a 'networked world'
--   The word 'network' is ubiquitous:
--   Communication networks
--   Transport networks
--   Social networks
--   Has a formal meaning in mathematics, social and physical sciences: a representation of the relations between entities
+## Practical Information
 
-## Goals of this lecture
+-   Held online, via Zoom, on Wednesdays and Fridays, between 08.15 and 09.45
 
--   The lecture will be a brief overview of the origins and concept of network analysis as it applies to humanities subjects.
--   By the end you should:
-    -   Have a basic knowledge of network analysis and its key concepts
-    -   Understand key terminology such as nodes and edges
-    -   Understand some important network measurements and how to interpret them
-    -   Have a practical starting-point for the tools and methods needed to turn your own research into network data
+-   Assessment is the following:
 
-## Leonard Euler, graph theory, and the 'Königsberg Bridge Problem'
+    -   Completion of weekly assignments (pass/fail, during class and finished afterwards if necessary).
 
--   Network analysis has its origins in 'graph theory', put forward by the 18th century mathematician Leonhard Euler.
--   Trying to solve the 'Königsberg Bridge problem'
+    -   Presentation on final project (1/5 of the grade)**, Wednesday or Friday of the final week.**
+
+    -   Final project (4/5 of the grade, s**ubmitted on January 17 at the latest.**
+
+    -   Full details on the [course page on Studies Service](https://studies.helsinki.fi/courses/cur/hy-opt-cur-2223-7c9cdedc-fc7b-4e66-b793-1dbe0db868b7)
+
+## Course Structure
+
+-   Week 1: Introduction
+
+-   Week 2: Preparing and cleaning network data
+
+-   Week 3: Data structure and modelling
+
+-   Week 4: Network fundamentals
+
+-   Week 5: Visualisations and other network types
+
+-   Week 6: Asking questions, reflections
+
+-   Week 7: Final project
+
+## Class Structure
+
+-   Most weeks: lecture (various lengths) and practical session
+
+-   Lecture:
+
+    -   Introduce theory, walk through ideas behind exercises
+
+-   Practical session:
+
+    -   Work through exercises,
+
+    -   Ask questions,
+
+    -   Discuss reading.
+
+## Practical sessions
+
+-   Series of coding exercises, using R notebooks.
+
+-   We'll begin them during the class but they can be completed afterwards.
+
+-   No previous experience required
+
+-   Notebooks are on the cloud, using [CSC notebooks service](https://notebooks.rahtiapp.fi/welcome), meaning you don't need to install R or worry about computer requirements
+
+-   You'll need a CSC account, and you'll be sent a join code at the beginning of the course. If you don't have either of these things, contact the [course leader](mailto:yann.ryan@helinki.fi).
+
+## Submitting Assignments and Final Project
+
+::: columns
+::: {.column width="40%"}
+-   Done through the course Moodle page (access is automatic if you are enrolled for the course).
+:::
+
+::: {.column width="60%"}
+
+![](images/Screenshot%202022-10-25%20at%2011.44.42.png)
+:::
+:::
+
+
+## Submitting Assignments and Final Project
+
+-   Each week has two submission areas on Moodle:
+
+    -   Finish the assignment using CSC notebooks
+
+    -   'Knit' the file
+
+    -   Download the HTML and R Markdown notebook source
+
+    -   Upload to the relevant assignment on Moodle
+
+## Reading
+
+Each week will have one piece of set reading, usually an article or book chapter, to be discussed in-class the following week.
+
+**Week 1:** Ruth Ahnert, Sebastian E Ahnert, 'Metadata, Surveillance and the Tudor State'.
+
+**Week 2:** Beheim, B., Atkinson, Q.D., Bulbulia, J. *et al.* 'Treatment of missing data determined conclusions regarding moralizing gods'.
+
+## Reading
+
+**Week 3:**
+
+**Week 4:** Ahnert et. al. (2021). *The Network Turn: Changing Perspectives in the Humanities* **Chapter 5, 'Quantifying Culture'.
+
+## Reading
+
+**Week 5:** Venturini, T., Jacomy, M., & Jensen, P. (2021). 'What do we see when we look at networks: Visual network analysis, relational ambiguity, and force-directed layouts'.
+
+**Week 6:** Silvia Donker, 'Networking Data. A Network Analysis of Spotify's Socio-Technical Related Artist Network'
+
+## Reading
+
+**Week 7:** Mushon Zer-Aviv, 'If Everything Is a Network, Nothing Is a Network', *Visualising Information for Advocacy*.
+
+## Other useful reading
+
+There is no set textbook, but the following are good general introductions to networks:
+
+**Ahnert, R., Ahnert, S., Coleman, C., & Weingart, S. (2021). *The Network Turn: Changing Perspectives in the Humanities* (Elements in Publishing and Book Culture). Cambridge: Cambridge University Press.
+
+Short, very readable volume on networks, specifically focused on humanities applications. Free, open access copy available through the above link.
+
+## Other useful reading
+
+**Easley, D., and Kleinberg,J. (2010). *Networks, Crowds, and Markets: Reasoning about a Highly Connected World.* Cambridge University Press.**
+
+Very comprehensive textbook on networks, mostly relating to economics, sociology, computing. Pre-publication draft is available for free on the [book website](https://www.cs.cornell.edu/home/kleinber/networks-book/).
+
+## Other useful reading
+
+**Barabási, A.-L. (2002). *Linked: The New Science of Networks*. Perseus Pub.**
+
+Popular science book on networks, very influential in bringing the science of networks to a popular audience.
+
+**Newman, M. E. J. (2018). *Networks* (Second edition). Oxford University Press.**
+
+Comprehensive textbook of network theory, recommended if you want to understand algorithms etc. in more detail.
+
+## Other useful reading
+
+Also worth checking out is the [extensive bibliography](https://historicalnetworkresearch.org/bibliography/) and [journal](https://jhnr.uni.lu/index.php/jhnr) by the Historical Network Research Community.
+
+![](images/Screenshot 2022-10-25 at 12.55.44.png)
+
+## Final Project
+
+-   The final project is due on January 17
+
+-   The final project tasks you with using your network data and related data model to carry out an analysis.
+
+-   The project should take the form of an R Markdown notebook, which you'll learn how to create over the next few weeks.
+
+-   You'll write up this document and then turn it into a HTML page - a process known as 'knitting'.
+
+## Final Project Presentation
+
+-   To help you with your project, we ask you to present your ideas and proposed methods to the rest of the group
+
+-   You'll be allocated a ten-minute presentation slot, for either Wednesday or Friday of the final week.
+
+-   You'll also be asked to give feedback and ask questions of the other class participants, with the aim of helping their own projects.
+
+## Grading {.smaller}
+
+In this course, each of the learning objectives builds on top of the previous one. To receive the highest grade, students should demonstrate competency in the following five areas. The criteria for each grade is given below:
+
+1: Through the final project, show a basic understanding of network principles and metrics, and demonstrate the ability to conduct a descriptive analysis of a network dataset.
+
+2: Additionally, present a conceptual and logical data model representing a particular set of data tables.
+
+3: Demonstrate how this particular data model can be used to construct queries of large datasets.
+
+4: Use the above skills to produce an analysis of a particular humanities questions
+
+5: Additionally, demonstrate a critical eye for these technologies, how they apply to your particular dataset, and what the potential pitfalls are.
+
+# Introduction to Networks
+
+## What do we mean by a 'network'?
+
+-   The word 'network' is ubiquitous in our daily lives.
+
+-   The Oxford English Dictionary tells us the term itself originally was first defined as `Work (esp. manufactured work) in which threads, wires, etc., are crossed or interlaced in the fashion of a net.` (think patch work)
+
+## What do we mean by a 'network'?
+
+-   Now we commonly use it for any complex system of interrelated things:
+
+    -   We all use social networking, and the telephone, railway, and road networks;
+
+    -   An area of a city might be described as having networks of alleyways,
+
+    -   A historian might write about a network of trading posts.
+
+## Networks are Metaphorical?
+
+-   These are all in some way metaphorical.
+
+-   The networks we'll learn about and use on this course have a more specific definition.
+
+-   In mathematics, a network is an object made up of *things* and *connections.*
+
+-   To use the standard language, the *things* are called **nodes** (or sometimes vertices), and the *connections* called **edges**.
+
+## Nodes and Edges
+
+These things (and connections) could be almost anything. Some typical examples include:
+
+-   Nodes are people, and the edges their friendships or followers, as in a typical social network.
+
+-   The nodes are books and authors, and the connection is 'written by'.
+
+-   Nodes are web pages on the internet
+
+-   **In this final example, what might the connections be?**
+
+## Networks in the Humanities
+
+-   Networks have long been used to understand aspects of historical or cultural change.
+
+-   Some typical uses of complex networks in humanities subjects include [spatial networks](https://model-articles.rrchnm.org/articles/midura/), [line of sight](https://www.frontiersin.org/articles/10.3389/fdigh.2017.00017/full) or [pottery similarity networks](https://academic.oup.com/book/40384/chapter-abstract/347130019?redirectedFrom=fulltext) in archaeology, [historic road networks](https://www.landesgeschichte.uni-goettingen.de/handelsstrassen/index.php), and [character networks in plays](http://www.martingrandjean.ch/network-visualization-shakespeare/).
+
+-   In this course, we'll mostly work with networks as tools for **descriptive** and **exploratory** data analysis.
+
+-   But network science also has wide uses in **statistical and predictive modelling**.
+
+# Some Examples
+
+Before we get in to some of the details, it's worth going through a few examples of interesting projects which have combined humanities data with network science.
+
+## Ruth and Sebastian Ahnert, Tudor networks{.smaller}
+
+::: columns
+::: {.column width="40%"}
+-   Used network measurements to make a 'network fingerprint' for individuals in an archive of Tudor state papers.
+
+-   looked at individuals with a high betweenness (a bridging measurement) in comparison to their degree (measuring their overall connections)
+
+-   The biggest outlier is Jon Snowden: an alias of John Cecil, a Catholic priest in exile in Elizabeth I's regime.
+:::
+
+::: {.column width="60%"}
+![](images/Screenshot%202022-10-03%20at%2011.42.11.png)
+:::
+:::
+
+::: notes
+Speaker notes (press 's' when presenting to switch to speaker mode).
+
+As found in your reading this week, Ahnert and Ahnert used a number of network measurements to make a 'network fingerprint' for individuals in an archive of Tudor state papers. Using this measure, they were able to identify or confirm spies and collaborators. Specifically, they looked at individuals with a high betweenness (a bridging measurement) in comparison to their degree (measuring their overall connections): represented by the points underneath the trendline in the graph below. The biggest outlier is Jon Snowden: an alias of John Cecil, a Catholic priest in exile in Elizabeth I's regime. Looking at others with a similar profile revealed other conspirators.
+:::
+
+## Networking Cultural History{.smaller}
+
+
+::: columns
+::: {.column width="40%"}
+-   Researchers graphed places of birth and death---taken from Wikidata---as nodes and edges
+
+-   Used it as a way to trace the movement of culture from one area of the world to another, and how this changed over time.
+
+-   Given that the information is taken from Wikidata, what problems could you envisage with this study?
+
+:::
+
+::: {.column width="60%"}
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/4gIhRkCcD4U" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+
+</iframe>
+:::
+:::
+
+
+
+
+::: notes
+In below video, accompanying a [paper in *Science*](https://www.science.org/doi/10.1126/science.1240064), researchers graphed places of birth and death---taken from Wikidata---as nodes and edges, using it as a way to trace the movement of culture from one area of the world to another, and how this changed over time.
+
+Given that the information is taken from Wikidata, what problems could you envisage with this study?
+
+While Wikidata is a large data source, it is obviously very partial and has a particular focus, for example in favour of white, male, Western Europeans. The study may just replicate the biases of Wikidata itself, hiding the important cultural influences on the west, from other parts of the world.
+:::
+
+## Using Multi-Layered Networks to Disclose Books in the Republic of Letters
+
+![](images/Screenshot%202022-10-03%20at%2011.23.15.png){width="500"}
+
+::: notes
+In [this project](https://jhnr.uni.lu/index.php/jhnr/article/view/7), Ingeborg van Vugt made a 'multi-layer network' by combining a network of letters with a network of book mentions. The paper compared the networks of the Dutch philologist, Nicolaas Heinsius, and the Florentine librarian Antonio Magliabechi. Dynamic visualisations were made using the Nodegoat software. One key finding was that having access to books turned these people into experts - scholars would send their books to them, and then in turn they would use this information to inform their correspondents. Van Vugt showed that these two separate spheres (books and correspondence) were related to each other, that a book dedication could influence whether two individuals would write to each other, and so forth.
+:::
+
+## Six Degrees of Francis Bacon
+
+![](images/Screenshot%202022-10-03%20at%2011.26.54.png){width="600"}
+
+::: notes
+The [Six Degrees of Francis Bacon](http://www.sixdegreesoffrancisbacon.com/) project used co-occurrence networks (a technique we'll learn about later) to infer links between early modern individuals. Specifically, they looked for co-occurrences of individuals in the Oxford Dictionary of National Biography, inferring links if two individuals were mentioned together more than was statistically significant. This data was then turned into an interactive social network.
+
+Rather than answering a specific question, the Six Degrees project is a good example of how we can use networks as exploratory tools. The interactive site can be used to explore patterns and groups who were likely connected, and can be used as a starting-point to understanding the social relations of a figure of interest.
+:::
+
+## Mapping the digital humanities community of Twitter
+
+![](images/Screenshot%202022-10-03%20at%2011.46.29.png)
+
+::: notes
+Network analysis has naturally been used extensively to understand the structure of social networks and sites like Reddit. In [this study](https://halshs.archives-ouvertes.fr/hal-01517493), the authors measured the centrality of a group of 2,500 Twitter users self-identified as digital humanities practioners. They found that there were separate communities of languages, and that French was particularly isolated.
+:::
+
+## Graph Theory
+
+::: columns
+::: {.column width="60%"}
+-   Representing data as nodes and edges allows us to use the mathematics of *graph theory* to analyse and explore it.
+
+-   The origins of graph theory date back to the 18th century, and the mathematician Leonard Euler.
+:::
+
+::: {.column width="40%"}
+![](images/Leonhard_Euler_2%20(1).jpg)
+:::
+:::
+
+## Graph Theory
+
+-   The city of Königsberg (now Kaliningrad) was built on a river with two islands and a system (a network, perhaps?) of seven bridges connecting them.
+
+![](images/Image-Koenigsberg,_Map_by_Merian-Erben_1652.jpg)
+
+## Graph Theory
+
+::: columns
+::: {.column width="60%"}
+-   The inhabitants of the city had long wondered if there it was possible to devise a route which would cross each bridge exactly once.
+:::
+
+::: {.column width="40%"}
+![](images/euler_bubble.jpg)
+:::
+:::
+
+## Graph Theory
+
+-   Euler solved this problem by abstracting the bridge system into what we now call a graph: a structure with nodes and edges.
 
 ![](images/Screenshot%202022-09-26%20at%2011.25.49.png)
 
-## From Graphs to Networks...
+## Graph Theory
 
--   Graphs can be used to represent 'things' (called nodes) and connections between them (called links or edges).
--   Often represented as a 'network diagram, where the nodes are points and the edges lines.
--   They have a few additional properties: they can be directed and weighted
+-   He used this approach to prove that the path was only possible if the graph had exactly zero or two nodes with a *degree* (a count of the total connections) with an odd number.
 
-![](images/Screenshot%202022-09-26%20at%2011.27.17.png)
+-   This process: abstracting a system to its connections, and devising mathematical rules to understand it, forms the basis of modern graph theory.
 
-## Directed Networks
+## Graph Theory
 
--   Directed networks are ones in which the information flows in a particular direction, from one node to another.
+-   Graph theory has methods to perform all sorts of calculations on the network: both on the individual nodes (for example to find the most important nodes by various measurements), and on the network as a whole.
 
-![](images/Screenshot%202022-09-26%20at%2011.29.45.png)
+-   Rather than think about each individual relationship separately, a network model means that we can understand some more about how each part is interrelated, how the structure itself is important, and how one node might affect another in complex ways.
 
-## Weighted Networks
+## Why use networks in humanities?
 
--   A weighted network is one where these is a measurement representing the strength of the ties between the nodes.
+-   Network analysis has become one of the most popular (and perhaps one of the most overused) techniques in the digital humanities toolbox. Over this course, we'll ask you to think critically about the methods you use and when they might not always be the best way to think about your data.
 
-![](images/Screenshot%202022-09-26%20at%2011.31.15.png)
+-   There are plenty of circumstances when a network model is not the best was of representing a dataset, as we'll learn. However, representing data as a network has a number of unique benefits:
 
-## Social Network Analysis
+## Some Benefits of a Network Approach:
 
--   Graph theory applied to systems of relations between people
--   Eg. Mark Granovetter, 'Strength of Weak ties' (1973)
--   Do we learn more from our distant acquaintances than our close friends?
+-   Networks allow us to reduce or understand **complexity:** we can reduce complicated data to its overall structure. Network visualisations, when used well, allow us to **spot patterns** and make inferences on the structure of our data.
 
-![](images/Screenshot%202022-09-26%20at%2011.33.01.png)
+-   Rather than consider each individual data point as isolated, networks allow us to consider how **data is interrelated**, and how the relationships between nodes effect each other and the overall structure.
 
-## The 'New Science of Networks'
+## Some Benefits of a Network Approach:
 
--   Using network theory to understand and map very large complex systems such as the internet
--   Papers by Barabasi (1999) and Watts & Strogatz (1998) shows that many real-world networks have a similar structure
--   A small number of nodes with many connections, often called 'hubs', and many nodes with very few connections.
+-   Network techniques allow us to move **beyond pairs** to putting entities and their relationships in a much larger context, showing how they bridge the local and the global. They allow us to consider **groups** within data, particularly in communication networks.
 
-## Small world
+-   Networks can point to data subsets worth investigating in more detail: allowing us to move from **close to distant reading**, and in-between.
 
--   Hubs make it easy to reach other parts of network even with a very few total connections
--   This has been called the 'small-world' phenomenon, and helps to explain why everyone is so well-connected to everyone else!
--   These types of networks are also resistant to failure but susceptible to targeted attack.
+# Network Basics
 
-![](images/Screenshot%202022-09-26%20at%2011.34.56.png)
+This section introduces the fundamental ideas behind network analysis, including its key components, and various network types.
 
-## Network Analysis and the Humanities
+## Nodes and Edges
 
--   Networks particularly suitable to humanities data, because we are in the business of relations
--   In the past 20 years has been used to analyse historical social networks, archaeology, geographic networks, historical infrastructure, and others
--   Also relevant to many other areas: even literary studies, art history etc.
+As already mentioned, a network is a graph consisting of nodes and edges (connections). Typically (though not always), the edges are *pairwise,* meaning they run between a pair of nodes. These are often represented visually as points (the nodes) and lines (the edges), like this:
 
-![](images/Screenshot%202022-09-26%20at%2011.35.49.png)
+![](images/Screenshot%202022-09-26%20at%2011.42.32.png){width="300"}
 
-## Almost anything can be a network..
+## Edge weights
 
--   Almost anything can be represented as a network
--   Network of words in a literary text, or characters in a play
+-   These connections can often have a *weight* attached, for example the number of letters exchanged between two people, or the number of times two actors appear in a scene in a movie or play together.
 
-![](images/Screenshot%202022-09-26%20at%2011.36.43.png)
+![](images/Screenshot%202022-09-26%20at%2011.42.58.png){width="300"}
 
-## Constructing and Analysing Network Data: practical steps  
+## Edge weights
 
--   Networks very commonly constructed from an ‘edge list’: a list of connections between pairs of nodes, often in a simple spreadsheet with two columns
--   Data can be entered manually on a small scale
--   Lots of existing humanities datasets available online, ready for network analysis
--   A huge range of software available to visualise and analyse network data  
+-   A weight might also be a measurement of similarity or difference between two nodes, such as a linguistic similarity between two books (a network can also be between inanimate objects!), or the distance between two cities on a map. These weights can be used in the calculations.
 
-## Network Visualisation  
+## Edge direction
 
--   Often represented as a force-directed network
--   Highly-connected groups of nodes are placed closely together
--   Useful to get a sense of the overall ‘topology’, or map of a network, findings its centres, peripheries and separate clusters
+-   Edges can also have *directions,* meaning that the incoming and outgoing links are counted separately: for example we might count incoming and outgoing letters separately.
 
-## Network Analysis Metrics  
+-   Another typical illustration of **directed** and **undirected** networks is the difference between Twitter and Facebook:
 
--   The metrics above can be used to highlight important nodes
--   Think about the implications of each one for your own data and research
-  -   Eg high degree score in historical social network might indicate an important communicator; high degree in an archaeological network something else entirely.  
-  
-## Pitfalls of Network Analysis  
+    -   Facebook friends must be reciprocated - both people have to accept the friend request, meaning that a Facebook network is undirected.
 
--   Be careful in interpreting the results - particularly with messy data
--   Some network types (such as bipartite) need additional steps in order to be able to analyse them accurately.
--   Think about whether your network is representing a view of the world, or a view of the data used and its own agenda or history of collection!
+    -   Twitter, on the other hand, is a directed network, because an individual can have separate *follower* and *following* numbers.
 
-## Conclusions  
+::: {notes}
+What might this letter count tell us about a relationship in a network? What potential danger is there is reading something from this?
 
--   Networks can be a powerful way to quantitatively assess related objects
--   Easy to analyse with a variety tools
--   Both visualisation and network metrics can be useful
--   Think about how your own data might be represented as a network
+It might be worth considering how the letter network was constructed. Often they are reconstructed from personal letter archives, which tend to be collections of mostly incoming letters to a single person or family. In that case, it's likely the difference between incoming and outgoing letters is not statistically significant, but simpy a product of the method of data collection.
+:::
 
+## Weighted and directed
 
+-   These directed edges can also have separate weights attached to them:
 
+![](images/Screenshot%202022-09-26%20at%2011.31.15.png){width="300"}
 
+## Network paths
 
+-   One of the central concepts behind networks is that they allow information to travel along the edges, moving from node to node.
 
+-   In a metaphorical sense, nodes with less 'hops' between them have an easier route to this information, and may be said to be close together or influential on each other.
+
+-   If we add more than three nodes to the network, these paths begin to emerge.
+
+-   A network path is simply a route, travelling along edges, from one node to another in a network.
+
+## Network paths
+
+-   Some network metrics use these paths to estimate structural importance, for example.
+
+-   Paths work differently in *directed* networks: information can only move in the direction of the edges.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(ggraph)
+library(igraph)
+g = tibble(a = c(1,1,2,3,4,7,6), b = c(2,3,7,5,3,4,2)) %>% graph_from_data_frame(directed = F)
+
+s = igraph::get.shortest.paths(g, 6, 7, output = 'both')
+
+E(g, path=unlist(s[[1]]))$color <- "red"
+
+a = ggraph(g, 'kk') + 
+  geom_edge_link(width = 2, aes(color = color)) + 
+  geom_node_point(size = 20, fill = 'white', pch = 21, stroke = 2) + 
+  geom_node_text(aes(label = name)) + theme_void() + 
+  scale_x_continuous(expand = c(.1, .1))+ 
+  scale_y_continuous(expand = c(.1, .1)) + theme(legend.position = 'none')
+
+g = tibble(a = c(1,1,2,3,4,7,6), b = c(2,3,7,5,3,4,2)) %>% graph_from_data_frame(directed = T)
+
+s = igraph::get.shortest.paths(g, 6, 7, output = 'both')
+
+E(g, path=unlist(s[[1]]))$color <- "red"
+
+b = ggraph(g, 'kk') + 
+  geom_edge_link(width = 2, aes(color = color),
+                 arrow = arrow(length = unit(4, 'mm')), 
+                   end_cap = circle(10, 'mm')) + 
+  geom_node_point(size = 20, fill = 'white', pch = 21, stroke = 2) + 
+  geom_node_text(aes(label = name)) + theme_void() + 
+  scale_x_continuous(expand = c(.1, .1))+ 
+  scale_y_continuous(expand = c(.1, .1)) + theme(legend.position = 'none')
+
+cowplot::plot_grid(a,b)
+
+```
+
+# Different Network Types
+
+## Bipartite networks
+
+-   In the above examples, the nodes and connections have been very straightforward: two things of the same *type* (people in a social network for example) connected to each other.
+
+-   These are known as *one-mode* or *unipartite* networks.
+
+-   However, many networks you'll encounter will be of things of different types.
+
+-   These are known as *bipartite networks,* and we'll return to them later in the course. They are very common in humanities data.
+
+## Bipartite Network Examples
+
+-   Some examples include:
+
+    -   A network of characters in a play connected to scenes they appear in.
+
+    -   A network of company directors connected to companies
+
+    -   A network of publishers connected to the books they financed.
+
+    -   A network of people connected to membership of certain organisations
+
+## Bipartite Networks
+
+-   Below, each individual is listed as the publisher of a number of books
+
+-   A publisher can be connected to many books, but the two types of nodes cannot be connected to each other
+
+![](images/bipartite.png){width="500"}
+
+## Bipartite Projections
+
+-   Many network measurements and algorithms are designed to be used on regular, *one-mode* networks.
+
+-   Often, when working with bipartite networks, we *collapse* the network into one of the node types, meaning that we directly connect one of the types to each other, based on shared connections to the other type.
+
+## Bipartite Projections
+
+-   In the figure on the left below, we have collapsed the network so that now, publishers are directly connected to each other, based on shared appearances on books.
+
+-   If publishers shared multiple books, this can be added to the new edge as weight.
+
+![](images/bipartite.png){width="500"}
+
+::: {notes}
+What would a projected network of the other type (books connected to books) look like?
+
+All three books would be connected to each other, because they all have one publisher in common (Strahan). Book 1 and book 3 would have an edge weight of 2, because they have two publishers in common (Millar and Strahan).
+:::
+
+## Multigraphs
+
+-   There can also be multiple *kinds* of edges, in the same network.
+
+-   For example in a network of historical correspondents, you might have 'met in person' as well as 'sent a letter to/from'.
+
+-   If these edges are not merged, these graphs are known as **multigraphs**.
+
+## Multigraphs
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidygraph)
+library(igraph)
+library(ggraph)
+library(tidyverse)
+
+tibble(from = c('A', 'A', 'A', 'A', 'B'),
+       to = c('B', 'C', 'D', 'B', 'C'), 
+       type = c('met', 'met', 'met', 'letter', 'letter')) %>% 
+  graph_from_data_frame() %>% 
+  ggraph() + 
+  geom_edge_fan(width = 1,aes(label = type), 
+                   angle_calc = 'along',
+                   label_dodge = unit(2.5, 'mm'),
+                   arrow = arrow(length = unit(4, 'mm')), 
+                   end_cap = circle(10, 'mm')) + 
+  geom_node_point(size = 20, pch = 21, fill = 'white', stroke = 2) +
+  geom_node_text(aes(label = name)) + 
+  theme_void() + 
+  scale_x_continuous(expand = c(.2,.2)) + 
+  scale_y_continuous(expand = c(.2,.2))
+```
+
+## Multigraphs
+
+-   Multigraphs are also known as multi-layer networks: you could imagine each separate set of edges as a separate layer within a network.
+
+-   Conceptually, we might learn interesting things by understanding how the various layers overlap and interact.
+
+-   R and other programming languages have packages to plot and analyse them.
+
+## Hypergraphs
+
+-   In an ordinary network, an edge always connects two nodes together.
+
+-   A network where each edge can connect to any number of nodes is called a **hypergraph**.
+
+## Hypergraphs
+
+-   Below, an edge is no longer a line but a coloured area, and each of the points which fall within them are connected nodes.
+
+![](images/1920px-Hypergraph-wikipedia.svg.png){width="500"}
+
+## Hypergraphs
+
+-   Good real-world examples are WhatsApp or Facebook groups: each person can be a member of multiple groups.
+
+-   These networks---multigraphs and hypergraphs---require an additional set of algorithms, and generally off-the-shelf tools have not been developed for them in the same way as exist for normal graphs.
+
+-   However, there are packages available for R which have been developed to deal with them.
+
+::: notes
+What other way could we model the network of Facebook or WhatsApp groups?
+
+These could also be considered bipartite networks (individuals connected to groups).
+:::
+
+## Spatial networks
+
+-   A final type of network is a spatial network: one where the nodes and edges have real-world spatial characteristics.
+
+-   A good example of this is a road network: edges can be represented as geometric lines, and cities and other points of interest as geographic points.
+
+## Spatial networks
+
+-   These can have historical uses, for example the early modern road network of some of north-western Europe has been mapped by the Viabundus project as a spatial network.
+
+-   Using simple network shortest-path algorithms and adding the road length as a weight, the data can be used to plot likely itineraries from one point to another.
+
+## Spatial networks
+
+![A map of the early modern road network made with data from the Viabundus project. Each color represents the 'neighbourhood' of roads which can be reached from Urecht in a single day.](images/viabundus.png){width="500"}
+
+## From Bridges to Social Networks...
+
+-   In the twentieth century, this graph theory began to be used by sociologists to understand the processes behind business, family, and friendship ties.
+
+-   Gave birth to the field of 'social network analysis'
+
+-   Human nodes naturally behave quite differently to an island, after all.
+
+::: notes
+In what specific way might the connection between two people have different attributes to a connection between two islands?
+
+Bridges and islands, clearly, don't have any choices as to whom they will connect to: it is determined by their geographic position. So many network analysis techniques may not be appropriate. But it is a good example of how graph theory should be considered firstly as a set of mathematical tools.
+:::
+
+## The Strength of Weak Ties
+
+-   In a [1973 paper](https://www.jstor.org/stable/2776392), Mark Granovetter argued that the most important ties in a network are often those which connect two separate social groups together.
+
+-   These ties, according to Granovatter, occupy a 'brokerage' position, and can be key in certain situations.
+
+-   Job seekers are more likely to find the most useful leads through their distant acquaintances rather than their close friends...
+
+-   This 'brokerage' position can be deduced mathematically using a metric known as *betweenness centrality* (we'll come back to that in a later class).
+
+::: {notes}
+Why might this be the case?
+
+It's because, according to Granovetter, these distant acquaintances are more likely to be able to provide 'new' information on opportunities: a close friend, on the other hand, will probably have access to the same information as you.
+:::
+
+## It's a Small World
+
+-   In 1967 Stanley Milgram devised an experiment where a series of postcards were mailed out to random people in US cities.
+
+-   These postcards contained basic information about a 'target' person in another, geographically-distant, city.
+
+-   The participants were asked to send the postcard to that person if they knew them, and if not, send it to the contact they thought might be most likely to know that person.
+
+-   The details of each person were recorded on the postcard at every step.
+
+::: notes
+What problems can you imagine with this experiment?
+
+It's worth considering how the experiment may be biased. Are all groups of people equally likely to answer (or have the time and money to carry out) a request from a random postcard? How might this have distorted the findings?
+:::
+
+## It's a Small World
+
+-   When (or if) a postcard made it to the target person, Milgram could see how many 'hops' it had taken in order to get there.
+
+-   The average number of hops was between five and a half and six.
+
+-   This information was later used to claim that everyone in the US was connected by 'six degrees of separation'.
+
+-   In network terms, this is known as the 'average path length' of the network.
+
+-   This fact is known as the 'small world' effect.
+
+-   It is also connected to the 'strength of weak ties' theory by Granovetter.
+
+-   This surprisingly-small number is possible because of the structure of social networks: If you want to reach someone in a distant city, are you more likely to have success if you send it to a close neighbour, or a distant acquaintance who lives there?
+
+## The 'New' Science of Networks
+
+-   The most common use of networks in academic research much of the 20th century was looking at these small, sociological networks of relationships between people.
+
+-   This changed in the late 1990s, beginning of network research to understand the structures governing many kinds of complex systems, e.g the structure of the World Wide Web.
+
+-   This research showed that many of these complex networks had a similar structure: a small number of nodes with a very large number of connections, known as *hubs,* and a large number of nodes with very few connections.
+
+-   The structure followed what is known as a *power-law*: many nodes have a very small number of connections, an exponentially smaller number of nodes have an exponentially larger number of connections, and so forth..
+
+## Scale-free Networks and Preferential Attachment
+
+-   Process was guided by *preferential attachment*, meaning the structure of the network is explained by the fact that nodes attach themselves to nodes which already had many connections, leading to a 'rich get richer' effect.
+
+-   Demonstrated empirically that structure could be found across a range of networks, from computers, to people, to biological networks or neurons in the brain.
+
+-   A scale-free network means it is easy for a disease to spread, because once it reaches a hub node it can easily move throughout the network.
+
+## Scale-free Networks and Preferential Attachment
+
+```{r, echo=FALSE,out.width="49%", out.height="20%",fig.cap="These diagrams show how a scale-free network is susceptible to to targeted attack but not to random. Removing any two nodes at random in a network of hubs makes little difference to the overall structure or robustness. However, removing two hub or bridging nodes, as on the right, results in a network in which many of the paths are now severed, meaning the network structure has begun to fall apart. Images from https://cs.brynmawr.edu/Courses/cs380/spring2013/section02/slides/01Introduction.pdf",fig.show='hold',fig.align='center'}
+knitr::include_graphics(c("images/Screenshot 2022-10-03 at 12.07.50.png","images/Screenshot 2022-10-03 at 12.07.55.png"))
+```
+
+## Networks Become Popular...
+
+-   These ideas, published at a time when the internet (and later social networking) moved into the mainstream, drove a huge interest in thinking about the world in a 'networked' way.
+
+-   They spawned a range of popular science and psychology books.
+
+-   Barabasi wrote [*Linked*](https://en.wikipedia.org/wiki/Linked:_The_New_Science_of_Networks)*,* one of the defining popular science books of the 2000s, and used networks to argue that this scale-free network structure could be used to explain a whole range of human behaviours, from epidemics, to economics, to politics.
+
+## Conclusion
+
+-   This outline has hopefully got you thinking about this network approach to data.
+
+-   A word of warning: almost everything can be represented as some kind of network. Think about:
+
+    -   Do they tell us something interesting, such as why a group of contacts formed in a particular formed in this way?
+
+    -   Do they just reflect the data that we have collected or have available?
+
+    -   What does a complex 'hairball' network diagram really tell us?
+
+    -   Have the claims of *Linked* really helped us to understand business, economics, and the spread of disease?
+
+## Conclusion
+
+-   Between now and the next class, try to consider the ways some of the data you have used in your studies might be thought of as a network, and what benefits (and pitfalls) that approach might bring.
+
+-   Lastly, remember that a network is a *model:* a set of proposals to explain something about the real world. It is an artificial contruction, or a metaphor, rather than the thing itself. As such, even a very 'accurate' network is likely to be only one of many such models which could be used as an explanation for a particular phenomenon or observation. Throughout this course, you should use your critical tools to keep this in mind, and assess the usefulness of a particular model to your data explorations.

@@ -4,21 +4,564 @@ format: revealjs
 editor: visual
 ---
 
-## Quarto
+```{r include=FALSE}
+library(tidyverse)
+```
 
-Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+## Exercises
 
-## Bullets
+-   This lesson has a corresponding editable notebook containing some exercises.
 
-When you click the **Render** button a document will be generated that includes:
+-   Stored as a separate notebook in the CSC notebook workspace, with the name `1-2-intro-to-r.Rmd`.
 
--   Content authored with markdown
--   Output from executable code
+-   Move a copy to your 'my-work' folder in your CSC notebook Workspace, complete the exercises, and knit them, using the [method we learned in the previous class](https://comhis.github.io/applying-network-analysis-to-humanities/notebooks/1-1-introduction_nb.html).
 
-## Code
+-   Once this is done, download the file and notebook, and upload to Moodle
 
-When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+## R and R-Studio
+
+-   Throughout this course, we'll mostly work on networks and data using the programming lanugage R and a popular extension known as 'the tidyverse'.
+
+-   This will be done using R-Studio, an interface designed to make R easier to work with, known as an IDE.
+
+-   For this course, the data, files, and interface are all already set up for you in the CSC Notebooks workspace.
+
+-   Outside of this course, you will want to install R and R-Studio on your local machine.
+
+## Logging into CSC notebooks and opening a notebook.
+
+-   The first thing you should do is log in to CSC Notebooks, and start the RStudio application
+
+-   Once you've done this, and opened the relevant notebook, you'll see this screen (I've overlaid squares and numbers to refer to different parts).
+
+## Logging into CSC notebooks and opening a notebook.
+
+![](images/Screenshot%202022-09-27%20at%2012.50.25.png)
+
+## R-studio Panes {.smaller}
+
+R-Studio is divided into four different sections, or *panes*. Each of these also has multiple tabs. Starting from the top-left (numbered 1):
+
+1.  The source editor. Here is where you can edit R files such as RMarkdown or scripts.
+
+2.  The environment pane will display any objects you create or import here, along with basic information on their type and size.
+
+3.  This pane has a number of tabs. The default is files, which will show all the files in the current folder. You can use this to import or export additional files to R-Studio from your local machine.
+
+4.  The console allows you to type and execute R commands directly: do this by typing here and pressing return.
+
+## R-Studio Panes
+
+-   All four of these panes are important and worth it's worth exploring more of the buttons and menu items.
+
+-   Throughout this course, you'll complete exercises by using the source editor to edit notebooks.
+
+-   As you execute code in these notebooks, you'll see objects pop into the environment pane.
+
+-   The console can be useful to test code that you don't want to keep in a document.
+
+-   Lastly, getting to know how to use and navigate the directory structure using the files pane is essential.
+
+# Using R
+
+# 'Base' R.
+
+Commands using R without needing any additional packages are often called 'base' R. Here are some important ones to know:
+
+## Assigning Values
+
+-   You can assign a value to an object using `=` or `<-`:
 
 ```{r}
-1 + 1
+#| echo: true
+x = 1
+
+y <- 4
+
 ```
+
+## Print to the Console
+
+-   Entering the name of a variable in the console and pressing return will return that value in the console.
+
+-   The same will happen if you enter it in a notebook cell (like here below), and run the cell.
+
+-   This is also true of any R object, such as a dataframe, vector, or list.
+
+```{r}
+#| echo: true
+y
+```
+
+## Basic Calculations
+
+-   You can do basic calculations with `+`, `-`, `*` and `/`:
+
+```{r}
+#| echo: true
+x = 1+1
+
+y = 4 - 2
+
+z = x * y
+
+z
+```
+
+## Comparing objects or values
+
+-   You can compare numbers or variables using:
+    -   `==` (equals), `>` (greater than), `<` (less than), `!=` (not equal to)
+-   These return either `TRUE` or `FALSE`:
+
+```{r}
+#| echo: true
+1 == 1
+
+x > y
+
+x != z
+
+```
+
+# Basic R data structures and variables
+
+## **Elements**
+
+-   A variable is a piece of data stored with a name, which can then be used for various purposes.
+-   The simplest of these are single **elements**, such as a number.
+
+```{r}
+#| echo: true
+
+x = 1
+
+x
+```
+
+## **Vectors**
+
+-   A vector is a list of **elements**.
+
+-   A vector is created with the command `c()`, with each item in the vector placed between the brackets, and followed by a comma.
+
+-   If your vector is a vector of words, the words need to be in inverted commas or quotation marks.
+
+```{r}
+#| echo: true
+fruit = c("apples", "bananas", "oranges", "apples")
+colour = c("green", "yellow", "orange", "red")
+amount = c(2,5,10,8)
+```
+
+## Dataframes
+
+-   These are the spreadsheet-like objects, with rows and columns, which you'll use in most analyses.
+
+-   You can create a dataframe using the `data.frame()` command. Each column is made up of a single **vector**, which must be all the same length.
+
+## Dataframes
+
+-   We can use the `glimpse()` or `str()` commands to view some basic information on the dataframe (particularly useful with longer data).
+
+```{r}
+#| echo: true
+fruit_data = data.frame(fruit, colour, amount, stringsAsFactors = FALSE)
+
+glimpse(fruit_data)
+```
+
+## Data types
+
+-   Notice that to the right of the third column, the amount, has `<dbl>`under it, whereas the other two have <chr>\`.
+
+-   That's because R is treating the third as a number and others as a string of characters.
+
+-   It's often important to know which data type your data is in: you can't do arithmetic on characters, for example.
+
+## Data types
+
+:::: {.columns}
+
+::: {.column width="50%"}
+R has 6 data types:
+
+-   character
+-   numeric (real or decimal)
+-   integer
+-   logical
+-   complex
+-   Raw
+:::
+
+::: {.column width="50%"}
+The most commonly-used ones you'll come across are `character`, `numeric`, and `logical`. `logical` is data which is either `TRUE` or `FALSE`.
+:::
+
+::::
+
+
+
+
+
+## Coercion of data types
+
+In R, all the items in a vector are *coerced* to the same type. So if you try to make a vector with a combination of numbers and strings, the numbers will be converted to strings, as in the example below:
+
+```{r}
+#| echo: true
+
+fruit = c("apples", 5, "oranges", 3)
+
+glimpse(fruit)
+```
+
+
+## Installing 'packages':
+
+-   R is extended through the use of 'packages': pre-made sets of functions, usually with a particular task or theme in mind.
+
+-   To work with networks, for example, we'll use a set of third-party packages.
+
+-   If you complete the exercises using the CSC cloud notebooks, these are already installed for you in most cases.
+
+## Installing 'packages':
+
+-   To install a package, use the command `install.packages()`, and include the package name within quotation marks:
+
+```{r, eval=FALSE}
+#| echo: true
+install.packages('igraph')
+
+```
+
+## Loading a Package
+
+-   To load a package, use the command `library()`.
+
+-   This time, the package name is not within quotation marks
+
+```{r}
+#| echo: true
+library(igraph)
+```
+
+
+# Working with the Tidyverse
+
+## What is the Tidyverse?  
+
+-   Most of the work in these notebooks is done using a set of packages developed for R called the 'tidyverse'.
+
+-   These enhance and improve a large range of R functions, with a more intuitive syntax.
+
+-   All these functions work in the same way. The first argument is the thing you want to operate on. This is nearly always a data frame. After come other arguments, which are often specific columns, or certain variables you want to do something with.
+
+## Load the Tidyverse functions  
+
+-   First, load the tidyverse set of packages with the following command:
+
+```{r}
+#| echo: true
+
+library(tidyverse)
+```
+
+# Key Tidyverse Commands
+
+Here are a couple of the most important ones
+
+## select(), pull()
+
+-   `select()` allows you to select columns.
+
+-   You can use names or numbers to pick the columns, and you can use a `-` sign to select everything *but* a given column.
+
+-   Using the fruit data frame we created above: We can select just the fruit and colour columns:
+
+```{r}
+#| echo: true
+
+select(fruit_data, fruit, colour)
+```
+
+## select(), pull()
+
+-   Select everything but the colour column:
+
+```{r}
+#| echo: true
+select(fruit_data, -colour)
+```
+
+## select(), pull()
+
+-   Select the first two columns:
+
+```{r}
+#| echo: true
+select(fruit_data, 1:2)
+```
+
+## group_by(), tally(), summarise()
+
+-   The next group of functions group columns together and count them.
+
+-   `group_by()` puts rows with the same value in a column of your dataframe into a group. Once they're in a group, you can count them or summarise them by another variable.
+
+## group_by(), tally(), summarise()
+
+-   First you need to create a new dataframe with the grouped fruit.
+
+```{r}
+#| echo: true
+grouped_fruit = group_by(fruit_data, fruit)
+```
+
+## group_by(), tally(), summarise()
+
+-   Next we use `tally()`. This counts all the instances of each fruit group.
+
+```{r}
+#| echo: true
+tally(grouped_fruit)
+```
+
+
+-   Now the apples are grouped together rather than being two separate rows, and there's a new column called `n`, which contains the result of the count.
+
+## group_by(), tally(), summarise()
+
+-   If we specify that we want to count by something else, we can add that in as a 'weight', by adding `wt =` as an argument in the function.
+
+```{r}
+#| echo: true
+tally(grouped_fruit, wt = amount)
+```
+
+-   That counts the amounts of each fruit, ignoring the colour.
+
+## filter()
+
+-   This filters the dataframe based on a condition which you set within the function.
+
+-   The first argument is the data to be filtered.
+
+-   The second is a condition (or multiple condition).
+
+-   The function will return every row where that condition is true.
+
+## filter()
+
+-   Just red fruit:
+
+```{r}
+#| echo: true
+filter(fruit_data, colour == 'red')
+```
+
+## filter()
+
+-   Just fruit with at least 5 pieces:
+
+```{r}
+#| echo: true
+filter(fruit_data, amount >=5)
+```
+
+## arrange()
+
+-   The function `arrange()` sorts a dataframe by the column specified, as you might do in a spreadsheet programme. 
+
+-   In the function, specify the data frame, and the variable you would like to sort by.
+
+```{r}
+#| echo: true
+arrange(fruit_data, amount)
+```
+
+## arrange()
+
+-   Sorting is ascending by default, but you can specify descending using `desc()`:
+
+```{r}
+#| echo: true
+arrange(fruit_data, desc(amount))
+```
+
+##  arrange() with strings instead of numbers
+
+-   If you `arrange()` by a list of characters, you'll get alphabetical order:
+
+```{r}
+#| echo: true
+arrange(fruit_data, fruit)
+```
+
+## Multiple columns with arrange()
+
+-   You can sort by multiple things:
+
+```{r}
+#| echo: true
+arrange(fruit_data, fruit, desc(amount))
+```
+
+-   Notice that now red apples are first.
+
+## left_join(), inner_join(), anti_join()
+
+-   Joins are a very powerful but simple way of selecting certain subsets of data, and adding information from multiple tables together.
+
+-   Let's make a second table of information giving the delivery day for each fruit type:
+
+```{r}
+#| echo: true
+fruit_type = c('apples', 'bananas','oranges')
+weekday = c('Monday', 'Wednesday', 'Friday')
+
+fruit_days = data.frame(fruit_type, weekday, stringsAsFactors = FALSE)
+
+fruit_days
+
+```
+
+## left_join(), inner_join(), anti_join()
+
+-   This can be 'joined' to the fruit information, to add the new data on the delivery day, without having to edit the original table (or repeat the information for apples twice).
+
+-   `left_join()` will merge the two dataframes, keeping all rows on the left, adding data from the new dataset. `inner_join` keeps only rows where the key is found in both datasets, and `anti_join()` keeps only rows where the key is *not* found in either. 
+## left_join(), inner_join(), anti_join()
+
+-   Joins need a common `key`, a column which allows the join to match the data tables up.
+
+-   It's important that these are unique (a person's name makes a bad key by itself, for example, because it's likely more than one person will share the same name).
+
+-   Usually, we use codes as the join keys.
+
+-   If the columns containing the join keys have different names (as ours do), specify them using the syntax below:
+
+## left_join(), inner_join(), anti_join()
+
+-   Join the dataframes with the following command:  
+
+```{r}
+#| echo: true
+joined_fruit = left_join(fruit_data, fruit_days, by = c("fruit" = "fruit_type"))
+
+joined_fruit
+
+```
+
+-   In this new dataframe, the correct weekday is now listed beside the relevant fruit type.
+
+## Piping
+
+-   Another useful feature of the tidyverse is that you can 'pipe' commands through a bunch of functions, making it easier to follow the logical order of the code.
+
+-   This means that you can do one operation, and pass the result to another operation.
+
+## Piping
+
+
+-   The previous dataframe is passed as the first argument of the next function by using the pipe `%>%` command. It works like this:
+
+```{r}
+#| echo: true
+
+fruit_data %>% 
+  filter(colour != 'yellow') %>% # remove any yellow colour fruit
+  group_by(fruit) %>% # group the fruit by type
+  tally(amount) %>% # count each group
+  arrange(desc(n)) # arrange in descending order of the count
+```
+
+## Piping
+
+-   That code block, written in prose: "take fruit data, remove any yellow colour fruit, count the fruits by type and amount, and arrange in descending order of the total"
+
+
+## Plotting using ggplot()
+
+-   The tidyverse includes a plotting library called `ggplot2`.
+
+-   To use it, first use the function `ggplot()` and specify the dataset you wish to graph using `data =`.
+
+-   Next, add what is known as a 'geom': a function which tells the package to represent the data using a particular geometric form (such as a bar, or a line).
+
+-   These functions begin with the standard form `geom_`.
+
+## Plotting using ggplot()
+
+-   Within this geom, you'll add 'aesthetics', which specify to the package which part of the data needs to be mapped to which particular element of the geom.
+
+-   The most common ones include `x` and `y` for the x and y axes, `color` or `fill` to map colors in your plot to particular data.
+
+-   `ggplot` is an advanced package with many options and extensions, which cannot be covered here.
+
+## Plotting using ggplot()
+
+-   Some examples using the fruit data:
+
+-   Bar chart of different types of fruit (one each of bananas and oranges, two types of apple)
+
+```{r}
+#| echo: true
+
+ggplot(data = fruit_data) + geom_col(aes(x = fruit, y = amount))
+```
+
+## Plotting using ggplot()
+
+-   Counting the total amount of fruit:
+
+```{r}
+#| echo: true
+ggplot(fruit_data) + geom_col(aes(x = fruit, y = amount))
+```
+
+## Plotting using ggplot()
+
+-   Charting amounts and fruit colours:
+
+```{r}
+
+#| echo: true
+ggplot(data = fruit_data) + geom_bar(aes(x = fruit, weight = amount, fill = colour)) 
+```
+
+## Reading in external data
+
+-   Most of the time, you'll be working with external data sources.
+
+-   These most commonly come in the form of comma separated values (.csv) or tab separated values (.tsv).
+
+-   The tidyverse commands to read these are `read_csv()` and `read_tsv`.
+
+-   You can also use `read_delim()`, and specify the type of delimited using `delim = ','` or `delim = '/t`.
+
+-   The path to the file is given as a string to the argument `file=`.
+
+## Reading in external data
+
+```{r}
+#| echo: true
+df = read_csv(file = '../data/sample_network.csv') # Read a .csv file as a network, specify the path to the file here.
+
+df
+
+```
+
+-   Notice that each column has a data type beside it, either <chr> for text or <dbl> for numbers. This is important if you want to sort or run calculations on the data.
+
+## Further reading
+
+-   This has been a very quick introduction to R, covering the basics. There are lots of places to learn more, including:
+
+-   [R-studio cheat sheets](https://www.rstudio.com/resources/cheatsheets/)
+
+-   [The Pirate's Guide to R, a good beginner's guide to base R](https://bookdown.org/ndphillips/YaRrr/)
+
+-   [R for data science, which teaches the tidyverse in detail](https://r4ds.had.co.nz)
+
+-   [Learn how to make a book like this using Bookdown](https://bookdown.org/yihui/bookdown/introduction.html)

@@ -1,0 +1,6 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Make a Spotify developer account. Use spotifyr to make an ego network of an artist you're interested in. Compare to another ego network. Comment on both, what do they tell us?

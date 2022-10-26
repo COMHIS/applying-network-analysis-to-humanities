@@ -5,74 +5,39 @@ output:
     df_print: paged
 ---
 
+## Exercises - Visualising your data with ggraph.
 
-### Visualisation with ggraph
-
-The last step in the workflow is visualising the network. You can use igraph and standard R plotting libraries for this, but I use a package called [ggraph](https://github.com/thomasp85/ggraph), which uses the same language as ggplot (a very well-known visualisation library for R) and adds some special functions to visualise networks. To create a network diagram, first use the function ```ggraph``` on your tbl_graph, then add the special [ggraph geoms](https://ggplot2.tidyverse.org/reference/) ```geom_node_point()``` and ```geom_edge_link()```
-
-
-
-```{r message=FALSE, warning=FALSE}
-library(tidygraph)
-library(tidyverse)
-library(ggraph)
-letters = read_csv("https://raw.githubusercontent.com/yann-ryan/dh_intro_gates/main/sample_letter_data_network.csv", col_types = cols(.default = "c"))
-
-edge_list = letters %>% 
-  group_by(author, recipient) %>% 
-  tally(name = 'weight')
-
-sample_tbl_graph = edge_list %>% 
-  as_tbl_graph()
-
-sample_tbl_graph
-```
-
+Using the `letter_data` dataset, create a network object. Count the number of letters between each pair as a weight:
 
 ```{r}
 
-
-sample_tbl_graph %>% ggraph('nicely') + geom_node_point() + geom_edge_link()
-
-
 ```
 
-You can use the dplyr pipes to perform calculations, filter the data and then visualise it, all in one go:
 
-```{r}
-sample_tbl_graph %>% 
-  activate(nodes)%>% 
-  mutate(degree = centrality_degree(mode = 'total')) %>% 
-  filter(degree >2) %>% 
-  ggraph('nicely') + 
-  geom_node_point() + 
-  geom_edge_link()
-```  
-
-```geom_node_point()``` and ```geom_edge_link``` take aesthetics, just like regular ggplot geoms. You can calculate degree scores and then set the size of the nodes to the result:
-
-
-```{r}
-sample_tbl_graph %>% 
-  activate(nodes)%>% 
-  mutate(degree = centrality_degree(mode = 'total'))  %>% 
-  ggraph('nicely') + 
-  geom_node_point(aes(size = degree)) + 
-  geom_edge_link()
-```
-
-Add ```geom_node_text()``` to add text labels to your network. In a larger network, it can be helpful to only show labels belonging to the most-connected nodes. First, join the people table to the nodes table, then use ggraph, setting the ```label``` aesthetic. Another ```dplyr``` verb, ```if_else``` allows you to add conditions to the label command. Here, I've used if_else to return the label if the node's degree score is more than 10:
+Draw a basic points and lines diagram of your network:
 
 ```{r}
 
-sample_tbl_graph %>% 
-  activate(nodes)%>% 
-  mutate(degree = centrality_degree(mode = 'total'))  %>% 
-  ggraph('nicely') + 
-  geom_node_point(aes(size = degree)) + 
-  geom_node_text(aes(label = if_else(degree >10, name, NULL), size = degree), repel = TRUE) + 
-  geom_edge_link(alpha = .2)
+```
+
+Calculate the degree of the nodes, and add this as a size aesthetic to your network diagram:
+
+```{r}
 
 ```
 
-## Visualising further information (using extra information with joins)
+Add arrows and a dashed line to the edges:
+
+```{r}
+
+```
+
+Add a `width` aesthetic to the edges, representing the weight:
+
+```{r}
+
+```
+
+Create a new network, using this larger network dataset. Make it as 'readable' as possible. Use color and size to communicate the relevant information about its structure. Add node labels, but make sensible use of filtering to make it as readable as possible. 
+
+

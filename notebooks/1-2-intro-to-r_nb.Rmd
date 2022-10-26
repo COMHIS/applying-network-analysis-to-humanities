@@ -60,7 +60,7 @@ Arrange the places in descending order of number of books:
 
 ```
 
-Make a bar chart of the count of places:
+Use `ggplot2` to make a bar chart of the count of places:
 
 ```{r}
 
