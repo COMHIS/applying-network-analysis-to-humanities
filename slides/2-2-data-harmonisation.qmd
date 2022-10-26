@@ -1,0 +1,121 @@
+---
+title: "Cleaning the Observed and Thinking About the Unobserved Data"
+author: "Iiro Tiihonen"
+format: pptx
+---
+
+```{r echo = FALSE}
+library(magrittr)
+library(igraph)
+library(ggraph)
+```
+
+## Goals of this lecture
+
+-   This lecture will introduce basic problems that affect all practical work with (network) data
+-   By the end you should:
+    -   Know why missing data matters
+    -   Know why unharmonised data matters
+    -   Be working with the data set you acquired last time
+
+## Missing data
+
+-   Two major variants:
+    -   Partially missing data (known unknown)
+    -   Completely missing data (at worst, unknown unknown)
+
+## Partially Missing Data - Three problems:
+
+-   NA is not a number
+
+-   The way the first problem is solved can affect the results
+
+-   Survival bias \## Partially missing data - example
+
+```{r echo=FALSE}
+
+example_data_set <- matrix(nrow=2,ncol=2) %>% as.data.frame(.)
+colnames(example_data_set) <- c("name","occupation")
+example_data_set[1,1] <- "Thomas Hobbes"
+example_data_set[2,1] <- "Steven Steel"
+example_data_set[1,2] <- "philosopher"
+print(example_data_set)
+
+```
+
+## Partially missing data - common solutions
+
+-   Disregard observations with missing data (e.g. nodes without birth year)\
+
+-   Impute missing values (e.g. fill the missing values with mean, prediction from a statistical model etc.)
+
+-   Robust analysis/analysis of the sensitivity of the results
+
+-   Unfortunately, the first two solutions can be dangerous and affect the results of analysing the data significantly
+
+-   Positive note: Here substance understanding about humanities can be valuable 
+
+
+## Completely missing data
+
+-   Some nodes (e.g. persons, books) might be missing entirely from the data
+
+-   Reasons vary (failures in querying, survival of historical evidence, etc.)
+
+-   The questions remains: is the data representative or complete enough that analysing it is meaningful
+
+-   Think carefully how important possible missing data is for you research 
+
+## Completely missing data - some solutions
+
+-   Comparison of the data used to other sources
+
+-   Does subject understanding prove insight to the nature of missingness (e.g. book history)
+
+-   Sensitivity analysis of results (how much to they wary if you "shake" your data)
+
+-   A very important topic, but we can not dwell deep into it during the course. 
+
+## Unharmonised data
+
+-   Definition of unharmonised: things that are exactly same to us and should be considered the same, are not the same in the data
+
+-   Example: Names of publishers in the ESTC with spelling variations
+
+-   Solution: harmonisation
+
+## Unharmonised data - example
+
+```{r echo=FALSE}
+aachen <- c("Aach","Achen", "Aix la Chapelle", "Aix-la-Chapelle")
+print("Some name variants of the City of Aachen according to CERL Thesaurus:")
+print(aachen)
+```
+
+## Unharmonised data - why it matters
+
+-   Very common phenomenon in all sorts of data sets, especially with text data
+-   Without harmonisation, many datasets - for example networks - will be heavily inflated
+
+## Unharmonised data - common solutions
+
+-   Start by just taking a look at your data, can you e.g. notice the same name being spelled in different ways?
+-   Most common solutions:
+    -   Via programming: regular expressions (systematic changes to character strings)
+    -   Most of the book chapter is about using regular expressions with Stringr
+    -   With software designated to the task (e.g. openRefine)
+    
+## Unharmonised data - we focus on one tool out of many    
+-   A field in its own right, all sorts of algorhitms and metrics have been developed to harmonise data.
+-   We will practice with regular expressions, they are flexible, powerful and relatively quick to learn
+
+## Summary
+
+-   Always consider these three questions when working with (network) data
+    -   Are you completely missing some of the relevant data, and can you evaluate the severity of this problem?
+    -   What will you do to your partially missing data (imputation, removal of nodes with missing data, do the results of your analysis depe´ your data and try to find if there is a need to harmonise it (always assume that this is the case).
+
+## What Next
+- Start working on the exercises and going through the related book chapter
+- Remember also the article for the next week, though its better to use
+remainder of the lecture for the programming task.

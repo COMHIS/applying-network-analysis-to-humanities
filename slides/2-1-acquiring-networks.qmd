@@ -1,0 +1,112 @@
+---
+title: "Acquiring and Transforming Data to Networks"
+author: "Iiro Tiihonen"
+format: pptx
+---
+
+```{r echo = FALSE}
+library(magrittr)
+library(igraph)
+library(ggraph)
+```
+
+## Goals of this lecture
+
+-   This lecture will introduce you to practicalities of working with network data
+-   By the end you should:
+    -   Know how nodes and edges can be represented as concrete data
+    -   Have basic knowledge about the network data sets that we are going to use during the course
+    -   In the process of creating your own Twitter data set.
+
+## Translating networks for computers
+
+-   Humans can understand things like connections (edges) between nodes vaguely, computers can not
+-   To represent a network so that a computer can understand it, it needs to be represented as data
+-   The main things to turn to data are the entities to be connected (nodes) and the connections (edges)
+-   Additionally, we might want to translate qualities of the nodes and strength of connections
+
+## Nodes as data, node list
+
+-   In the simplest case, nodes can be represented as a list (N x 1 table) of ids, one node per row
+-   If the analysis makes use of some properties of the nodes, then the list can have more columns (N x P table)
+-   Example: a list of persons, one per row. At least an identifier, possibly other columns.
+
+## Node list example
+
+```{r echo = FALSE}
+node_list <- c("person_1","person_2","person_3","person_4") 
+occupation <- c("humanist","digital humanist","computer scientist","post humanist")
+
+node_list_example <- cbind.data.frame(id=node_list,occupation)
+colnames(node_list_example) <- c("id","occupation")
+print(node_list_example)
+```
+
+## Connections as data: adjacency matrix
+
+-   If we have N nodes, there are N x N possible connections (edges) between them
+-   All possible edges can be represented with a N x N matrix (M)
+-   If there is connection between nodes X and Y, M\_{X,Y}\>0, otherwise 0
+
+## Connections as data: adjacency matrix, additional considerations
+
+-   if the network is undirected, them M\_{X,Y}=M\_{Y,M}
+-   A network might capture only whether a connections exists (cells of M take only values 1 or 0)
+
+## Edge list
+
+-   Think of it has the Adjacency matrix writ open (edge lists and adjacency matrices are convertible)
+-   list of pairs of nodes and (sometimes) weight
+-   The pairs of nodes represent edges in the network (non zero cells in the adjacency matrix)
+-   The weight is the strength of the connection
+
+## Edge list example
+
+```{r echo = FALSE}
+
+edge_list <-  matrix(nrow=4,ncol=3) %>% as.data.frame(.)
+colnames(edge_list) <- c("from","to","weight")
+
+edge_list[1,1:3] <- c("person_1","person_4",1) 
+edge_list[2,1:3] <- c("person_2","person_3",2) 
+edge_list[3,1:3] <- c("person_1","person_3",1) 
+edge_list[4,1:3] <- c("person_1","person_2",1) 
+print(edge_list)
+```
+
+## Example network
+
+```{r echo = FALSE}
+
+graph <-  igraph::graph_from_data_frame(d=edge_list, vertices=node_list_example, directed = FALSE)
+plot(graph, edge.arrow.size=.2, edge.color="orange",
+     vertex.color="orange", vertex.frame.color="#ffffff",
+     vertex.label=V(graph)$occupation, vertex.label.color="black",edge.width=E(graph)$weight)
+
+
+```
+
+## Summary of data representation
+
+-   The things (nodes) to be connected in the network can be represented as a list
+-   The connections (edges) between the things can be represented as an adjacency matrix or edge list
+-   Most network softwares can understand your network data if you give them a node list and an edge list
+
+## Network data sets on this course
+
+-   Twitter networks
+    -   Nodes: (for example) users
+    -   edges: interactions between users
+    -   used to study: spread of (dis)information
+-   ESTC
+    -   Nodes: (for example) publishers, printers, authors
+    -   Edges: Co-operation instances
+    -   used to study: early modern book, political and intellectual history
+-   Your data set
+    -   Nodes and edges: ?
+
+## Next steps
+
+-   Read the instructions for homework from the corresponding course book chapter
+-   Start working on getting data from Twitter
+-   After the lecture: Start thinking about the data set that you would like to use for the final project.

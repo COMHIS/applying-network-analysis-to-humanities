@@ -1,0 +1,135 @@
+---
+title: "Introduction to Relational Data - Part 2"
+format: pptx
+author: Iiro Tiihonen
+---
+
+
+```{r echo=FALSE}
+library(tidyverse)
+library(knitr)
+
+```
+
+
+## Goals of this lecture
+
+-   Last lecture was about constructing a relational data, now we move into using it
+-   By the end you should:
+    -   Understand the importance of joins in working with relational data
+    -   Have an idea of how Tidyverse can be used to subset ("query") relational data in practice
+    -   Be working with R and Tidyverse (joins included) in practice
+
+## Repetition
+
+-   reminder: relational data is:
+    -   a collection of tables
+    -   each table stores information about one entity type of your database
+    -   each row is one entity of the given type
+    -   the columns of the table are the attributes of the entity
+    -   attributes join the entity to other entities (of same or different type) and characterise it in other ways
+
+## Repetition, example
+```{r echo=FALSE}
+
+receiver_city <- c("Frankfurt","Aachen","Frankfurt")
+receiver_location <- c("Main","Westfalen","Oder")
+sender <- c("Dewey","Hue","Louie")
+occupation_sender <- c("philosopher","theologian","lens grinder")
+receiver <- c("Hue","Louie","Dewey")
+occupation_receiver <- c("theologian","lens grinder","philosopher")
+letter <- c("Absence of data management","Absense of tenures for lens grinders","Absence of pseudo name for letter titles")
+letter_topic <- c("data","economy","meta commentary")
+
+pseudo_data <- cbind.data.frame(sender,receiver,occupation_sender,occupation_receiver,receiver_city,receiver_location,letter,letter_topic)
+
+person_id <- c("p_id_1","p_id_2","p_id_3")
+city_id <- c("c_id_1","c_id_2","c_id_3")
+letter_id <- c("l_id_1","l_id_2","l_id_3")
+
+pseudo_data_person <- cbind.data.frame(person_id,receiver,occupation_receiver)
+colnames(pseudo_data_person) <- c("person_id","person_name","person_occupation")
+
+
+pseudo_data_city <- cbind.data.frame(city_id,receiver_city,receiver_location)
+colnames(pseudo_data_city) <- c("city_id","city_name","city_location")
+
+sender_id <- c("p_id_3","p_id_1","p_id_2")
+
+pseudo_data_letter <- cbind.data.frame(letter_id,letter,letter_topic,sender_id,person_id,city_id)
+colnames(pseudo_data_letter) <- c("letter_id","letter_name","letter_topic","sender_id","receiver_id","city_in_which_received_id")
+
+print("A table of persons:")
+print(pseudo_data_person)
+
+```
+
+
+## Join operations
+
+-   Tools (functions) to create new tables from existing tables
+    -   X_join(table_1,table_2) = new_table
+-   How it works: matches columns (keys) from one table to columns in another table, and returns a new table
+    -   for example: if a table of persons has a column for birth city, the birth city can be matched with primary key of the table of cities
+    -   matching can happen with more than one column
+
+## What joins are used for
+-   To connect tables to each other, e.g letters to people sending them
+-   To subset a table with another table (e.g only keep those rows in a table that are in another table)
+-   With relational data: joins are the tool that allow us to connect entities of different types
+
+## Example: left_join (person table connected to letter table by sender of letter)
+
+```{r echo=FALSE}
+sender_to_letter <- left_join(pseudo_data_person,pseudo_data_letter,by=c("person_id"="sender_id"))
+kable(sender_to_letter)
+```
+
+## Join examples
+
+- For more examples, read course book chapter. Try to connect how the code relates to the output.
+
+## Subsetting data
+
+-   Very often in (network) analysis, we want to use only part of our data
+-   Joins and the filter function allow us to do this efficiently
+-   When the data set is large enough, this subsetting can start to resemble querying data
+
+## Subsetting data example (1)
+-   Let's imagine that we have a new table of people: 
+
+```{r echo=FALSE}
+pseudo_data_person_new_table <- cbind.data.frame(c("p_id_3","p_id_4","p_id_5"),c("Dewey","Agnus","Crassus"),c("philosopher","theologian","natural philosopher"),c(1600,1575,1590))
+colnames(pseudo_data_person_new_table) <- c("person_id","person_name","person_occupation","person_birth_year")
+kable(pseudo_data_person_new_table)
+```
+
+## Subsetting data example: letters of 17th century philosophers
+In R code, we could get this subset from the two tables with the following:
+
+philosophers_both_lists_17th_century <- pseudo_data_person_new_table %>% filter(person_birth_year>=1600 & person_birth_year<1700 & person_occupation=="philosopher") %>% semi_join(.,pseudo_data_person,by="person_id") %>% semi_join(pseudo_data_letter,.,by=c("sender_id"="person_id"))
+```{r}
+philosophers_both_lists_17th_century <- pseudo_data_person_new_table %>% filter(person_birth_year>=1600 & person_birth_year<1700 & person_occupation=="philosopher") %>% semi_join(.,pseudo_data_person,by="person_id") %>% semi_join(pseudo_data_letter,.,by=c("sender_id"="person_id"))
+
+```
+
+
+## Subsetting data example: 17th century philosophers (output)
+
+```{r echo=FALSE}
+kable(philosophers_both_lists_17th_century)
+```
+
+## Relational data - summary
+  -  We have now gone through the basic steps of creating and using relational data
+  -  The benefits of relational data are not specific to networks
+  -  However, conceptual and logical data modeling can be seen as making graphs over the structure of data
+  -  In this sense, we never left the topic of networks.
+  
+
+## What Next
+
+-   Read the related course book chapter for more concrete examples about how to use joins 
+-   Start working on the coding excercises of this lesson.
+-   After the lesson, remember to read the material (part of a tutorial from the Programming historian) about linked open
+data. Details at the end of the course book chapter.

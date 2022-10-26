@@ -1,0 +1,226 @@
+---
+title: "Introduction to Relational Data"
+author: "Iiro Tiihonen"
+format: pptx
+---
+
+
+```{r}
+library(tidyverse)
+library(knitr)
+```
+
+
+
+## Goals of this lecture
+
+-   By the end you should understand:
+-   Meaning and aims of data modeling
+-   The key principles of relational data
+-   Have read a little about linked data and started to wrangle your Tweetsets data to relational form.
+
+## Motivation - what data should not look like
+
+```{r echo=FALSE}
+
+receiver_city <- c("Frankfurt","Aachen","Frankfurt")
+receiver_location <- c("Main","Westfalen","Oder")
+sender <- c("Dewey","Hue","Louie")
+occupation_sender <- c("philosopher","theologian","lens grinder")
+receiver <- c("Hue","Louie","Dewey")
+occupation_receiver <- c("theologian","lens grinder","philosopher")
+letter <- c("Absence of data management","Absense of tenures for lens grinders","Absence of pseudo name for letter titles")
+letter_topic <- c("data","economy","meta commentary")
+
+pseudo_data <- cbind.data.frame(sender,receiver,occupation_sender,occupation_receiver,receiver_city,receiver_location,letter,letter_topic)
+
+print(pseudo_data)
+
+```
+
+## Motivation - what data should not look like (2)
+
+-   Data modeling and the principles of relational data can help us to disentangle and clarify data sets like this
+-   Or to avoid this situation to begin with!
+-   While data modeling and relational data are often used to construct databases, they help in data management even without a formal database.
+
+## Motivation (3-1)
+
+```{r echo=FALSE}
+
+receiver_city <- c("Frankfurt","Aachen","Frankfurt")
+receiver_location <- c("Main","Westfalen","Oder")
+sender <- c("Dewey","Hue","Louie")
+occupation_sender <- c("philosopher","theologian","lens grinder")
+receiver <- c("Hue","Louie","Dewey")
+occupation_receiver <- c("theologian","lens grinder","philosopher")
+letter <- c("Absence of data management","Absense of tenures for lens grinders","Absence of pseudo name for letter titles")
+letter_topic <- c("data","economy","meta commentary")
+
+pseudo_data <- cbind.data.frame(sender,receiver,occupation_sender,occupation_receiver,receiver_city,receiver_location,letter,letter_topic)
+
+person_id <- c("p_id_1","p_id_2","p_id_3")
+city_id <- c("c_id_1","c_id_2","c_id_3")
+letter_id <- c("l_id_1","l_id_2","l_id_3")
+
+pseudo_data_person <- cbind.data.frame(person_id,receiver,occupation_receiver)
+colnames(pseudo_data_person) <- c("person_id","person_name","person_occupation")
+
+
+pseudo_data_city <- cbind.data.frame(city_id,receiver_city,receiver_location)
+colnames(pseudo_data_city) <- c("city_id","city_name","city_location")
+
+sender_id <- c("p_id_3","p_id_1","p_id_2")
+
+pseudo_data_letter <- cbind.data.frame(letter_id,letter,letter_topic,sender_id,person_id,city_id)
+colnames(pseudo_data_letter) <- c("letter_id","letter_name","letter_topic","sender_id","receiver_id","city_in_which_received_id")
+
+print("A table of persons:")
+kable(pseudo_data_person)
+
+```
+
+## Motivation (3-2)
+
+```{r echo=FALSE}
+print("A table of cities:")
+print(pseudo_data_city)
+
+```
+
+## Motivation (3-3)
+
+```{r echo=FALSE}
+
+print("A table of letters:")
+kable(pseudo_data_letter)
+
+```
+
+## Relational data
+
+-   Now, the data is in a format called relational data
+
+-   definition: each table stores entities of one type, each row has one entity of that type
+
+-   each row is uniquely identifiable by the primary key (e.g person_id)
+
+-   Why relational data: unique identifiers protects against duplicates, less repetition and easier to understand than one big table.
+
+## Data model
+
+-   What: a framework to organise data
+
+-   Can happen at different levels of abstraction: we consider conceptual and logical data models - For example, how we end up from a collection of letters to a correspondence database?
+
+-   Data modeling: creating a data model
+
+## Conceptual data model
+
+-   Motivation: The aim is to recognise the types of "things" (entities) in the data, and which are connected to each other.
+
+-   Schema that describes your material as distinct entitities and their relationships
+
+-   Can be drawn like a map
+
+## Conceptual data model - example
+
+-   In our example case, people cities and letters are entities, other things in the data characterise them
+-   Letters would be connected to both cities and people.
+
+Conceptual model would look like this. City -\> Letter \<- Person
+
+## Logical data model
+
+-   Motivation: more details to the conceptual data model
+
+-   Addition of the attributes of the entities
+
+-   Addition of detailed relationships between the entities
+
+## Logical data model - example
+
+-   attributes of person: person_id, name, occupation
+
+-   attributes of city: city_id, name, area
+
+-   attributes of letter: sender_id, receiver_id, title, topic, city_id_of_receiver.
+
+-   letter connects to city through city_id_of_receiver
+
+## Networks and data modeling
+
+- Data model can be drawn as a graph of entities (nodes) and their relationships (edges)
+- In this sense, data modeling can be seen as applying network approach to describing the 
+structure of data.
+
+## From data modeling to relational data
+
+-   Having done the data modeling, we can now see how the variables in our data should be separated to different tables to make it relational
+-   We also need to add unique identifiers.
+
+## From data modeling to relational data -example
+
+```{r echo=FALSE}
+
+receiver_city <- c("Frankfurt","Aachen","Frankfurt")
+receiver_location <- c("Main","Westfalen","Oder")
+sender <- c("Dewey","Hue","Louie")
+occupation_sender <- c("philosopher","theologian","lens grinder")
+receiver <- c("Hue","Louie","Dewey")
+occupation_receiver <- c("theologian","lens grinder","philosopher")
+letter <- c("Absence of data management","Absense of tenures for lens grinders","Absence of pseudo name for letter titles")
+letter_topic <- c("data","economy","meta commentary")
+
+pseudo_data <- cbind.data.frame(sender,receiver,occupation_sender,occupation_receiver,receiver_city,receiver_location,letter,letter_topic)
+
+person_id <- c("p_id_1","p_id_2","p_id_3")
+city_id <- c("c_id_1","c_id_2","c_id_3")
+letter_id <- c("l_id_1","l_id_2","l_id_3")
+
+pseudo_data_person <- cbind.data.frame(person_id,receiver,occupation_receiver)
+colnames(pseudo_data_person) <- c("person_id","person_name","person_occupation")
+
+
+pseudo_data_city <- cbind.data.frame(city_id,receiver_city,receiver_location)
+colnames(pseudo_data_city) <- c("city_id","city_name","city_location")
+
+sender_id <- c("p_id_3","p_id_1","p_id_2")
+
+pseudo_data_letter <- cbind.data.frame(letter_id,letter,letter_topic,sender_id,person_id,city_id)
+colnames(pseudo_data_letter) <- c("letter_id","letter_name","letter_topic","sender_id","receiver_id","city_in_which_received_id")
+
+print("A table of persons:")
+print(pseudo_data_person)
+
+```
+
+## Example continues
+
+```{r echo=FALSE}
+print("A table of cities:")
+print(pseudo_data_city)
+
+```
+
+## Example continues (2)
+
+```{r echo=FALSE}
+
+print("A table of letters:")
+print(pseudo_data_letter)
+
+```
+
+## From material to data: overview
+
+-   Starting point: data or a plan to create data
+-   Step 1: Build the conceptual data model: recognise entities, and their relationships
+-   Step 2: Build the logical data model: list attributes for each entity type, map relationships between attributes
+-   Step 3: Implement in practice (we will practice this).
+-   Step 4: Use the data (we will practice this as well)
+
+## What next?
+
+-   From the chapter, read at least the example r code that was used to split the example data set, to relational data, and the section Note About Unique Identifiers.
+-   Start working on the exercises.
