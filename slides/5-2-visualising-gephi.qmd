@@ -1,24 +1,623 @@
 ---
-title: "Visualising Large Networks with Gephi"
+title: "Other Network Types"
+subtitle: "Ego Networks and Bipartite Networks"
+author: "Yann Ryan"
 format: revealjs
 editor: visual
 ---
 
-## Quarto
+```{r message=FALSE, warning=FALSE, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE) 
+```
 
-Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+## Ego Networks
 
-## Bullets
+-   Very often when applying network analysis to humanities datasets, you'll be working with *ego networks*.
 
-When you click the **Render** button a document will be generated that includes:
+-   An ego network is a network seen from the perspective of a focal node, known as the ego, and all the nodes to which it is connected, known as *alters*.
 
--   Content authored with markdown
--   Output from executable code
+-   In a true ego network, the network will include all the links *between* the alters.
 
-## Code
+## Ego Networks
 
-When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.cap = "Example ego network", fig.height=3, fig.width=3, fig.align='center'}
+library(igraph)
+library(ggraph)
+library(tidygraph)
+library(tidyverse)
+tibble(to = c("A", 'A', 'A', 'A', 'C'), from = c('B', 'C', 'D', 'E', 'B')) %>% 
+  graph_from_data_frame() %>% 
+  ggraph('star') + 
+  geom_edge_link(width = 2) + geom_node_point(size = 20, pch = 21, fill = 'white', stroke = 2) + 
+  scale_x_continuous(expand = c(.1, .1))+ 
+  scale_y_continuous(expand = c(.1, .1)) +
+  annotate("text", x = -.5, y = .5, label = "Ego node")  +
+  annotate("curve", curvature = -.2, x = -.5, xend = 0, y = .4, yend = 0,
+           arrow = arrow(length=unit(0.30,"cm"), ends="last", type = "closed")) +
+  annotate("text", x = -.3, y = -.7, label = "Alter")  +
+  annotate("curve", curvature = -.2, x = -.2, xend = 0, y = -.75, yend = -1,
+           arrow = arrow(length=unit(0.30,"cm"), ends="last", type = "closed"))  +
+  annotate("text", x = .8, y = .8, label = "Alter link")  +
+  annotate("curve", curvature = .2, x = .7, xend = .5, y = .75, yend = .55,
+           arrow = arrow(length=unit(0.30,"cm"), ends="last", type = "closed"))+ 
+  
+  theme_void() 
+
+```
+
+## Ego Networks
+
+-   Common in real-world networks because data is often collected from the perspective of an ego node or a number of ego nodes, for example, in a survey, or perhaps in a collection of correspondence.
+
+-   Because of this it is important to understand what they are, and think about whether the data is representative.
+
+-   Studies have shown that many metrics in an ego network correlate strongly with metrics from a full network (meaning that if an alter is central to the ego network, it is likely also central if we had the full network data too.
+
+## Ego Networks {.smaller}
+
+-   Network analysis from the point of view of egos can tell us about the structure of a particular node and its relationship to its neighbours.
+
+-   [Lerman et al (2022)](https://www.pnas.org/doi/10.1073/pnas.2206070119):
+
+    > Women's ego networks have higher average degree, edge density, and clustering coefficient. Together, these features suggest that women are more tightly embedded within their research communities. This is consistent with previous findings that women tend to gravitate to certain communities ([11](https://www.pnas.org/doi/10.1073/pnas.2206070119#core-r11)). Women have fewer peers than men, but these peers are more productive (publish more papers) and receive more citations. Finally, women NAS members have more women among their peers.
+
+## Ego Networks
+
+-   Many of the datasets you might be considering using for your final project may in fact be ego networks.
+
+-   It is worth thinking about the implications of this, and considering which kinds of metrics, or comparisons would work best.
+
+    -   Is each ego network collected using the same method?
+
+    -   If not, does this skew the results?
+
+## Case Study: A Spotify Ego Network
+
+::: columns
+::: {.column width="40%"}
+-   Spotify Developer API Allows for extracting ego networks from 'related artists' information
+:::
+
+::: {.column width="60%"}
+![](images/Screenshot%202022-10-27%20at%2013.52.15.png)
+:::
+:::
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+library(spotifyr)
+
+access_token <- get_spotify_access_token()
+
+radiohead <- get_artist_audio_features('radiohead')
+
+radiohead_related = spotifyr::get_related_artists('4Z8W4fKeB5YxbusRsdQVPb')
+
+```
+
+## A simple ego network (no alters)
+
+```{r, echo = FALSE}
+
+library(ggraph)
+library(tidygraph)
+library(igraph)
+radiohead_related %>% 
+  mutate(ego_name = 'Radiohead') %>% 
+  distinct( ego_name, name) %>% 
+  as_tbl_graph() %>% 
+  ggraph('stress') + geom_edge_link() + 
+  geom_node_point(size = 20, fill = 'white', color = 'black', pch = 21, stroke = 1)+ 
+  geom_node_text(size = 3, aes(label =name)) + theme_void() + scale_x_continuous(expand = c(.1, .1))+ scale_y_continuous(expand = c(.1, .1))
+
+
+```
+
+## Ego Network plus Alters
+
+-   Not much useful information in 'simple' ego network
+
+-   We can 'crawl' through the API and get the 20 most related artists for each of them, taking a [snowball sample](https://en.wikipedia.org/wiki/Snowball_sampling) approach to creating a network.
+
+![](images/Screenshot%202022-10-27%20at%2013.55.50.png)
+
+```{r, echo = FALSE}
+radiohead_related_related = lapply(radiohead_related$id, get_related_artists)
+
+radiohead_related_related = data.table::rbindlist(radiohead_related_related)
+
+radiohead_related_related = radiohead_related_related %>% 
+  mutate(seed_id = rep(radiohead_related$id, each= 20))%>% 
+  mutate(ego_name = rep(radiohead_related$name, each= 20))
+
+```
+
+## Ego Network plus alters
+
+-   This results in dataset of the twenty related nodes plus all their own connections, which can be drawn as a network:
 
 ```{r}
-1 + 1
+g = radiohead_related_related   %>% 
+  rbind(radiohead_related %>% 
+  mutate(seed_id = '4Z8W4fKeB5YxbusRsdQVPb')%>% 
+  mutate(ego_name = 'Radiohead') ) %>% 
+  distinct(ego_name, name) %>% 
+  as_tbl_graph(directed = F) %>% 
+  ggraph('fr')+ geom_edge_link(alpha = .5) + 
+  geom_node_point(size = 4, color = 'white') + 
+  geom_node_text(size = 2, aes(label =name)) + theme_void()
+g
 ```
+
+## Ego Networks
+
+-   Reduce to ego + links between alters:
+
+```{r}
+radiohead_related_related   %>% 
+  rbind(radiohead_related %>% 
+  mutate(seed_id = '4Z8W4fKeB5YxbusRsdQVPb') %>% 
+  mutate(ego_name = 'Radiohead') ) %>% 
+  filter(id %in% radiohead_related$id) %>% 
+  distinct(ego_name, name) %>% 
+  as_tbl_graph(directed = F) %>%
+  mutate(group = group_louvain()) %>%
+  ggraph('fr')+ 
+  geom_edge_link(alpha = .5) + 
+  geom_node_point(size = 15, pch = 21, fill = 'white', color = 'black', stroke = 1) + 
+  geom_node_text(size = 3, aes(label =name))+ theme_void() + scale_x_continuous(expand = c(.1, .1)) + scale_y_continuous(expand = c(.1, .1))
+```
+
+## What can we tell with this network?
+
+-   There are a large number of *triads*, meaning that artists are clustered together (if the Verve and Pulp are connected to Blur, it's also likely that they are connected to each other).
+
+    -   What does a clustered network mean in this circumstance?
+
+-   There is almost a 'clique' (a group of fully-connected nodes), including all those in green. What does a clique tell us?
+
+-   There is one node (Smashing Pumpkins) with no other connections.
+
+## Further levels
+
+-   As a further step, we can crawl another level deep into the related artists' network. This will give us all the connections at a *third* level removed from Radiohead.
+
+```{r, echo = FALSE}
+
+
+level_3_related = lapply(radiohead_related_related$id, get_related_artists)
+
+level_3_related = level_3_related %>% data.table::rbindlist() %>% 
+  mutate(seed_id = rep(radiohead_related_related$id, each= 20))%>% 
+  mutate(ego_name = rep(radiohead_related_related$name, each= 20))
+
+node_info = level_3_related %>% 
+  distinct(id, name, genres) %>% rbind(level_3_related %>% select(id = seed_id,name =  ego_name, genres) %>% distinct(id, name, genres)) %>% distinct(id, name, genres) %>% select(name = id, artist_name = name, genres) %>% distinct(name, .keep_all = T)
+
+g = level_3_related %>% 
+  #filter(id %in% radiohead_related_related$id) %>% 
+  distinct(id, seed_id) %>% 
+  as_tbl_graph(directed = TRUE) %>% 
+  left_join(node_info, by = 'name') %>% 
+  mutate(in_degree = centrality_degree(mode = 'in'))%>% 
+  mutate(out_degree = centrality_degree(mode = 'out'))%>% 
+  mutate(total_degree = centrality_degree(mode = 'all')) %>% 
+  mutate(between = centrality_betweenness()) %>% 
+  arrange(desc(total_degree)) 
+
+
+df = level_3_related %>% 
+  #filter(id %in% radiohead_related_related$id)%>% 
+  distinct(id, seed_id) %>% 
+  as_tbl_graph(directed = F) %>% 
+  mutate(total_degree = centrality_degree(mode = 'all')) %>% 
+  filter(total_degree>1) %>% 
+  mutate(group = group_louvain()) 
+
+
+df %>% 
+  ggraph('fr') + 
+  geom_edge_link(alpha = .1) + 
+  geom_node_point(aes(color =as.character(group))) + theme_void()
+
+```
+
+## What does this ego network look like?
+
+-   The network is asymmetric: if artist A is in the top twenty of artist B, it doesn't necessarily follow that B is in the top twenty of A. We can test that by calculating the network's *reciprocity*:
+-   Network has reciprocity of 61%
+-   It's also transitive: if A and B are connected to C, A and B also likely connected
+-   Transitivity is 55%
+
+## What does this tell us?
+
+-   What does this tell us about the way music is organised?
+
+-   Relatedness is transitive, meaning artists tend to form triangles: if both your friends like a band, it's likely you'll like them too. Spotify can exploit this fact to make better playlist recommendations!
+
+-   Relatedness is not necessarily reciprocal: there's a difference between A related to B and B related to A. Why might this be?
+
+## Conclusions
+
+-   Most importantly, this shows that it's not always necessary to have access to the 'full' network in order to get results.
+
+-   In many cases, we will work with ego networks or sets of connected ego networks.
+
+-   Even so, it is possible to make interesting insights into the data regardless. The key takeaway is that you should take into account the perspective you're looking from.
+
+## Bipartite networks
+
+-   So far networks have been *unimodel* or *unipartite*:
+
+    -   Person A sends a letter to person B.
+
+    -   In a letter network there is only one type of node (a letter author or recipient), and one type of node (sends/receives a letter).
+
+-   Many networks are not this straightforward, and have two, or more, types of nodes.
+
+-   These networks are known as *bimodal* or *bipartite*, if there are two types of nodes, or *tripartite* when there's three, and so forth.
+
+## Example Bipartite Network: Facebook Group Membership {.smaller}
+
+::: columns
+::: {.column width="40%"}
+-   In this network, the first type (red, on the left) are people, and the second type (green, on the right) are Facebook groups.
+
+-   A line is drawn from one to the other if they are a member of that group.
+
+-   Carol is a member of the rabbits and dog group, Carol, David, Bob, and Egbert are members of the dog group, and Egbert and Alice members of the cat group.
+:::
+
+::: {.column width="60%"}
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height=8}
+library(tidygraph)
+library(tidyverse)
+library(igraph)
+library(ggraph)
+
+e = tibble(person = c('Alice', 'Bob', 'Carol', 'David', 'Egbert', 'Carol', 'Egbert', 'Bob'), 
+       group = c('cats', 'dogs', 'rabbits', 'dogs', 'cats','dogs', 'dogs', 'cats'))
+
+g = e %>% igraph::graph_from_data_frame()
+
+V(g)$type <- bipartite_mapping(g)$type
+
+g %>% ggraph::ggraph('bipartite') + 
+  geom_edge_link() + 
+  geom_node_point(size = 35,aes(fill = type), pch = 21) + 
+  geom_node_label(aes(label = name), size = 10) +
+  coord_flip() + 
+  theme_void() + 
+  scale_x_continuous(expand = c(.1,.1))+ 
+  scale_y_reverse(expand = c(.2,.2))  + 
+  theme(legend.position = 'none')
+
+```
+:::
+:::
+
+## Bipartite networks {.smaller}
+
+::: columns
+::: {.column width="60%"}
+-   In digital humanities research, we often have access to bipartite network data, because almost any two sets of data points can be represented as a bipartite network.
+
+-   In some cases, the dataset can be derived rather than some pre-existing membership or category the data belongs to, as, for instance, in this study of the New Zealand parliament, which constructed a bipartite network of MPs to a set of speech topics, created using LDA topic modelling.
+
+-   In this model MPs are the first type, and topics the second, and these are used to construct a network of MPs based on their similarity across the topics they spoke about in Parliament.
+:::
+
+::: {.column width="40%"}
+![From Curran B, Higham K, Ortiz E, Vasques Filho D (2018) Look who's talking: Two-mode networks as representations of a topic model of New Zealand parliamentary speeches. PLoS ONE 13(6): e0199072. <https://doi.org/10.1371/journal.pone.0199072>](images/nz_topics.png){width="400"}
+:::
+:::
+
+## Bipartite networks
+
+-   It's important, therefore, to understand the extent to which regular network methods work or don't work with this structure.
+
+-   Standard network measurements (such as degree) are easy to calculate using these networks, but are not always meaningful.
+
+-   In the above example, the degree count for each node (its connections) is simply a count of its group membership.
+
+-   Unlike in a regular network, the measurement doesn't give any clues as to the most central member of the group. Similar problems exist for other metrics.
+
+## Bipartite Network Projection
+
+-   In many cases, then, we will need to do something to the network in order to get meaningful analysis from it.
+
+-   The most common thing to do is to *project* the network.
+
+-   This involves collapsing the network, and directly connecting one of the node types, based on their connections to the other.
+
+-   For example, the network above can be collapsed into two separate networks: a network of people connected by shared group membership, and a network of groups connected by shared members:
+
+## Bipartite Network Projection {.smaller}
+
+-   The network on the left displays a very common aspect of bipartite network projections: *cliques*, a cluster of nodes where each is connected to all the others.
+
+-   In the network on the left, the edge becomes 'shares a Facebook group with', and on the right, 'has shared members'.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+b = igraph::bipartite.projection(g)
+
+cowplot::plot_grid(b[[1]] %>% ggraph::ggraph() + 
+  geom_edge_link(aes(width = weight)) + 
+  geom_node_point(size = 25, pch = 21, fill = 'white') + 
+  geom_node_label(aes(label = name)) +
+  coord_flip() + 
+  theme_void() + 
+  scale_x_continuous(expand = c(.1,.1))+ 
+  scale_y_reverse(expand = c(.3,.3))  + 
+  theme(legend.position = 'none'), 
+  b[[2]] %>% ggraph::ggraph('stress') + 
+  geom_edge_link(aes(width = weight)) + 
+  geom_node_point(size = 25, pch = 21, fill = 'white') + 
+  geom_node_label(aes(label = name)) +
+  coord_flip() + 
+  theme_void() + 
+  scale_x_continuous(expand = c(.1,.1))+ 
+  scale_y_reverse(expand = c(.3,.3))  + 
+  theme(legend.position = 'bottom'))
+```
+
+::: notes
+Which of these two networks do you think is more appropriate?
+
+To a certain extent, that depends on the question. The more obvious answer would be to build a network of people, but if we were more interested in the 'ecosystem' of Facebook groups and how they interact, then perhaps the second network type would be of more use.
+:::
+
+## Bipartite Networks and Loss of Information
+
+-   At this point, regular network metrics can be used. We might use degree, for example, to demonstrate that Alice is peripheral to this network.
+
+-   However, it's important to be aware of what projecting the network does.
+
+-   Most importantly, there is a potential *loss of information*: in the new network, the edge only records that there is a shared group between two nodes, and the information on which groups specifically were shared is discarded.
+
+## Bipartite Weights
+
+-   Some of this information can be kept through a weight value attached to each node.
+
+-   In the diagram on the left above, Egbert and Bob have a weight of two, because they share two groups (cats and dogs).
+
+-   This weight information can be incorporated into your network metrics.
+
+-   Technically almost any data can be modelled as a bipartite network. However, is it always appropriate?
+
+## Anything can be a bipartite network... but should it?
+
+::: columns
+::: {.column width="40%"}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+tibble(fruit = c('apple', 'banana', 'peach', 'pineapple', 'grape'), 
+       color = c('green', 'yellow', 'pink', 'yellow', 'green')) %>% 
+  kableExtra::kbl(booktabs = T) 
+
+```
+:::
+
+::: {.column width="60%"}
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height=8}
+e = tibble(fruit = c('apple', 'banana', 'peach', 'pineapple', 'grape'), 
+       color = c('green', 'yellow', 'pink', 'yellow', 'green'))
+
+g = e %>% igraph::graph_from_data_frame()
+
+V(g)$type <- bipartite_mapping(g)$type
+
+g %>% ggraph::ggraph('bipartite') + 
+  geom_edge_link() + 
+  geom_node_point(size = 35, pch = 21, fill = 'white') + 
+  geom_node_label(aes(label = name), size = 10) +
+  coord_flip() + 
+  theme_void() + 
+  scale_x_continuous(expand = c(.1,.1))+ 
+  scale_y_reverse(expand = c(.2,.2))  + 
+  theme(legend.position = 'bottom')
+
+```
+:::
+:::
+
+## Anything can be a bipartite network... but should it?
+
+-   Is it meaningful?
+
+-   Perhaps not, unless there was a very clear reason for doing (biologists may be interested in this very question!).
+
+## Co-occurrence and co-authorship networks.
+
+-   However, there are many cases where a bipartite network does actually make sense.
+
+-   Two very popular (and related) uses are **co-authorship networks** and **co-citation** **networks**.
+
+-   In the former, people are connected to the papers they wrote together, and in the latter, they are connected if they were cited in the same paper together.
+
+## Co-occurrence and co-authorship networks.
+
+-   Unlike fruit and colours, this data has some inherently networked-looking properties.
+
+-   The connections are likely to be clustered into different topics or academic communities, and if A and B both authored separate papers with C, they probably have a higher chance of also authoring a paper together.
+
+## Co-occurrence and co-authorship networks.
+
+-   Perhaps even more interestingly, this is a way of finding connections where we otherwise may have no data.
+
+-   We probably don't have any information on whether a large group of academic writers were in contact with each other (although maybe some of it can be found through Twitter data).
+
+-   A co-authorship network allows us to *infer* these connections through another dataset.
+
+## Co-occurrence and co-authorship networks.
+
+-   Often the case in humanities datasets, particularly historical, where we only have very limited information on who was in contact with whom
+
+-   However, we may have more information on the companies they worked for, the groups they were part of, or the publications they worked on.
+
+-   Modelling this data as a network may allow us to understand subject boundaries, highlight influential individuals, and look, for example, at questions of gender or racial bias in patterns of authorship and citation.
+
+## Co-occurrence and co-authorship networks {.smaller}
+
+::: columns
+::: {.column width="40%"}
+-   [This recent paper](https://doi.org/10.1108/JD-11-2021-0221) constructed a co-authorship network of digital humanities publications, and found that even through there were less women authors overall, they had important roles as bridges, linking otherwise disconnected areas.
+
+-   This network diagram from that paper shows the centrality of many of the green (female) authors:
+:::
+
+::: {.column width="60%"}
+![From Gao, J., Nyhan, J., Duke-Williams, O. and Mahony, S. (2022), "Gender influences in Digital Humanities co-authorship networks", Journal of Documentation, Vol. 78 No. 7, pp. 327-350. <https://doi.org/10.1108/JD-11-2021-0221>](images/co-authorship.png){width="600"}
+:::
+:::
+
+## A type of co-authorship: publisher networks
+
+-   We can take a similar approach to the information found in historical books.
+
+-   While co-authorship itself in early modern publishing was rare, most books were *produced* by collaborations between sets of publishers and printers.
+
+-   These relationships are well suited to modelling as a network, and we could imagine they might display some of the network tendencies we've just discussed.
+
+## ESTC
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+cowplot::ggdraw() + 
+  cowplot::draw_image("images/hist_eng_milar.png", width = 0.5) + 
+  cowplot::draw_image("images/millar-kincaid.png", width = 0.5, x = 0.5)
+
+```
+
+## ESTC
+
+![](images/Screenshot%202022-10-27%20at%2014.53.45.png)
+
+## Networks from Title Pages
+
+```{r echo=FALSE, message=FALSE, warning=FALSE,fig.cap="Bipartite network from book imprints", out.height="20%", out.width='99%'}
+e = tibble(person = c('A. Millar', 'A. Millar', 'T. Cadell', 'A. Kincaid'), 
+       group = c('History of England', "Essays Moral and Political", "History of England", "Essays Moral and Political"))
+
+g = e %>% igraph::graph_from_data_frame()
+
+V(g)$type <- bipartite_mapping(g)$type
+
+b = igraph::bipartite.projection(g)
+layout = tibble(x = c(2,3,4), y = c(1,2,1))
+cowplot::plot_grid(g %>% ggraph::ggraph('bipartite') + 
+  geom_edge_link() + 
+  geom_node_point(size = 14,aes(), pch = 21) + 
+  geom_node_label(aes(label = name)) +
+  coord_flip() + 
+  theme_void() + 
+  scale_x_continuous(expand = c(.2,.2))+ 
+  scale_y_reverse(expand = c(.3,.3))  + 
+  theme(legend.position = 'none'), 
+  b[[1]] %>% ggraph::ggraph(layout = layout) + 
+  geom_edge_link(aes()) + 
+  geom_node_point(size = 10, pch = 21, fill = 'white') + 
+  geom_node_label(aes(label = name)) +
+  coord_flip() + 
+  theme_void() + 
+  scale_x_continuous(expand = c(.1,.1))+ 
+  scale_y_continuous(expand = c(.2,.2))  + 
+  theme(legend.position = 'bottom'))
+```
+
+## Networks from Title Pages
+
+-   As you can see, the title page lists a few pieces of information: the book is 'printed for' A. Millar (who is the publisher), and 'sold by' Thomas Cadell, the bookseller.
+
+-   These pieces of information, showing a connection between Millar and Cadell, can form the basis of a bipartite network.
+
+## Method
+
+-   Take this raw data, filter it, and turn it into a bipartite network of publishers and printers connected to books.
+
+-   We'll then *project* the network, and directly connect the publishers and printers, based on their shared co-occurrences on books.
+
+-   This network can then be visualised and analysed.
+
+```{r}
+load(file = '../../publisher_network/estc_actor_links')
+load('../../publisher_network/estc_core')
+```
+
+```{r}
+
+edge_list = estc_actor_links %>% left_join(estc_core %>% select(estc_id, publication_year, publication_place)) %>% 
+  filter(publication_year %in% 1750:1760) %>% 
+  filter(publication_place == 'Edinburgh') %>%
+  filter(actor_role_publisher == TRUE) %>% 
+  select(estc_id, actor_id) 
+
+
+```
+
+```{r}
+publisher_graph  = edge_list%>% as_tbl_graph()
+```
+
+```{r}
+V(publisher_graph)$type <- bipartite_mapping(publisher_graph)$type
+```
+
+## A Bipartite Network
+
+```{r}
+publisher_graph %>% 
+  ggraph('fr') +
+  geom_edge_link(alpha = .2) + 
+  geom_node_point(aes(shape = type, color = type),size =2) + 
+  theme_void()
+```
+
+## A Bipartite Network
+
+-   It already looks like a network structure, with a number of disconnected components (individuals who never collaborate, or only in a small group), with a central connected 'component', consisting of publishers who often collaborate on books together.
+
+-   However, we want to know more specifically about the structure of the publisher network. To do this, we project it.
+
+## Projected Network
+
+```{r}
+proj = bipartite.projection(publisher_graph)
+```
+
+```{r}
+proj[[2]] = proj[[2]] %>% as_tbl_graph()
+
+```
+
+```{r}
+proj[[2]] %>% 
+  mutate(degree = centrality_degree(mode = 'all', weights = weight)) %>% 
+  ggraph('fr') + 
+  geom_edge_link(alpha = .1) + 
+  geom_node_point() + theme_void()
+```
+
+## What does it look like?{.smaller}
+
+-   Because we used a small sample of books, the network consists of a number of disconnected components:
+
+    -   One large component, of publishers who work together in groups on several books,
+
+    -   2 small 'cliques' (groups of publishers all mentioned on one book, hence they are all connected together and not to anything else)
+
+    -   A large number of individual nodes with no connections (they were the only person listed on a single book), as well as
+
+    -   Some pairs (two individuals listed together on a single book, and not to anyone else).
+
+## Conclusions
+
+-   A co-authorship network like this can get very dense very quickly, because there are many books, and only a limited number of individuals, so there will be many connections between them.
+
+-    It may be more meaningful to filter the data, for example using the edge weight column, to only consider 'stronger' relationships in the network (nodes which share several books together).
+
+-   This projected network is inherently *undirected*, because the edge 'shares a book title' doesn't have any direction associated with it.
+
+## Exercises:
+
+a)  Construct two spotify ego networks. Write up the clusters found in them. Compare their global network metrics. What does this tell you about the difference between them - for instance how wide or narrow their reach is?

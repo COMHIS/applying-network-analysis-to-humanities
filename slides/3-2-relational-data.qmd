@@ -1,6 +1,6 @@
 ---
 title: "Introduction to Relational Data - Part 2"
-format: pptx
+format: revealjs
 author: Iiro Tiihonen
 ---
 

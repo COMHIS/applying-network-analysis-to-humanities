@@ -181,8 +181,7 @@ glimpse(fruit_data)
 
 ## Data types
 
-:::: {.columns}
-
+::: columns
 ::: {.column width="50%"}
 R has 6 data types:
 
@@ -197,12 +196,7 @@ R has 6 data types:
 ::: {.column width="50%"}
 The most commonly-used ones you'll come across are `character`, `numeric`, and `logical`. `logical` is data which is either `TRUE` or `FALSE`.
 :::
-
-::::
-
-
-
-
+:::
 
 ## Coercion of data types
 
@@ -215,7 +209,6 @@ fruit = c("apples", 5, "oranges", 3)
 
 glimpse(fruit)
 ```
-
 
 ## Installing 'packages':
 
@@ -246,10 +239,9 @@ install.packages('igraph')
 library(igraph)
 ```
 
-
 # Working with the Tidyverse
 
-## What is the Tidyverse?  
+## What is the Tidyverse?
 
 -   Most of the work in these notebooks is done using a set of packages developed for R called the 'tidyverse'.
 
@@ -257,7 +249,7 @@ library(igraph)
 
 -   All these functions work in the same way. The first argument is the thing you want to operate on. This is nearly always a data frame. After come other arguments, which are often specific columns, or certain variables you want to do something with.
 
-## Load the Tidyverse functions  
+## Load the Tidyverse functions
 
 -   First, load the tidyverse set of packages with the following command:
 
@@ -327,7 +319,6 @@ grouped_fruit = group_by(fruit_data, fruit)
 tally(grouped_fruit)
 ```
 
-
 -   Now the apples are grouped together rather than being two separate rows, and there's a new column called `n`, which contains the result of the count.
 
 ## group_by(), tally(), summarise()
@@ -371,7 +362,7 @@ filter(fruit_data, amount >=5)
 
 ## arrange()
 
--   The function `arrange()` sorts a dataframe by the column specified, as you might do in a spreadsheet programme. 
+-   The function `arrange()` sorts a dataframe by the column specified, as you might do in a spreadsheet programme.
 
 -   In the function, specify the data frame, and the variable you would like to sort by.
 
@@ -389,7 +380,7 @@ arrange(fruit_data, amount)
 arrange(fruit_data, desc(amount))
 ```
 
-##  arrange() with strings instead of numbers
+## arrange() with strings instead of numbers
 
 -   If you `arrange()` by a list of characters, you'll get alphabetical order:
 
@@ -430,8 +421,7 @@ fruit_days
 
 -   This can be 'joined' to the fruit information, to add the new data on the delivery day, without having to edit the original table (or repeat the information for apples twice).
 
--   `left_join()` will merge the two dataframes, keeping all rows on the left, adding data from the new dataset. `inner_join` keeps only rows where the key is found in both datasets, and `anti_join()` keeps only rows where the key is *not* found in either. 
-## left_join(), inner_join(), anti_join()
+-   `left_join()` will merge the two dataframes, keeping all rows on the left, adding data from the new dataset. `inner_join` keeps only rows where the key is found in both datasets, and `anti_join()` keeps only rows where the key is *not* found in either. \## left_join(), inner_join(), anti_join()
 
 -   Joins need a common `key`, a column which allows the join to match the data tables up.
 
@@ -443,7 +433,7 @@ fruit_days
 
 ## left_join(), inner_join(), anti_join()
 
--   Join the dataframes with the following command:  
+-   Join the dataframes with the following command:
 
 ```{r}
 #| echo: true
@@ -463,7 +453,6 @@ joined_fruit
 
 ## Piping
 
-
 -   The previous dataframe is passed as the first argument of the next function by using the pipe `%>%` command. It works like this:
 
 ```{r}
@@ -479,7 +468,6 @@ fruit_data %>%
 ## Piping
 
 -   That code block, written in prose: "take fruit data, remove any yellow colour fruit, count the fruits by type and amount, and arrange in descending order of the total"
-
 
 ## Plotting using ggplot()
 

@@ -1,7 +1,7 @@
 ---
 title: "Cleaning the Observed and Thinking About the Unobserved Data"
 author: "Iiro Tiihonen"
-format: pptx
+format: revealjs
 ---
 
 ```{r echo = FALSE}

@@ -86,11 +86,9 @@ title-slide-attributes:
 :::
 
 ::: {.column width="60%"}
-
 ![](images/Screenshot%202022-10-25%20at%2011.44.42.png)
 :::
 :::
-
 
 ## Submitting Assignments and Final Project
 
@@ -116,7 +114,7 @@ Each week will have one piece of set reading, usually an article or book chapter
 
 **Week 3:**
 
-**Week 4:** Ahnert et. al. (2021). *The Network Turn: Changing Perspectives in the Humanities* **Chapter 5, 'Quantifying Culture'.
+**Week 4:** Ahnert et. al. (2021). *The Network Turn: Changing Perspectives in the Humanities* \*\*Chapter 5, 'Quantifying Culture'.
 
 ## Reading
 
@@ -132,7 +130,7 @@ Each week will have one piece of set reading, usually an article or book chapter
 
 There is no set textbook, but the following are good general introductions to networks:
 
-**Ahnert, R., Ahnert, S., Coleman, C., & Weingart, S. (2021). *The Network Turn: Changing Perspectives in the Humanities* (Elements in Publishing and Book Culture). Cambridge: Cambridge University Press.
+\*\*Ahnert, R., Ahnert, S., Coleman, C., & Weingart, S. (2021). *The Network Turn: Changing Perspectives in the Humanities* (Elements in Publishing and Book Culture). Cambridge: Cambridge University Press.
 
 Short, very readable volume on networks, specifically focused on humanities applications. Free, open access copy available through the above link.
 
@@ -156,7 +154,7 @@ Comprehensive textbook of network theory, recommended if you want to understand 
 
 Also worth checking out is the [extensive bibliography](https://historicalnetworkresearch.org/bibliography/) and [journal](https://jhnr.uni.lu/index.php/jhnr) by the Historical Network Research Community.
 
-![](images/Screenshot 2022-10-25 at 12.55.44.png)
+![](images/Screenshot%202022-10-25%20at%2012.55.44.png)
 
 ## Final Project
 
@@ -244,7 +242,7 @@ These things (and connections) could be almost anything. Some typical examples i
 
 Before we get in to some of the details, it's worth going through a few examples of interesting projects which have combined humanities data with network science.
 
-## Ruth and Sebastian Ahnert, Tudor networks{.smaller}
+## Ruth and Sebastian Ahnert, Tudor networks {.smaller}
 
 ::: columns
 ::: {.column width="40%"}
@@ -266,8 +264,7 @@ Speaker notes (press 's' when presenting to switch to speaker mode).
 As found in your reading this week, Ahnert and Ahnert used a number of network measurements to make a 'network fingerprint' for individuals in an archive of Tudor state papers. Using this measure, they were able to identify or confirm spies and collaborators. Specifically, they looked at individuals with a high betweenness (a bridging measurement) in comparison to their degree (measuring their overall connections): represented by the points underneath the trendline in the graph below. The biggest outlier is Jon Snowden: an alias of John Cecil, a Catholic priest in exile in Elizabeth I's regime. Looking at others with a similar profile revealed other conspirators.
 :::
 
-## Networking Cultural History{.smaller}
-
+## Networking Cultural History {.smaller}
 
 ::: columns
 ::: {.column width="40%"}
@@ -276,7 +273,6 @@ As found in your reading this week, Ahnert and Ahnert used a number of network m
 -   Used it as a way to trace the movement of culture from one area of the world to another, and how this changed over time.
 
 -   Given that the information is taken from Wikidata, what problems could you envisage with this study?
-
 :::
 
 ::: {.column width="60%"}
@@ -285,9 +281,6 @@ As found in your reading this week, Ahnert and Ahnert used a number of network m
 </iframe>
 :::
 :::
-
-
-
 
 ::: notes
 In below video, accompanying a [paper in *Science*](https://www.science.org/doi/10.1126/science.1240064), researchers graphed places of birth and death---taken from Wikidata---as nodes and edges, using it as a way to trace the movement of culture from one area of the world to another, and how this changed over time.
