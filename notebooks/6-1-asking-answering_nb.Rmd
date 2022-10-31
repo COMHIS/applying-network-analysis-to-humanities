@@ -3,10 +3,33 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-Download the Florentine network data:
+Download the Fsample ESTC data
 
 ```{r}
 
 ```
 
-Use it to highlight a particular aspect of the data. Compare a network property to some attribute. Draw this, either as a network diagram, or a scatterplot, or a adjacency matrix etc. 
+Turn the raw data into a network:
+
+```{r}
+
+```
+
+
+Calculate some basic network metrics:
+
+```{r}
+
+
+```
+
+Use the available data to make a subset of the full ESTC. Calculate group membership using `group_louvain()`. 
+
+Turn the network into a dataframe using `as_tibble()`. Summarise the data per group, and calculate the `document_type` and `gatherings` information using `summarise()`. 
+
+```{r}
+
+```
+
+
+
