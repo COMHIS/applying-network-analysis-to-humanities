@@ -5,7 +5,14 @@ output:
     df_print: paged
 ---
 
-## EXERCISES - R Basics and Tidyverse
+## BASIC EXERCISES - R Basics and Tidyverse
+
+Load the tidyverse package:
+
+```{r}
+library()
+```
+
 
 Change the third item in the `fruit` vector to `bananas` and the corresponding item in the colour vector to `yellow`:
 
@@ -27,18 +34,22 @@ Get a total for the amount of each fruit:
 
 ```
 
-Read in the `book_sample.csv` dataset, giving it the name `df`. It's a random sample of 1500 books published in London, Edinburgh, and Dublin. You'll need to find this file in the 'data' folder of the CSC notebooks workspace.
+
+## Exercises with 'real-world' data:
+
+Read in the `book_sample.csv` dataset, giving it the name `df`. It's a random sample of 5000 book records published in London, Edinburgh, and Dublin. You'll need to find this file in the 'data' folder of the CSC notebooks workspace.
 
 Fill in the necessary part of the function below:
 
 ```{r}
-
+df  = read_csv('../data/')
 ```
 
-Filter to only include books with Dublin as the place of publication. Call this new dataset `dublin_books`:
+Filter to only include books with Dublin as the place of publication. Call this new dataset `dublin_books`. 
 
 ```{r}
 
+dublin_books = df %>% filter(publication_place == '')
 
 ```
 
@@ -46,11 +57,15 @@ Count the number of books per year in the `dublin_books` dataset:
 
 ```{r}
 
+
+
 ```
 
 Count the number of books for each place of publication in the original `df` dataset. Save this as an object called `df_count`.
 
 ```{r}
+
+df_count = df %>%
 
 ```
 
@@ -66,4 +81,34 @@ Use `ggplot2` to make a bar chart of the count of places:
 
 ```
 
-Join the `df_count` dataset to the `df` dataset, so that each record now has the total count alongside it.
+## SLIGHTLY MORE ADVANCED EXERCISES
+
+If you struggle with these and need to knit the notebook, you can delete everything below here. 
+
+To carry out an analysis of the changing book trade in Dublin and Edinburgh, you realise that it's not enough to count the books per year, but you also want to know the percentage of the total. This is because the total number of books keeps increasing, so it will look like the number of books in these two publication places is increasing anyway. What you want to calculate is the **proportion** out of the total, for each of these two places. 
+
+To do this you need to make use of the `group_by()` and `summarise()` functions. 
+
+To do this, you can also make use of another very important programming skill: Google! If you get stuck, try googling 'calculate proportion per group with R tidyverse'. You'll probably find an answer in the first couple of results. 
+
+Make a new dataset called 'df_prop', which takes the df dataset, groups it by year and by place of publication, and then creates a new column called 'prop', which contains the proportion of the total for these places. 
+
+
+```{r}
+
+df_prop = df %>% group_by(publication_year, publication_place ) %>% 
+  summarise(n = n())  %>%
+  mutate(prop = n / sum(n))
+
+```
+
+Finally, filter to just include Edinburgh and Dublin, and create a line plot (using `geom_line`), which charts the proportion of each place of publication per year. 
+
+Remember to use `ggplot()`, and you'll need to set the colour to the place of publication in order to get separate lines for each. You'll also need to filter the results by a vector of place names for both Edinburgh and Dublin, which can be found in today's chapter. 
+
+Fill out the rest of the code below: 
+
+```{r}
+df_prop %>% filter(publication_place )
+```
+
