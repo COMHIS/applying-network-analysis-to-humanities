@@ -609,9 +609,19 @@
           display:block!important;
       }</style></aside>
 </section>
-<section id="using-multi-layered-networks-to-disclose-books-in-the-republic-of-letters" class="slide level2">
-<h2>Using Multi-Layered Networks to Disclose Books in the Republic of Letters</h2>
+<section id="van-vugt-using-multi-layered-networks-to-disclose-books-in-the-republic-of-letters" class="slide level2 smaller">
+<h2>Van Vugt, ‘Using Multi-Layered Networks to Disclose Books in the Republic of Letters’</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<ul>
+<li><p>‘Multi-layer network’ by combining a network of letters with a network of book mentions.</p></li>
+<li><p>Having access to books turned these people into experts - scholars would send their books to them, and then in turn they would use this information to inform their correspondents.</p></li>
+</ul>
+</div><div class="column" style="width:60%;">
 <p><img data-src="images/Screenshot%202022-10-03%20at%2011.23.15.png" width="500"></p>
+
+</div>
+</div>
 <aside class="notes">
 <p>In <a href="https://jhnr.uni.lu/index.php/jhnr/article/view/7">this project</a>, Ingeborg van Vugt made a ‘multi-layer network’ by combining a network of letters with a network of book mentions. The paper compared the networks of the Dutch philologist, Nicolaas Heinsius, and the Florentine librarian Antonio Magliabechi. Dynamic visualisations were made using the Nodegoat software. One key finding was that having access to books turned these people into experts - scholars would send their books to them, and then in turn they would use this information to inform their correspondents. Van Vugt showed that these two separate spheres (books and correspondence) were related to each other, that a book dedication could influence whether two individuals would write to each other, and so forth.</p>
 <style type="text/css">
@@ -628,7 +638,11 @@
 </section>
 <section id="six-degrees-of-francis-bacon" class="slide level2">
 <h2>Six Degrees of Francis Bacon</h2>
-<p><img data-src="images/Screenshot%202022-10-03%20at%2011.26.54.png" width="600"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/Screenshot%202022-10-03%20at%2011.26.54.png" width="800"></p>
+</figure>
+</div>
 <aside class="notes">
 <p>The <a href="http://www.sixdegreesoffrancisbacon.com/">Six Degrees of Francis Bacon</a> project used co-occurrence networks (a technique we’ll learn about later) to infer links between early modern individuals. Specifically, they looked for co-occurrences of individuals in the Oxford Dictionary of National Biography, inferring links if two individuals were mentioned together more than was statistically significant. This data was then turned into an interactive social network.</p>
 <p>Rather than answering a specific question, the Six Degrees project is a good example of how we can use networks as exploratory tools. The interactive site can be used to explore patterns and groups who were likely connected, and can be used as a starting-point to understanding the social relations of a figure of interest.</p>
@@ -646,7 +660,11 @@
 </section>
 <section id="mapping-the-digital-humanities-community-of-twitter" class="slide level2">
 <h2>Mapping the digital humanities community of Twitter</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
 <p><img data-src="images/Screenshot%202022-10-03%20at%2011.46.29.png"></p>
+</figure>
+</div>
 <aside class="notes">
 <p>Network analysis has naturally been used extensively to understand the structure of social networks and sites like Reddit. In <a href="https://halshs.archives-ouvertes.fr/hal-01517493">this study</a>, the authors measured the centrality of a group of 2,500 Twitter users self-identified as digital humanities practioners. They found that there were separate communities of languages, and that French was particularly isolated.</p>
 <style type="text/css">
@@ -680,7 +698,7 @@
 <li>The city of Königsberg (now Kaliningrad) was built on a river with two islands and a system (a network, perhaps?) of seven bridges connecting them.</li>
 </ul>
 
-<img data-src="images/Image-Koenigsberg,_Map_by_Merian-Erben_1652.jpg" class="r-stretch"></section>
+<img data-src="images/Image-Koenigsberg,_Map_by_Merian-Erben_1652.jpg" class="r-stretch quarto-figure-center"></section>
 <section id="graph-theory-2" class="slide level2">
 <h2>Graph Theory</h2>
 <div class="columns">
@@ -699,7 +717,7 @@
 <li>Euler solved this problem by abstracting the bridge system into what we now call a graph: a structure with nodes and edges.</li>
 </ul>
 
-<img data-src="images/Screenshot%202022-09-26%20at%2011.25.49.png" class="r-stretch"></section>
+<img data-src="images/Screenshot%202022-09-26%20at%2011.25.49.png" class="r-stretch quarto-figure-center"></section>
 <section id="graph-theory-4" class="slide level2">
 <h2>Graph Theory</h2>
 <ul>
@@ -744,14 +762,14 @@
 <h2>Nodes and Edges</h2>
 <p>As already mentioned, a network is a graph consisting of nodes and edges (connections). Typically (though not always), the edges are <em>pairwise,</em> meaning they run between a pair of nodes. These are often represented visually as points (the nodes) and lines (the edges), like this:</p>
 
-<img data-src="images/Screenshot%202022-09-26%20at%2011.42.32.png" width="300" class="r-stretch"></section>
+<img data-src="images/Screenshot%202022-09-26%20at%2011.42.32.png" width="300" class="r-stretch quarto-figure-center"></section>
 <section id="edge-weights" class="slide level2">
 <h2>Edge weights</h2>
 <ul>
 <li>These connections can often have a <em>weight</em> attached, for example the number of letters exchanged between two people, or the number of times two actors appear in a scene in a movie or play together.</li>
 </ul>
 
-<img data-src="images/Screenshot%202022-09-26%20at%2011.42.58.png" width="300" class="r-stretch"></section>
+<img data-src="images/Screenshot%202022-09-26%20at%2011.42.58.png" width="300" class="r-stretch quarto-figure-center"></section>
 <section id="edge-weights-1" class="slide level2">
 <h2>Edge weights</h2>
 <ul>
@@ -779,7 +797,7 @@
 <li>These directed edges can also have separate weights attached to them:</li>
 </ul>
 
-<img data-src="images/Screenshot%202022-09-26%20at%2011.31.15.png" width="300" class="r-stretch"></section>
+<img data-src="images/Screenshot%202022-09-26%20at%2011.31.15.png" width="300" class="r-stretch quarto-figure-center"></section>
 <section id="network-paths" class="slide level2">
 <h2>Network paths</h2>
 <ul>
@@ -796,7 +814,7 @@
 <li><p>Paths work differently in <em>directed</em> networks: information can only move in the direction of the edges.</p></li>
 </ul>
 
-<img data-src="1-1-introduction_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch"></section></section>
+<img data-src="1-1-introduction_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch quarto-figure-center"></section></section>
 <section>
 <section id="different-network-types" class="title-slide slide level1 center">
 <h1>Different Network Types</h1>
@@ -830,7 +848,7 @@
 <li><p>A publisher can be connected to many books, but the two types of nodes cannot be connected to each other</p></li>
 </ul>
 
-<img data-src="images/bipartite.png" width="500" class="r-stretch"></section>
+<img data-src="images/bipartite.png" width="500" class="r-stretch quarto-figure-center"></section>
 <section id="bipartite-projections" class="slide level2">
 <h2>Bipartite Projections</h2>
 <ul>
@@ -844,31 +862,47 @@
 <li><p>In the figure on the left below, we have collapsed the network so that now, publishers are directly connected to each other, based on shared appearances on books.</p></li>
 <li><p>If publishers shared multiple books, this can be added to the new edge as weight.</p></li>
 </ul>
-
-<img data-src="images/bipartite.png" width="500" class="r-stretch"><div class="{notes}">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/bipartite.png" width="500"></p>
+</figure>
+</div>
+<aside class="notes">
 <p>What would a projected network of the other type (books connected to books) look like?</p>
 <p>All three books would be connected to each other, because they all have one publisher in common (Strahan). Book 1 and book 3 would have an edge weight of 2, because they have two publishers in common (Millar and Strahan).</p>
-</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
-<section id="multigraphs" class="slide level2">
+<section id="multigraphs" class="slide level2 smaller">
 <h2>Multigraphs</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
 <ul>
 <li><p>There can also be multiple <em>kinds</em> of edges, in the same network.</p></li>
 <li><p>For example in a network of historical correspondents, you might have ‘met in person’ as well as ‘sent a letter to/from’.</p></li>
 <li><p>If these edges are not merged, these graphs are known as <strong>multigraphs</strong>.</p></li>
 </ul>
-</section>
-<section id="multigraphs-1" class="slide level2">
-<h2>Multigraphs</h2>
-
-<img data-src="1-1-introduction_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"></section>
-<section id="multigraphs-2" class="slide level2">
-<h2>Multigraphs</h2>
-<ul>
-<li><p>Multigraphs are also known as multi-layer networks: you could imagine each separate set of edges as a separate layer within a network.</p></li>
-<li><p>Conceptually, we might learn interesting things by understanding how the various layers overlap and interact.</p></li>
-<li><p>R and other programming languages have packages to plot and analyse them.</p></li>
-</ul>
+</div><div class="column" style="width:60%;">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="1-1-introduction_files/figure-revealjs/unnamed-chunk-2-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="hypergraphs" class="slide level2">
 <h2>Hypergraphs</h2>
@@ -883,7 +917,7 @@
 <li>Below, an edge is no longer a line but a coloured area, and each of the points which fall within them are connected nodes.</li>
 </ul>
 
-<img data-src="images/1920px-Hypergraph-wikipedia.svg.png" width="500" class="r-stretch"></section>
+<img data-src="images/1920px-Hypergraph-wikipedia.svg.png" width="500" class="r-stretch quarto-figure-center"></section>
 <section id="hypergraphs-2" class="slide level2">
 <h2>Hypergraphs</h2>
 <ul>
@@ -961,12 +995,21 @@
 </section>
 <section id="its-a-small-world" class="slide level2">
 <h2>It’s a Small World</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
 <ul>
-<li><p>In 1967 Stanley Milgram devised an experiment where a series of postcards were mailed out to random people in US cities.</p></li>
-<li><p>These postcards contained basic information about a ‘target’ person in another, geographically-distant, city.</p></li>
-<li><p>The participants were asked to send the postcard to that person if they knew them, and if not, send it to the contact they thought might be most likely to know that person.</p></li>
-<li><p>The details of each person were recorded on the postcard at every step.</p></li>
+<li><p>In 1967, series of postcards were mailed out to random people in US cities.</p></li>
+<li><p>Participants were asked to send the postcard to a target person, or the person they thought might know them</p></li>
 </ul>
+</div><div class="column" style="width:60%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/Experement_Small_World_(possible_option).gif"></p>
+<p></p><figcaption>Ageev Andrew, CC BY-SA 3.0 &lt;https://creativecommons.org/licenses/by-sa/3.0&gt;, via Wikimedia Commons</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
 <aside class="notes">
 <p>What problems can you imagine with this experiment?</p>
 <p>It’s worth considering how the experiment may be biased. Are all groups of people equally likely to answer (or have the time and money to carry out) a request from a random postcard? How might this have distorted the findings?</p>
@@ -984,15 +1027,30 @@
 </section>
 <section id="its-a-small-world-1" class="slide level2">
 <h2>It’s a Small World</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
 <ul>
-<li><p>When (or if) a postcard made it to the target person, Milgram could see how many ‘hops’ it had taken in order to get there.</p></li>
 <li><p>The average number of hops was between five and a half and six.</p></li>
 <li><p>This information was later used to claim that everyone in the US was connected by ‘six degrees of separation’.</p></li>
-<li><p>In network terms, this is known as the ‘average path length’ of the network.</p></li>
-<li><p>This fact is known as the ‘small world’ effect.</p></li>
-<li><p>It is also connected to the ‘strength of weak ties’ theory by Granovetter.</p></li>
-<li><p>This surprisingly-small number is possible because of the structure of social networks: If you want to reach someone in a distant city, are you more likely to have success if you send it to a close neighbour, or a distant acquaintance who lives there?</p></li>
 </ul>
+</div><div class="column" style="width:60%;">
+<p><img data-src="images/Six_degrees_of_separation.svg"></p>
+</div>
+</div>
+<aside class="notes">
+<p>What problems can you imagine with this experiment?</p>
+<p>It’s worth considering how the experiment may be biased. Are all groups of people equally likely to answer (or have the time and money to carry out) a request from a random postcard? How might this have distorted the findings?</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="the-new-science-of-networks" class="slide level2">
 <h2>The ‘New’ Science of Networks</h2>
@@ -1013,51 +1071,42 @@
 </section>
 <section id="scale-free-networks-and-preferential-attachment-1" class="slide level2">
 <h2>Scale-free Networks and Preferential Attachment</h2>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="images/Screenshot%202022-10-03%20at%2012.07.50.png" style="width:49.0%;height:20.0%"></p>
-<p></p><figcaption>These diagrams show how a scale-free network is susceptible to to targeted attack but not to random. Removing any two nodes at random in a network of hubs makes little difference to the overall structure or robustness. However, removing two hub or bridging nodes, as on the right, results in a network in which many of the paths are now severed, meaning the network structure has begun to fall apart. Images from https://cs.brynmawr.edu/Courses/cs380/spring2013/section02/slides/01Introduction.pdf</figcaption><p></p>
-</figure>
-</div>
-</div>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="images/Screenshot%202022-10-03%20at%2012.07.55.png" style="width:49.0%;height:20.0%"></p>
-<p></p><figcaption>These diagrams show how a scale-free network is susceptible to to targeted attack but not to random. Removing any two nodes at random in a network of hubs makes little difference to the overall structure or robustness. However, removing two hub or bridging nodes, as on the right, results in a network in which many of the paths are now severed, meaning the network structure has begun to fall apart. Images from https://cs.brynmawr.edu/Courses/cs380/spring2013/section02/slides/01Introduction.pdf</figcaption><p></p>
-</figure>
-</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="images/Screenshot%202022-10-03%20at%2012.07.50.png"></p>
+</div><div class="column" style="width:50%;">
+<p><img data-src="images/Screenshot%202022-10-03%20at%2012.07.55.png"></p>
 </div>
 </div>
 </section>
 <section id="networks-become-popular" class="slide level2">
 <h2>Networks Become Popular…</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
 <ul>
-<li><p>These ideas, published at a time when the internet (and later social networking) moved into the mainstream, drove a huge interest in thinking about the world in a ‘networked’ way.</p></li>
-<li><p>They spawned a range of popular science and psychology books.</p></li>
-<li><p>Barabasi wrote <a href="https://en.wikipedia.org/wiki/Linked:_The_New_Science_of_Networks"><em>Linked</em></a><em>,</em> one of the defining popular science books of the 2000s, and used networks to argue that this scale-free network structure could be used to explain a whole range of human behaviours, from epidemics, to economics, to politics.</p></li>
+<li><p>Late 1990s: network ideas moved into mainstream</p></li>
+<li><p>Thinking about world in a ‘networked’ way</p></li>
+<li><p>Spawned huge range of popular science and psychology books</p></li>
 </ul>
+</div><div class="column" style="width:50%;">
+<p><img data-src="images/71qAmSP21wL.jpg" width="388"></p>
+</div>
+</div>
 </section>
-<section id="conclusion" class="slide level2">
-<h2>Conclusion</h2>
-<ul>
-<li><p>This outline has hopefully got you thinking about this network approach to data.</p></li>
-<li><p>A word of warning: almost everything can be represented as some kind of network. Think about:</p>
+<section id="what-do-networks-really-tell-us" class="slide level2">
+<h2>What do networks really tell us?</h2>
 <ul>
 <li><p>Do they tell us something interesting, such as why a group of contacts formed in a particular formed in this way?</p></li>
 <li><p>Do they just reflect the data that we have collected or have available?</p></li>
 <li><p>What does a complex ‘hairball’ network diagram really tell us?</p></li>
 <li><p>Have the claims of <em>Linked</em> really helped us to understand business, economics, and the spread of disease?</p></li>
-</ul></li>
 </ul>
 </section>
-<section id="conclusion-1" class="slide level2">
-<h2>Conclusion</h2>
+<section id="last-thoughts" class="slide level2">
+<h2>Last thoughts…</h2>
 <ul>
 <li><p>Between now and the next class, try to consider the ways some of the data you have used in your studies might be thought of as a network, and what benefits (and pitfalls) that approach might bring.</p></li>
-<li><p>Lastly, remember that a network is a <em>model:</em> a set of proposals to explain something about the real world. It is an artificial contruction, or a metaphor, rather than the thing itself. As such, even a very ‘accurate’ network is likely to be only one of many such models which could be used as an explanation for a particular phenomenon or observation. Throughout this course, you should use your critical tools to keep this in mind, and assess the usefulness of a particular model to your data explorations.</p></li>
+<li><p>Lastly, remember that a network is a <em>model:</em> a set of proposals to explain something about the real world. It is an artificial construction, or a metaphor, rather than the thing itself. As such, even a very ‘accurate’ network is likely to be only one of many such models which could be used as an explanation for a particular phenomenon or observation. Throughout this course, you should use your critical tools to keep this in mind, and assess the usefulness of a particular model to your data explorations.</p></li>
 </ul>
 </section>
 <section id="todays-exercise" class="slide level2">
@@ -1066,25 +1115,28 @@
 <li>If you have not already done so, sign up to https://notebooks.rahtiapp.fi/ with your Haka account:</li>
 </ul>
 
-<img data-src="images/Screenshot%202022-11-01%20at%2017.14.28.png" class="r-stretch"></section>
+<img data-src="images/Screenshot%202022-11-01%20at%2017.14.28.png" class="r-stretch quarto-figure-center"></section>
 <section id="todays-exercise-1" class="slide level2">
 <h2>Today’s Exercise</h2>
 <ul>
 <li>Join the workspace using the join code <strong>net-1pcitfm5</strong></li>
 </ul>
 
-<img data-src="images/Screenshot%202022-11-01%20at%2017.12.10%20copy.jpg" class="r-stretch"></section>
+<img data-src="images/Screenshot%202022-11-01%20at%2017.12.10%20copy.jpg" class="r-stretch quarto-figure-center"></section>
 <section id="start-the-workspace" class="slide level2">
 <h2>Start the workspace</h2>
+<ul>
+<li>Press the ‘power’ button and the workspace will begin to load.</li>
+</ul>
 
-<img data-src="images/csc_notebooks2.jpg" class="r-stretch"></section>
+<img data-src="images/csc_notebooks2.jpg" class="r-stretch quarto-figure-center"></section>
 <section id="open-the-exercise-notebook" class="slide level2">
 <h2>Open the exercise notebook</h2>
 <ul>
 <li>Navigate to applying-network-analysis-to-humanities/notebooks/1-1-introduction_nb.Rmd in the file browser and follow the instructions.</li>
 </ul>
 
-<img data-src="images/Screenshot%202022-11-01%20at%2017.18.22.png" class="r-stretch"><div class="footer footer-default">
+<img data-src="images/Screenshot%202022-11-01%20at%2017.18.22.png" class="r-stretch quarto-figure-center"><div class="footer footer-default">
 
 </div>
 </section></section>

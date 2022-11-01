@@ -304,9 +304,21 @@ Given that the information is taken from Wikidata, what problems could you envis
 While Wikidata is a large data source, it is obviously very partial and has a particular focus, for example in favour of white, male, Western Europeans. The study may just replicate the biases of Wikidata itself, hiding the important cultural influences on the west, from other parts of the world.
 :::
 
-## Using Multi-Layered Networks to Disclose Books in the Republic of Letters
+## Van Vugt, 'Using Multi-Layered Networks to Disclose Books in the Republic of Letters' {.smaller}
 
+::: columns
+::: {.column width="40%"}
+-   'Multi-layer network' by combining a network of letters with a network of book mentions.
+
+-   Having access to books turned these people into experts - scholars would send their books to them, and then in turn they would use this information to inform their correspondents.
+:::
+
+::: {.column width="60%"}
 ![](images/Screenshot%202022-10-03%20at%2011.23.15.png){width="500"}
+
+</iframe>
+:::
+:::
 
 ::: notes
 In [this project](https://jhnr.uni.lu/index.php/jhnr/article/view/7), Ingeborg van Vugt made a 'multi-layer network' by combining a network of letters with a network of book mentions. The paper compared the networks of the Dutch philologist, Nicolaas Heinsius, and the Florentine librarian Antonio Magliabechi. Dynamic visualisations were made using the Nodegoat software. One key finding was that having access to books turned these people into experts - scholars would send their books to them, and then in turn they would use this information to inform their correspondents. Van Vugt showed that these two separate spheres (books and correspondence) were related to each other, that a book dedication could influence whether two individuals would write to each other, and so forth.
@@ -314,7 +326,7 @@ In [this project](https://jhnr.uni.lu/index.php/jhnr/article/view/7), Ingeborg v
 
 ## Six Degrees of Francis Bacon
 
-![](images/Screenshot%202022-10-03%20at%2011.26.54.png){width="600"}
+![](images/Screenshot%202022-10-03%20at%2011.26.54.png){fig-align="center" width="800"}
 
 ::: notes
 The [Six Degrees of Francis Bacon](http://www.sixdegreesoffrancisbacon.com/) project used co-occurrence networks (a technique we'll learn about later) to infer links between early modern individuals. Specifically, they looked for co-occurrences of individuals in the Oxford Dictionary of National Biography, inferring links if two individuals were mentioned together more than was statistically significant. This data was then turned into an interactive social network.
@@ -324,7 +336,7 @@ Rather than answering a specific question, the Six Degrees project is a good exa
 
 ## Mapping the digital humanities community of Twitter
 
-![](images/Screenshot%202022-10-03%20at%2011.46.29.png)
+![](images/Screenshot%202022-10-03%20at%2011.46.29.png){fig-align="center"}
 
 ::: notes
 Network analysis has naturally been used extensively to understand the structure of social networks and sites like Reddit. In [this study](https://halshs.archives-ouvertes.fr/hal-01517493), the authors measured the centrality of a group of 2,500 Twitter users self-identified as digital humanities practioners. They found that there were separate communities of languages, and that French was particularly isolated.
@@ -348,7 +360,7 @@ Network analysis has naturally been used extensively to understand the structure
 
 -   The city of Königsberg (now Kaliningrad) was built on a river with two islands and a system (a network, perhaps?) of seven bridges connecting them.
 
-![](images/Image-Koenigsberg,_Map_by_Merian-Erben_1652.jpg)
+![](images/Image-Koenigsberg,_Map_by_Merian-Erben_1652.jpg){fig-align="center"}
 
 ## Graph Theory
 
@@ -366,7 +378,7 @@ Network analysis has naturally been used extensively to understand the structure
 
 -   Euler solved this problem by abstracting the bridge system into what we now call a graph: a structure with nodes and edges.
 
-![](images/Screenshot%202022-09-26%20at%2011.25.49.png)
+![](images/Screenshot%202022-09-26%20at%2011.25.49.png){fig-align="center"}
 
 ## Graph Theory
 
@@ -406,13 +418,13 @@ This section introduces the fundamental ideas behind network analysis, including
 
 As already mentioned, a network is a graph consisting of nodes and edges (connections). Typically (though not always), the edges are *pairwise,* meaning they run between a pair of nodes. These are often represented visually as points (the nodes) and lines (the edges), like this:
 
-![](images/Screenshot%202022-09-26%20at%2011.42.32.png){width="300"}
+![](images/Screenshot%202022-09-26%20at%2011.42.32.png){fig-align="center" width="300"}
 
 ## Edge weights
 
 -   These connections can often have a *weight* attached, for example the number of letters exchanged between two people, or the number of times two actors appear in a scene in a movie or play together.
 
-![](images/Screenshot%202022-09-26%20at%2011.42.58.png){width="300"}
+![](images/Screenshot%202022-09-26%20at%2011.42.58.png){fig-align="center" width="300"}
 
 ## Edge weights
 
@@ -438,7 +450,7 @@ It might be worth considering how the letter network was constructed. Often they
 
 -   These directed edges can also have separate weights attached to them:
 
-![](images/Screenshot%202022-09-26%20at%2011.31.15.png){width="300"}
+![](images/Screenshot%202022-09-26%20at%2011.31.15.png){fig-align="center" width="300"}
 
 ## Network paths
 
@@ -456,7 +468,7 @@ It might be worth considering how the letter network was constructed. Often they
 
 -   Paths work differently in *directed* networks: information can only move in the direction of the edges.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 library(tidyverse)
 library(ggraph)
 library(igraph)
@@ -522,7 +534,7 @@ cowplot::plot_grid(a,b)
 
 -   A publisher can be connected to many books, but the two types of nodes cannot be connected to each other
 
-![](images/bipartite.png){width="500"}
+![](images/bipartite.png){fig-align="center" width="500"}
 
 ## Bipartite Projections
 
@@ -536,25 +548,27 @@ cowplot::plot_grid(a,b)
 
 -   If publishers shared multiple books, this can be added to the new edge as weight.
 
-![](images/bipartite.png){width="500"}
+![](images/bipartite.png){fig-align="center" width="500"}
 
-::: {notes}
+::: notes
 What would a projected network of the other type (books connected to books) look like?
 
 All three books would be connected to each other, because they all have one publisher in common (Strahan). Book 1 and book 3 would have an edge weight of 2, because they have two publishers in common (Millar and Strahan).
 :::
 
-## Multigraphs
+## Multigraphs {.smaller}
 
+::: columns
+::: {.column width="40%"}
 -   There can also be multiple *kinds* of edges, in the same network.
 
 -   For example in a network of historical correspondents, you might have 'met in person' as well as 'sent a letter to/from'.
 
 -   If these edges are not merged, these graphs are known as **multigraphs**.
+:::
 
-## Multigraphs
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+::: {.column width="60%"}
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='center'}
 library(tidygraph)
 library(igraph)
 library(ggraph)
@@ -576,14 +590,8 @@ tibble(from = c('A', 'A', 'A', 'A', 'B'),
   scale_x_continuous(expand = c(.2,.2)) + 
   scale_y_continuous(expand = c(.2,.2))
 ```
-
-## Multigraphs
-
--   Multigraphs are also known as multi-layer networks: you could imagine each separate set of edges as a separate layer within a network.
-
--   Conceptually, we might learn interesting things by understanding how the various layers overlap and interact.
-
--   R and other programming languages have packages to plot and analyse them.
+:::
+:::
 
 ## Hypergraphs
 
@@ -595,7 +603,7 @@ tibble(from = c('A', 'A', 'A', 'A', 'B'),
 
 -   Below, an edge is no longer a line but a coloured area, and each of the points which fall within them are connected nodes.
 
-![](images/1920px-Hypergraph-wikipedia.svg.png){width="500"}
+![](images/1920px-Hypergraph-wikipedia.svg.png){fig-align="center" width="500"}
 
 ## Hypergraphs
 
@@ -625,7 +633,7 @@ These could also be considered bipartite networks (individuals connected to grou
 
 ## Spatial networks
 
-![A map of the early modern road network made with data from the Viabundus project. Each color represents the 'neighbourhood' of roads which can be reached from Urecht in a single day.](images/viabundus.png){width="500"}
+![A map of the early modern road network made with data from the Viabundus project. Each color represents the 'neighbourhood' of roads which can be reached from Urecht in a single day.](images/viabundus.png){fig-align="center" width="500"}
 
 ## From Bridges to Social Networks...
 
@@ -659,13 +667,17 @@ It's because, according to Granovetter, these distant acquaintances are more lik
 
 ## It's a Small World
 
--   In 1967 Stanley Milgram devised an experiment where a series of postcards were mailed out to random people in US cities.
+::: columns
+::: {.column width="40%"}
+-   In 1967, series of postcards were mailed out to random people in US cities.
 
--   These postcards contained basic information about a 'target' person in another, geographically-distant, city.
+-   Participants were asked to send the postcard to a target person, or the person they thought might know them
+:::
 
--   The participants were asked to send the postcard to that person if they knew them, and if not, send it to the contact they thought might be most likely to know that person.
-
--   The details of each person were recorded on the postcard at every step.
+::: {.column width="60%"}
+![Ageev Andrew, CC BY-SA 3.0 \<https://creativecommons.org/licenses/by-sa/3.0\>, via Wikimedia Commons](images/Experement_Small_World_(possible_option).gif)
+:::
+:::
 
 ::: notes
 What problems can you imagine with this experiment?
@@ -675,19 +687,23 @@ It's worth considering how the experiment may be biased. Are all groups of peopl
 
 ## It's a Small World
 
--   When (or if) a postcard made it to the target person, Milgram could see how many 'hops' it had taken in order to get there.
-
+::: columns
+::: {.column width="40%"}
 -   The average number of hops was between five and a half and six.
 
 -   This information was later used to claim that everyone in the US was connected by 'six degrees of separation'.
+:::
 
--   In network terms, this is known as the 'average path length' of the network.
+::: {.column width="60%"}
+![](images/Six_degrees_of_separation.svg)
+:::
+:::
 
--   This fact is known as the 'small world' effect.
+::: notes
+What problems can you imagine with this experiment?
 
--   It is also connected to the 'strength of weak ties' theory by Granovetter.
-
--   This surprisingly-small number is possible because of the structure of social networks: If you want to reach someone in a distant city, are you more likely to have success if you send it to a close neighbour, or a distant acquaintance who lives there?
+It's worth considering how the experiment may be biased. Are all groups of people equally likely to answer (or have the time and money to carry out) a request from a random postcard? How might this have distorted the findings?
+:::
 
 ## The 'New' Science of Networks
 
@@ -709,56 +725,68 @@ It's worth considering how the experiment may be biased. Are all groups of peopl
 
 ## Scale-free Networks and Preferential Attachment
 
-```{r, echo=FALSE,out.width="49%", out.height="20%",fig.cap="These diagrams show how a scale-free network is susceptible to to targeted attack but not to random. Removing any two nodes at random in a network of hubs makes little difference to the overall structure or robustness. However, removing two hub or bridging nodes, as on the right, results in a network in which many of the paths are now severed, meaning the network structure has begun to fall apart. Images from https://cs.brynmawr.edu/Courses/cs380/spring2013/section02/slides/01Introduction.pdf",fig.show='hold',fig.align='center'}
-knitr::include_graphics(c("images/Screenshot 2022-10-03 at 12.07.50.png","images/Screenshot 2022-10-03 at 12.07.55.png"))
-```
+::: columns
+::: {.column width="50%"}
+![](images/Screenshot%202022-10-03%20at%2012.07.50.png)
+:::
+
+::: {.column width="50%"}
+![](images/Screenshot%202022-10-03%20at%2012.07.55.png)
+:::
+:::
 
 ## Networks Become Popular...
 
--   These ideas, published at a time when the internet (and later social networking) moved into the mainstream, drove a huge interest in thinking about the world in a 'networked' way.
+::: columns
+::: {.column width="50%"}
+-   Late 1990s: network ideas moved into mainstream
 
--   They spawned a range of popular science and psychology books.
+-   Thinking about world in a 'networked' way
 
--   Barabasi wrote [*Linked*](https://en.wikipedia.org/wiki/Linked:_The_New_Science_of_Networks)*,* one of the defining popular science books of the 2000s, and used networks to argue that this scale-free network structure could be used to explain a whole range of human behaviours, from epidemics, to economics, to politics.
+-   Spawned huge range of popular science and psychology books
+:::
 
-## Conclusion
+::: {.column width="50%"}
+![](images/71qAmSP21wL.jpg){width="388"}
+:::
+:::
 
--   This outline has hopefully got you thinking about this network approach to data.
+## What do networks really tell us?
 
--   A word of warning: almost everything can be represented as some kind of network. Think about:
+-   Do they tell us something interesting, such as why a group of contacts formed in a particular formed in this way?
 
-    -   Do they tell us something interesting, such as why a group of contacts formed in a particular formed in this way?
+-   Do they just reflect the data that we have collected or have available?
 
-    -   Do they just reflect the data that we have collected or have available?
+-   What does a complex 'hairball' network diagram really tell us?
 
-    -   What does a complex 'hairball' network diagram really tell us?
+-   Have the claims of *Linked* really helped us to understand business, economics, and the spread of disease?
 
-    -   Have the claims of *Linked* really helped us to understand business, economics, and the spread of disease?
-
-## Conclusion
+## Last thoughts...
 
 -   Between now and the next class, try to consider the ways some of the data you have used in your studies might be thought of as a network, and what benefits (and pitfalls) that approach might bring.
 
--   Lastly, remember that a network is a *model:* a set of proposals to explain something about the real world. It is an artificial contruction, or a metaphor, rather than the thing itself. As such, even a very 'accurate' network is likely to be only one of many such models which could be used as an explanation for a particular phenomenon or observation. Throughout this course, you should use your critical tools to keep this in mind, and assess the usefulness of a particular model to your data explorations.
+-   Lastly, remember that a network is a *model:* a set of proposals to explain something about the real world. It is an artificial construction, or a metaphor, rather than the thing itself. As such, even a very 'accurate' network is likely to be only one of many such models which could be used as an explanation for a particular phenomenon or observation. Throughout this course, you should use your critical tools to keep this in mind, and assess the usefulness of a particular model to your data explorations.
 
 ## Today's Exercise
 
 -   If you have not already done so, sign up to https://notebooks.rahtiapp.fi/ with your Haka account:
 
-![](images/Screenshot%202022-11-01%20at%2017.14.28.png)
+![](images/Screenshot%202022-11-01%20at%2017.14.28.png){fig-align="center"}
 
 ## Today's Exercise
 
 -   Join the workspace using the join code **net-1pcitfm5**
 
-![](images/Screenshot%202022-11-01%20at%2017.12.10%20copy.jpg)
+![](images/Screenshot%202022-11-01%20at%2017.12.10%20copy.jpg){fig-align="center"}
 
 ## Start the workspace
 
-![](images/csc_notebooks2.jpg)
+-   Press the 'power' button and the workspace will begin to load.
+
+![](images/csc_notebooks2.jpg){fig-align="center"}
 
 ## Open the exercise notebook
 
 -   Navigate to applying-network-analysis-to-humanities/notebooks/1-1-introduction_nb.Rmd in the file browser and follow the instructions.
 
-![](images/Screenshot%202022-11-01%20at%2017.18.22.png)
+![](images/Screenshot%202022-11-01%20at%2017.18.22.png){fig-align="center"}
