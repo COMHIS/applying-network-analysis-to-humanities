@@ -352,7 +352,7 @@ igraph::sample_islands(islands.n = 5, islands.pin = .5,islands.size = 20, n.inte
 
 -   In very large graphs, the process is more difficult and likely to give different results depending on the random starting point.
 
--    Also, while the method may be a useful way of finding communities without preconceived starting points, it does require us to think of the network as being divided into communities of some kind.
+-   Also, while the method may be a useful way of finding communities without preconceived starting points, it does require us to think of the network as being divided into communities of some kind.
 
 -   Every node must be placed in a community - none can be placed outside the communities, and, perhaps more controversially, with this method, no node can be a member of more than one community. 
 
@@ -458,11 +458,11 @@ cowplot::plot_grid(a,b,c,d, labels = c('closed triad', 'open triad', 'connected 
 
 -   Triadic closure is the simple idea that people in a social network are more likely to connect to each other if they share another common connection.
 
--    In social network theory, this is very common, and thought to drive the process of network formation. It's called triadic closure, because it measures the relation between triads - sets of three nodes.
+-   In social network theory, this is very common, and thought to drive the process of network formation. It's called triadic closure, because it measures the relation between triads - sets of three nodes.
 
 -   It's easy to measure in a network: we can do so simply by measuring the number of 'complete' triangles.
 
-## Why is this interesting? 
+## Why is this interesting?
 
 -   As well as helping to explain network formation, we can think about how various triads work on a micro-level.
 
@@ -500,7 +500,7 @@ b
 
 -   This gap, from A to C, is sometimes called a 'structural hole'.
 
--    In this triad, B is particularly important because they are needed for information to be shared between A and C. B may even work to keep A and C from meeting and 'closing' the triad.
+-   In this triad, B is particularly important because they are needed for information to be shared between A and C. B may even work to keep A and C from meeting and 'closing' the triad.
 
 -   The sociologist Ronald Burt, in his book *Structural Holes: The Social Structure of Competition* theorised that these gaps could be beneficial to individuals, and that people with many of these kinds of relationships were often successful in business.
 
@@ -518,7 +518,7 @@ b
 
 -   It's easy to see the appeal of these methods applied to historical or cultural sources, which we might use to uncover the specific social relations within a network of historical actors, understand the formation by which a particular correspondence network came about, or maybe measure the 'success' of a particular historical figure by the existence of 'structural holes' in their networks.
 
--    I encourage you to think about and use these theories.
+-   I encourage you to think about and use these theories.
 
 -   However, do bear in mind that these theories were often developed using modern, 'complete' social network data, where every interaction was carefully recorded, often for the purposes of a particular test.
 

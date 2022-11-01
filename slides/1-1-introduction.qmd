@@ -12,6 +12,16 @@ title-slide-attributes:
 
 # About this Course
 
+## Course Teachers
+
+-   Yann Ryan (yann.ryan\@helsinki.fi)
+
+    -   Teaching weeks 1, 4,5,6,7
+
+-   Iiro Tihonen (iiro.tiihonen\@helsinki.fi)
+
+    -   Teaching weeks 2,3
+
 ## Course Aims
 
 -   It focuses on **applied approaches** to network analysis and humanities data.
@@ -33,6 +43,10 @@ title-slide-attributes:
     -   Final project (4/5 of the grade, s**ubmitted on January 17 at the latest.**
 
     -   Full details on the [course page on Studies Service](https://studies.helsinki.fi/courses/cur/hy-opt-cur-2223-7c9cdedc-fc7b-4e66-b793-1dbe0db868b7)
+
+## There is a course book available
+
+https://tinyurl.com/3x29jv8k
 
 ## Course Structure
 
@@ -726,3 +740,25 @@ knitr::include_graphics(c("images/Screenshot 2022-10-03 at 12.07.50.png","images
 -   Between now and the next class, try to consider the ways some of the data you have used in your studies might be thought of as a network, and what benefits (and pitfalls) that approach might bring.
 
 -   Lastly, remember that a network is a *model:* a set of proposals to explain something about the real world. It is an artificial contruction, or a metaphor, rather than the thing itself. As such, even a very 'accurate' network is likely to be only one of many such models which could be used as an explanation for a particular phenomenon or observation. Throughout this course, you should use your critical tools to keep this in mind, and assess the usefulness of a particular model to your data explorations.
+
+## Today's Exercise
+
+-   If you have not already done so, sign up to https://notebooks.rahtiapp.fi/ with your Haka account:
+
+![](images/Screenshot%202022-11-01%20at%2017.14.28.png)
+
+## Today's Exercise
+
+-   Join the workspace using the join code **net-1pcitfm5**
+
+![](images/Screenshot%202022-11-01%20at%2017.12.10%20copy.jpg)
+
+## Start the workspace
+
+![](images/csc_notebooks2.jpg)
+
+## Open the exercise notebook
+
+-   Navigate to applying-network-analysis-to-humanities/notebooks/1-1-introduction_nb.Rmd in the file browser and follow the instructions.
+
+![](images/Screenshot%202022-11-01%20at%2017.18.22.png)
