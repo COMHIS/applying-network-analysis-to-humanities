@@ -126,9 +126,9 @@ Each week will have one piece of set reading, usually an article or book chapter
 
 ## Reading
 
-**Week 3:**
+**Week 3:** Sections from Programming Historian lesson: https://programminghistorian.org/en/lessons/intro-to-linked-data
 
-**Week 4:** Ahnert et. al. (2021). *The Network Turn: Changing Perspectives in the Humanities* \*\*Chapter 5, 'Quantifying Culture'.
+**Week 4:** Ahnert et. al. (2021). The Network Turn: Changing Perspectives in the Humanities. **Chapter 5, 'Quantifying Culture'.**
 
 ## Reading
 
@@ -144,23 +144,23 @@ Each week will have one piece of set reading, usually an article or book chapter
 
 There is no set textbook, but the following are good general introductions to networks:
 
-\*\*Ahnert, R., Ahnert, S., Coleman, C., & Weingart, S. (2021). *The Network Turn: Changing Perspectives in the Humanities* (Elements in Publishing and Book Culture). Cambridge: Cambridge University Press.
+Ahnert, R., Ahnert, S., Coleman, C., & Weingart, S. (2021). *The Network Turn: Changing Perspectives in the Humanities* (Elements in Publishing and Book Culture). Cambridge: Cambridge University Press.
 
 Short, very readable volume on networks, specifically focused on humanities applications. Free, open access copy available through the above link.
 
 ## Other useful reading
 
-**Easley, D., and Kleinberg,J. (2010). *Networks, Crowds, and Markets: Reasoning about a Highly Connected World.* Cambridge University Press.**
+Easley, D., and Kleinberg,J. (2010). *Networks, Crowds, and Markets: Reasoning about a Highly Connected World.* Cambridge University Press.
 
 Very comprehensive textbook on networks, mostly relating to economics, sociology, computing. Pre-publication draft is available for free on the [book website](https://www.cs.cornell.edu/home/kleinber/networks-book/).
 
 ## Other useful reading
 
-**Barabási, A.-L. (2002). *Linked: The New Science of Networks*. Perseus Pub.**
+Barabási, A.-L. (2002). *Linked: The New Science of Networks*. Perseus Pub*
 
 Popular science book on networks, very influential in bringing the science of networks to a popular audience.
 
-**Newman, M. E. J. (2018). *Networks* (Second edition). Oxford University Press.**
+Newman, M. E. J. (2018). *Networks* (Second edition). Oxford University Press.
 
 Comprehensive textbook of network theory, recommended if you want to understand algorithms etc. in more detail.
 
@@ -418,13 +418,13 @@ This section introduces the fundamental ideas behind network analysis, including
 
 As already mentioned, a network is a graph consisting of nodes and edges (connections). Typically (though not always), the edges are *pairwise,* meaning they run between a pair of nodes. These are often represented visually as points (the nodes) and lines (the edges), like this:
 
-![](images/Screenshot%202022-09-26%20at%2011.42.32.png){fig-align="center" width="300"}
+![](images/Screenshot 2022-09-26 at 11.27.17.png){fig-align="center" width="300"}
 
 ## Edge weights
 
 -   These connections can often have a *weight* attached, for example the number of letters exchanged between two people, or the number of times two actors appear in a scene in a movie or play together.
 
-![](images/Screenshot%202022-09-26%20at%2011.42.58.png){fig-align="center" width="300"}
+![](images/Screenshot 2022-09-26 at 11.31.15.png){fig-align="center" width="300"}
 
 ## Edge weights
 
@@ -434,13 +434,18 @@ As already mentioned, a network is a graph consisting of nodes and edges (connec
 
 -   Edges can also have *directions,* meaning that the incoming and outgoing links are counted separately: for example we might count incoming and outgoing letters separately.
 
+![](images/Screenshot 2022-09-26 at 11.29.45.png){fig-align="center" width="300"}
+
+
+## Edge direction  
+
 -   Another typical illustration of **directed** and **undirected** networks is the difference between Twitter and Facebook:
 
     -   Facebook friends must be reciprocated - both people have to accept the friend request, meaning that a Facebook network is undirected.
 
     -   Twitter, on the other hand, is a directed network, because an individual can have separate *follower* and *following* numbers.
 
-::: {notes}
+::: {.notes}
 What might this letter count tell us about a relationship in a network? What potential danger is there is reading something from this?
 
 It might be worth considering how the letter network was constructed. Often they are reconstructed from personal letter archives, which tend to be collections of mostly incoming letters to a single person or family. In that case, it's likely the difference between incoming and outgoing letters is not statistically significant, but simpy a product of the method of data collection.

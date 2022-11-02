@@ -434,8 +434,8 @@
 </section>
 <section id="reading-1" class="slide level2">
 <h2>Reading</h2>
-<p><strong>Week 3:</strong></p>
-<p><strong>Week 4:</strong> Ahnert et. al.&nbsp;(2021). <em>The Network Turn: Changing Perspectives in the Humanities</em> **Chapter 5, ‘Quantifying Culture’.</p>
+<p><strong>Week 3:</strong> Sections from Programming Historian lesson: https://programminghistorian.org/en/lessons/intro-to-linked-data</p>
+<p><strong>Week 4:</strong> Ahnert et. al.&nbsp;(2021). The Network Turn: Changing Perspectives in the Humanities. <strong>Chapter 5, ‘Quantifying Culture’.</strong></p>
 </section>
 <section id="reading-2" class="slide level2">
 <h2>Reading</h2>
@@ -449,19 +449,19 @@
 <section id="other-useful-reading" class="slide level2">
 <h2>Other useful reading</h2>
 <p>There is no set textbook, but the following are good general introductions to networks:</p>
-<p>**Ahnert, R., Ahnert, S., Coleman, C., &amp; Weingart, S. (2021). <em>The Network Turn: Changing Perspectives in the Humanities</em> (Elements in Publishing and Book Culture). Cambridge: Cambridge University Press.</p>
+<p>Ahnert, R., Ahnert, S., Coleman, C., &amp; Weingart, S. (2021). <em>The Network Turn: Changing Perspectives in the Humanities</em> (Elements in Publishing and Book Culture). Cambridge: Cambridge University Press.</p>
 <p>Short, very readable volume on networks, specifically focused on humanities applications. Free, open access copy available through the above link.</p>
 </section>
 <section id="other-useful-reading-1" class="slide level2">
 <h2>Other useful reading</h2>
-<p><strong>Easley, D., and Kleinberg,J. (2010). <em>Networks, Crowds, and Markets: Reasoning about a Highly Connected World.</em> Cambridge University Press.</strong></p>
+<p>Easley, D., and Kleinberg,J. (2010). <em>Networks, Crowds, and Markets: Reasoning about a Highly Connected World.</em> Cambridge University Press.</p>
 <p>Very comprehensive textbook on networks, mostly relating to economics, sociology, computing. Pre-publication draft is available for free on the <a href="https://www.cs.cornell.edu/home/kleinber/networks-book/">book website</a>.</p>
 </section>
 <section id="other-useful-reading-2" class="slide level2">
 <h2>Other useful reading</h2>
-<p><strong>Barabási, A.-L. (2002). <em>Linked: The New Science of Networks</em>. Perseus Pub.</strong></p>
+<p>Barabási, A.-L. (2002). <em>Linked: The New Science of Networks</em>. Perseus Pub*</p>
 <p>Popular science book on networks, very influential in bringing the science of networks to a popular audience.</p>
-<p><strong>Newman, M. E. J. (2018). <em>Networks</em> (Second edition). Oxford University Press.</strong></p>
+<p>Newman, M. E. J. (2018). <em>Networks</em> (Second edition). Oxford University Press.</p>
 <p>Comprehensive textbook of network theory, recommended if you want to understand algorithms etc. in more detail.</p>
 </section>
 <section id="other-useful-reading-3" class="slide level2">
@@ -762,14 +762,14 @@
 <h2>Nodes and Edges</h2>
 <p>As already mentioned, a network is a graph consisting of nodes and edges (connections). Typically (though not always), the edges are <em>pairwise,</em> meaning they run between a pair of nodes. These are often represented visually as points (the nodes) and lines (the edges), like this:</p>
 
-<img data-src="images/Screenshot%202022-09-26%20at%2011.42.32.png" width="300" class="r-stretch quarto-figure-center"></section>
+<img data-src="images/Screenshot%202022-09-26%20at%2011.27.17.png" width="300" class="r-stretch quarto-figure-center"></section>
 <section id="edge-weights" class="slide level2">
 <h2>Edge weights</h2>
 <ul>
 <li>These connections can often have a <em>weight</em> attached, for example the number of letters exchanged between two people, or the number of times two actors appear in a scene in a movie or play together.</li>
 </ul>
 
-<img data-src="images/Screenshot%202022-09-26%20at%2011.42.58.png" width="300" class="r-stretch quarto-figure-center"></section>
+<img data-src="images/Screenshot%202022-09-26%20at%2011.31.15.png" width="300" class="r-stretch quarto-figure-center"></section>
 <section id="edge-weights-1" class="slide level2">
 <h2>Edge weights</h2>
 <ul>
@@ -779,17 +779,33 @@
 <section id="edge-direction" class="slide level2">
 <h2>Edge direction</h2>
 <ul>
-<li><p>Edges can also have <em>directions,</em> meaning that the incoming and outgoing links are counted separately: for example we might count incoming and outgoing letters separately.</p></li>
+<li>Edges can also have <em>directions,</em> meaning that the incoming and outgoing links are counted separately: for example we might count incoming and outgoing letters separately.</li>
+</ul>
+
+<img data-src="images/Screenshot%202022-09-26%20at%2011.29.45.png" width="300" class="r-stretch quarto-figure-center"></section>
+<section id="edge-direction-1" class="slide level2">
+<h2>Edge direction</h2>
+<ul>
 <li><p>Another typical illustration of <strong>directed</strong> and <strong>undirected</strong> networks is the difference between Twitter and Facebook:</p>
 <ul>
 <li><p>Facebook friends must be reciprocated - both people have to accept the friend request, meaning that a Facebook network is undirected.</p></li>
 <li><p>Twitter, on the other hand, is a directed network, because an individual can have separate <em>follower</em> and <em>following</em> numbers.</p></li>
 </ul></li>
 </ul>
-<div class="{notes}">
+<aside class="notes">
 <p>What might this letter count tell us about a relationship in a network? What potential danger is there is reading something from this?</p>
 <p>It might be worth considering how the letter network was constructed. Often they are reconstructed from personal letter archives, which tend to be collections of mostly incoming letters to a single person or family. In that case, it’s likely the difference between incoming and outgoing letters is not statistically significant, but simpy a product of the method of data collection.</p>
-</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="weighted-and-directed" class="slide level2">
 <h2>Weighted and directed</h2>
