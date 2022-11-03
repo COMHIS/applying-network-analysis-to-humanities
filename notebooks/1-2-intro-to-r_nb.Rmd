@@ -5,6 +5,16 @@ output:
     df_print: paged
 ---
 
+## First exercises below this line
+
+
+
+
+
+
+
+
+
 ## BASIC EXERCISES - R Basics and Tidyverse
 
 Load the tidyverse package:
@@ -83,7 +93,7 @@ Use `ggplot2` to make a bar chart of the count of places:
 
 ## SLIGHTLY MORE ADVANCED EXERCISES
 
-If you struggle with these and need to knit the notebook, you can delete everything below here. 
+If you struggle with these and need to knit the notebook, you can delete everything below here if you can't knit the file. 
 
 To carry out an analysis of the changing book trade in Dublin and Edinburgh, you realise that it's not enough to count the books per year, but you also want to know the percentage of the total. This is because the total number of books keeps increasing, so it will look like the number of books in these two publication places is increasing anyway. What you want to calculate is the **proportion** out of the total, for each of these two places. 
 
@@ -97,8 +107,7 @@ Make a new dataset called 'df_prop', which takes the df dataset, groups it by ye
 ```{r}
 
 df_prop = df %>% group_by(publication_year, publication_place ) %>% 
-  summarise(n = n())  %>%
-  mutate(prop = n / sum(n))
+
 
 ```
 
