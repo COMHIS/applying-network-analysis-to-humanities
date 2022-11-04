@@ -32,7 +32,9 @@ colour = c("green", "yellow", "orange", "red")
 amount = c(2,5,10,8)
 ```
 
-Turn this into a dataframe:
+You'll probably need to look at the course book to find the solutions to the below:  
+
+Turn these three vectors into a dataframe.
 
 ```{r}
 
@@ -85,7 +87,7 @@ Arrange the places in descending order of number of books:
 
 ```
 
-Use `ggplot2` to make a bar chart of the count of places:
+Use `ggplot()` to make a bar chart of the count of places:
 
 ```{r}
 
