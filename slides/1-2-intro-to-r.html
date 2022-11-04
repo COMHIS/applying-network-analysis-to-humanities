@@ -397,10 +397,24 @@
 <section id="r-and-r-studio" class="slide level2">
 <h2>R and R-Studio</h2>
 <ul>
-<li><p>Throughout this course, we’ll mostly work on networks and data using the programming lanugage R and a popular extension known as ‘the tidyverse’.</p></li>
+<li><p>Throughout this course, we’ll mostly work on networks and data using the programming language R and a popular extension known as ‘the tidyverse’.</p></li>
 <li><p>This will be done using R-Studio, an interface designed to make R easier to work with, known as an IDE.</p></li>
 <li><p>For this course, the data, files, and interface are all already set up for you in the CSC Notebooks workspace.</p></li>
 <li><p>Outside of this course, you will want to install R and R-Studio on your local machine.</p></li>
+</ul>
+</section>
+<section id="why-are-we-using-r" class="slide level2">
+<h2>Why are we using R?</h2>
+<ul>
+<li>Can do the whole pipeline with one platform:
+<ul>
+<li><p>Filtering</p></li>
+<li><p>Analysis</p></li>
+<li><p>Cleaning</p></li>
+<li><p>Network analysis</p></li>
+</ul></li>
+<li>Can get reproducible results and visualisations</li>
+<li>More advanced algorithms/methods available through packages</li>
 </ul>
 </section>
 <section id="logging-into-csc-notebooks-and-opening-a-notebook." class="slide level2">
@@ -520,7 +534,7 @@
 <h2><strong>Elements</strong></h2>
 <ul>
 <li>A variable is a piece of data stored with a name, which can then be used for various purposes.</li>
-<li>The simplest of these are single <strong>elements</strong>, such as a number.</li>
+<li>The simplest of these are single <strong>elements</strong>, such as a number or a string/character</li>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>x <span class="ot">=</span> <span class="dv">1</span></span>
@@ -528,6 +542,12 @@
 <span id="cb12-3"><a href="#cb12-3"></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>y <span class="ot">=</span> <span class="st">"apple"</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a></span>
+<span id="cb14-3"><a href="#cb14-3"></a>y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "apple"</code></pre>
 </div>
 </div>
 </section>
@@ -539,9 +559,9 @@
 <li><p>If your vector is a vector of words, the words need to be in inverted commas or quotation marks.</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>fruit <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"apples"</span>, <span class="st">"bananas"</span>, <span class="st">"oranges"</span>, <span class="st">"apples"</span>)</span>
-<span id="cb14-2"><a href="#cb14-2"></a>colour <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"green"</span>, <span class="st">"yellow"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>)</span>
-<span id="cb14-3"><a href="#cb14-3"></a>amount <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">5</span>,<span class="dv">10</span>,<span class="dv">8</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>fruit <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"apples"</span>, <span class="st">"bananas"</span>, <span class="st">"oranges"</span>, <span class="st">"apples"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2"></a>colour <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"green"</span>, <span class="st">"yellow"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>)</span>
+<span id="cb16-3"><a href="#cb16-3"></a>amount <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">5</span>,<span class="dv">10</span>,<span class="dv">8</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="dataframes" class="slide level2">
@@ -557,9 +577,9 @@
 <li>We can use the <code>glimpse()</code> or <code>str()</code> commands to view some basic information on the dataframe (particularly useful with longer data).</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>fruit_data <span class="ot">=</span> <span class="fu">data.frame</span>(fruit, colour, amount, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb15-2"><a href="#cb15-2"></a></span>
-<span id="cb15-3"><a href="#cb15-3"></a><span class="fu">glimpse</span>(fruit_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>fruit_data <span class="ot">=</span> <span class="fu">data.frame</span>(fruit, colour, amount, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb17-2"><a href="#cb17-2"></a></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="fu">glimpse</span>(fruit_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 4
 Columns: 3
@@ -599,9 +619,9 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <h2>Coercion of data types</h2>
 <p>In R, all the items in a vector are <em>coerced</em> to the same type. So if you try to make a vector with a combination of numbers and strings, the numbers will be converted to strings, as in the example below:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>fruit <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"apples"</span>, <span class="dv">5</span>, <span class="st">"oranges"</span>, <span class="dv">3</span>)</span>
-<span id="cb17-2"><a href="#cb17-2"></a></span>
-<span id="cb17-3"><a href="#cb17-3"></a><span class="fu">glimpse</span>(fruit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>fruit <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"apples"</span>, <span class="dv">5</span>, <span class="st">"oranges"</span>, <span class="dv">3</span>)</span>
+<span id="cb19-2"><a href="#cb19-2"></a></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="fu">glimpse</span>(fruit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> chr [1:4] "apples" "5" "oranges" "3"</code></pre>
 </div>
@@ -621,7 +641,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li>To install a package, use the command <code>install.packages()</code>, and include the package name within quotation marks:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="fu">install.packages</span>(<span class="st">'igraph'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">install.packages</span>(<span class="st">'igraph'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="loading-a-package" class="slide level2">
@@ -631,7 +651,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li><p>This time, the package name is not within quotation marks</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">library</span>(igraph)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="fu">library</span>(igraph)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section></section>
 <section>
@@ -653,7 +673,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li>First, load the tidyverse set of packages with the following command:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section></section>
 <section>
@@ -669,7 +689,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li><p>Using the fruit data frame we created above: We can select just the fruit and colour columns:</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="fu">select</span>(fruit_data, fruit, colour)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="fu">select</span>(fruit_data, fruit, colour)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    fruit colour
 1  apples  green
@@ -685,7 +705,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li>Select everything but the colour column:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="fu">select</span>(fruit_data, <span class="sc">-</span>colour)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="fu">select</span>(fruit_data, <span class="sc">-</span>colour)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    fruit amount
 1  apples      2
@@ -701,7 +721,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li>Select the first two columns:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="fu">select</span>(fruit_data, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="fu">select</span>(fruit_data, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    fruit colour
 1  apples  green
@@ -724,7 +744,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li>First you need to create a new dataframe with the grouped fruit.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>grouped_fruit <span class="ot">=</span> <span class="fu">group_by</span>(fruit_data, fruit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a>grouped_fruit <span class="ot">=</span> <span class="fu">group_by</span>(fruit_data, fruit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="group_by-tally-summarise-2" class="slide level2">
@@ -733,7 +753,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li>Next we use <code>tally()</code>. This counts all the instances of each fruit group.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="fu">tally</span>(grouped_fruit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="fu">tally</span>(grouped_fruit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 2
   fruit       n
@@ -753,7 +773,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li>If we specify that we want to count by something else, we can add that in as a ‘weight’, by adding <code>wt =</code> as an argument in the function.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="fu">tally</span>(grouped_fruit, <span class="at">wt =</span> amount)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="fu">tally</span>(grouped_fruit, <span class="at">wt =</span> amount)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 2
   fruit       n
@@ -782,7 +802,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li>Just red fruit:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="fu">filter</span>(fruit_data, colour <span class="sc">==</span> <span class="st">'red'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="fu">filter</span>(fruit_data, colour <span class="sc">==</span> <span class="st">'red'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   fruit colour amount
 1 apples    red      8</code></pre>
@@ -795,7 +815,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li>Just fruit with at least 5 pieces:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="fu">filter</span>(fruit_data, amount <span class="sc">&gt;=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="fu">filter</span>(fruit_data, amount <span class="sc">&gt;=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    fruit colour amount
 1 bananas yellow      5
@@ -811,7 +831,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li><p>In the function, specify the data frame, and the variable you would like to sort by.</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="fu">arrange</span>(fruit_data, amount)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="fu">arrange</span>(fruit_data, amount)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    fruit colour amount
 1  apples  green      2
@@ -827,7 +847,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li>Sorting is ascending by default, but you can specify descending using <code>desc()</code>:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="fu">arrange</span>(fruit_data, <span class="fu">desc</span>(amount))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a><span class="fu">arrange</span>(fruit_data, <span class="fu">desc</span>(amount))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    fruit colour amount
 1 oranges orange     10
@@ -843,7 +863,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li>If you <code>arrange()</code> by a list of characters, you’ll get alphabetical order:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a><span class="fu">arrange</span>(fruit_data, fruit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="fu">arrange</span>(fruit_data, fruit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    fruit colour amount
 1  apples  green      2
@@ -859,7 +879,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li>You can sort by multiple things:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="fu">arrange</span>(fruit_data, fruit, <span class="fu">desc</span>(amount))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a><span class="fu">arrange</span>(fruit_data, fruit, <span class="fu">desc</span>(amount))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    fruit colour amount
 1  apples    red      8
@@ -879,12 +899,12 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li><p>Let’s make a second table of information giving the delivery day for each fruit type:</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a>fruit_type <span class="ot">=</span> <span class="fu">c</span>(<span class="st">'apples'</span>, <span class="st">'bananas'</span>,<span class="st">'oranges'</span>)</span>
-<span id="cb45-2"><a href="#cb45-2"></a>weekday <span class="ot">=</span> <span class="fu">c</span>(<span class="st">'Monday'</span>, <span class="st">'Wednesday'</span>, <span class="st">'Friday'</span>)</span>
-<span id="cb45-3"><a href="#cb45-3"></a></span>
-<span id="cb45-4"><a href="#cb45-4"></a>fruit_days <span class="ot">=</span> <span class="fu">data.frame</span>(fruit_type, weekday, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb45-5"><a href="#cb45-5"></a></span>
-<span id="cb45-6"><a href="#cb45-6"></a>fruit_days</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a>fruit_type <span class="ot">=</span> <span class="fu">c</span>(<span class="st">'apples'</span>, <span class="st">'bananas'</span>,<span class="st">'oranges'</span>)</span>
+<span id="cb47-2"><a href="#cb47-2"></a>weekday <span class="ot">=</span> <span class="fu">c</span>(<span class="st">'Monday'</span>, <span class="st">'Wednesday'</span>, <span class="st">'Friday'</span>)</span>
+<span id="cb47-3"><a href="#cb47-3"></a></span>
+<span id="cb47-4"><a href="#cb47-4"></a>fruit_days <span class="ot">=</span> <span class="fu">data.frame</span>(fruit_type, weekday, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb47-5"><a href="#cb47-5"></a></span>
+<span id="cb47-6"><a href="#cb47-6"></a>fruit_days</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  fruit_type   weekday
 1     apples    Monday
@@ -910,9 +930,9 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li>Join the dataframes with the following command:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a>joined_fruit <span class="ot">=</span> <span class="fu">left_join</span>(fruit_data, fruit_days, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"fruit"</span> <span class="ot">=</span> <span class="st">"fruit_type"</span>))</span>
-<span id="cb47-2"><a href="#cb47-2"></a></span>
-<span id="cb47-3"><a href="#cb47-3"></a>joined_fruit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a>joined_fruit <span class="ot">=</span> <span class="fu">left_join</span>(fruit_data, fruit_days, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"fruit"</span> <span class="ot">=</span> <span class="st">"fruit_type"</span>))</span>
+<span id="cb49-2"><a href="#cb49-2"></a></span>
+<span id="cb49-3"><a href="#cb49-3"></a>joined_fruit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    fruit colour amount   weekday
 1  apples  green      2    Monday
@@ -938,11 +958,11 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li>The previous dataframe is passed as the first argument of the next function by using the pipe <code>%&gt;%</code> command. It works like this:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a>fruit_data <span class="sc">%&gt;%</span> </span>
-<span id="cb49-2"><a href="#cb49-2"></a>  <span class="fu">filter</span>(colour <span class="sc">!=</span> <span class="st">'yellow'</span>) <span class="sc">%&gt;%</span> <span class="co"># remove any yellow colour fruit</span></span>
-<span id="cb49-3"><a href="#cb49-3"></a>  <span class="fu">group_by</span>(fruit) <span class="sc">%&gt;%</span> <span class="co"># group the fruit by type</span></span>
-<span id="cb49-4"><a href="#cb49-4"></a>  <span class="fu">tally</span>(amount) <span class="sc">%&gt;%</span> <span class="co"># count each group</span></span>
-<span id="cb49-5"><a href="#cb49-5"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="co"># arrange in descending order of the count</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a>fruit_data <span class="sc">%&gt;%</span> </span>
+<span id="cb51-2"><a href="#cb51-2"></a>  <span class="fu">filter</span>(colour <span class="sc">!=</span> <span class="st">'yellow'</span>) <span class="sc">%&gt;%</span> <span class="co"># remove any yellow colour fruit</span></span>
+<span id="cb51-3"><a href="#cb51-3"></a>  <span class="fu">group_by</span>(fruit) <span class="sc">%&gt;%</span> <span class="co"># group the fruit by type</span></span>
+<span id="cb51-4"><a href="#cb51-4"></a>  <span class="fu">tally</span>(amount) <span class="sc">%&gt;%</span> <span class="co"># count each group</span></span>
+<span id="cb51-5"><a href="#cb51-5"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="co"># arrange in descending order of the count</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 2
   fruit       n
@@ -982,7 +1002,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li><p>Bar chart of different types of fruit (one each of bananas and oranges, two types of apple)</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> fruit_data) <span class="sc">+</span> <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">x =</span> fruit, <span class="at">y =</span> amount))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> fruit_data) <span class="sc">+</span> <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">x =</span> fruit, <span class="at">y =</span> amount))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
 <img data-src="1-2-intro-to-r_files/figure-revealjs/unnamed-chunk-28-1.png" width="960" class="r-stretch"></section>
@@ -992,7 +1012,7 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <li>Counting the total amount of fruit:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="fu">ggplot</span>(fruit_data) <span class="sc">+</span> <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">x =</span> fruit, <span class="at">y =</span> amount))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a><span class="fu">ggplot</span>(fruit_data) <span class="sc">+</span> <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">x =</span> fruit, <span class="at">y =</span> amount))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
 <img data-src="1-2-intro-to-r_files/figure-revealjs/unnamed-chunk-29-1.png" width="960" class="r-stretch"></section>
@@ -1016,9 +1036,9 @@ $ amount &lt;dbl&gt; 2, 5, 10, 8</code></pre>
 <section id="reading-in-external-data-1" class="slide level2">
 <h2>Reading in external data</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a>df <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="at">file =</span> <span class="st">'../data/sample_network.csv'</span>) <span class="co"># Read a .csv file as a network, specify the path to the file here.</span></span>
-<span id="cb53-2"><a href="#cb53-2"></a></span>
-<span id="cb53-3"><a href="#cb53-3"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a>df <span class="ot">=</span> <span class="fu">read_csv</span>(<span class="at">file =</span> <span class="st">'../data/sample_network.csv'</span>) <span class="co"># Read a .csv file as a network, specify the path to the file here.</span></span>
+<span id="cb55-2"><a href="#cb55-2"></a></span>
+<span id="cb55-3"><a href="#cb55-3"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 7 × 3
   from  to    weight

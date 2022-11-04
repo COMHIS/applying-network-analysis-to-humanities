@@ -20,13 +20,26 @@ library(tidyverse)
 
 ## R and R-Studio
 
--   Throughout this course, we'll mostly work on networks and data using the programming lanugage R and a popular extension known as 'the tidyverse'.
+-   Throughout this course, we'll mostly work on networks and data using the programming language R and a popular extension known as 'the tidyverse'.
 
 -   This will be done using R-Studio, an interface designed to make R easier to work with, known as an IDE.
 
 -   For this course, the data, files, and interface are all already set up for you in the CSC Notebooks workspace.
 
 -   Outside of this course, you will want to install R and R-Studio on your local machine.
+
+## Why are we using R?
+
+-   Can do the whole pipeline with one platform:
+    -   Filtering
+
+    -   Analysis
+
+    -   Cleaning
+
+    -   Network analysis
+-   Can get reproducible results and visualisations
+-   More advanced algorithms/methods available through packages
 
 ## Logging into CSC notebooks and opening a notebook.
 
@@ -129,7 +142,7 @@ x != z
 ## **Elements**
 
 -   A variable is a piece of data stored with a name, which can then be used for various purposes.
--   The simplest of these are single **elements**, such as a number.
+-   The simplest of these are single **elements**, such as a number or a string/character
 
 ```{r}
 #| echo: true
@@ -137,6 +150,10 @@ x != z
 x = 1
 
 x
+
+y = "apple"
+
+y
 ```
 
 ## **Vectors**
@@ -553,3 +570,11 @@ df
 -   [R for data science, which teaches the tidyverse in detail](https://r4ds.had.co.nz)
 
 -   [Learn how to make a book like this using Bookdown](https://bookdown.org/yihui/bookdown/introduction.html)
+
+## Reading for next week
+
+-   For next week, please read Ahnert, Ruth, and Sebastian E. Ahnert. 'Metadata, Surveillance and the Tudor State'. History Workshop Journal, vol. 87, Apr. 2019, pp. 27--51. DOI.org (Crossref), https://doi.org/10.1093/hwj/dby033.
+
+-   Details and a link to an open-access copy are available on the course book
+
+-   The course book contains some questions you may be called on to discuss in next Wednesday's class.
