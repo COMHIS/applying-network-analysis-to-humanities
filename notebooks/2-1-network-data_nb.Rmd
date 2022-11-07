@@ -1,19 +1,17 @@
 ---
-title: "R Notebook"
-output: html_notebook
+title: "Applying Network Analysis to Humanities: Week 2"
+subtitle: "Network Data"
+output:
+  html_document:
+    df_print: paged
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+## Getting TweetSets data and Hydrating it
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+There is no coding exercise for this week, but you can use this notebook template to report 
+how getting data from TweetSets and hydrating it went.
 
-```{r}
-plot(cars)
-```
+## Report
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
-
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
-
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
-
+A very short summary will do. What is the dataset that you chose from TweetSets, how did you filter it? Did you also manage to
+hydrate the tweets? Replace this text block of instructions with your report.
