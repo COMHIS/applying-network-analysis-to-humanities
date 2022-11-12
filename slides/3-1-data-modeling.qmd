@@ -17,7 +17,7 @@ library(knitr)
 -   By the end you should understand:
 -   Meaning and aims of data modeling
 -   The key principles of relational data
--   Have read a little about linked data and started to wrangle your Tweetsets data to relational form.
+-   How this links to networks
 
 ## Motivation - what data should not look like
 
@@ -128,7 +128,7 @@ kable(pseudo_data_letter)
 -   In our example case, people cities and letters are entities, other things in the data characterise them
 -   Letters would be connected to both cities and people.
 
-Conceptual model would look like this. City -\> Letter \<- Person
+Conceptual model would look like this. City -> Letter <- Person
 
 ## Logical data model
 
