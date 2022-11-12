@@ -14,8 +14,8 @@ library(tidyverse)
 
 ## Conceptual Data Model
 
-The exercise for this lesson is to practice data modeling with the Tweetsets data that you acquired last week.
-The first task is to recognise entities from the data set. Write the names of two types of entities that you recognised from
+The exercise for this lesson is to practice data modeling with the hydrated Tweetsets data that you acquired last week. If you do not get to the last part during
+the lecture, you an also do this and the following section without this template and coding, and send the ansers e.g. as an pdf. The first task is to recognise entities from the data set. Write the names of two types of entities that you recognised from
 your data set to the empty places in the vector below:
 ```{r}
 entities_in_data <- c("","")
@@ -24,7 +24,7 @@ print(entities_in_data)
 
 ## Logical Data Model
 
-The next step is to recognise at least three attributes for each of these entitites. Write names of those attributes
+The next step is to recognise at least three attributes for these entitites. Write names of those attributes
 to the vectors below.
 ```{r}
 entity_one_attributes <- c("","","")
@@ -36,12 +36,12 @@ entity_two_attributes <- c("","","")
 print(entity_two_attributes)
 ```
 
-## Practical Data Wrangling
+## Practical Data Wrangling (optional, do this if you still have time left before the lecture ends)
 
 We will now put the data model to practice. First, download your Tweetsets data from the last week. Fill the missing parameter of the code block below to download the data set.
 ```{r}
-# We have given the read_csv an additional parameter: col_types = c("user_id"="character","id"="character","retweet_id"="character","in_reply_to_status_id"="character","in_reply_to_user_id"="character","created_at"="character","quote_id"="character"). This ensures that R will not start thinking that the strings in the data are factors.
-#Keep the parameter, it helps the function to read the data in properly.
+
+#Keep the col_types parameter, it helps the function to read the data in properly.
 tweet_data <- read_csv("Your data comes here",col_types = c("user_id"="character","id"="character","retweet_id"="character","in_reply_to_status_id"="character","in_reply_to_user_id"="character","created_at"="character","quote_id"="character"))
 
 ```
@@ -77,5 +77,3 @@ n_of_primary_keys_in_table_2 <-
 print(paste0("The number of rows is ",as.character(nrow(entity_type_1)),". The number of primary keys is ",as.character(n_of_primary_keys_in_table_2)))  
 ```
 
-## To return
-Knit the document and send the output.
