@@ -70,7 +70,7 @@ print(pseudo_data_person)
 -   Tools (functions) to create new tables from existing tables
     -   X_join(table_1,table_2) = new_table
 -   How it works: matches columns (keys) from one table to columns in another table, and returns a new table
-    -   for example: if a table of persons has a column for birth city, the birth city can be matched with primary key of the table of cities
+    -   for example: if a table of persons has a column for birth city, the birth city can be matched to the the table of cities with the primary key of the later
     -   matching can happen with more than one column
 
 ## What joins are used for
@@ -130,6 +130,6 @@ kable(philosophers_both_lists_17th_century)
 ## What Next
 
 -   Read the related course book chapter for more concrete examples about how to use joins 
--   Start working on the coding excercises of this lesson.
+-   Start working on the excercises of this lesson.
 -   After the lesson, remember to read the material (part of a tutorial from the Programming historian) about linked open
 data. Details at the end of the course book chapter.
