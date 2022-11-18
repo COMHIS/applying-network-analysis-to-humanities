@@ -9,17 +9,16 @@ output:
 
 ## Final Project Update (Part 1)
 
-The exercises of this lecture come in two parts, the second one is optional to complete. However, we recommend that you spend the time during class trying to get the second part done, as that is a way to get practical working experience with joins and data wrangling in general (it also connects these things into creating a network). You can also complete to the second part later during the course, and doing so should provide you a network (even for for the final project, if the network turns out to be interesting).
+The exercises of this lecture come in two parts, the second one is optional to complete. However, we recommend that you spend the time during class trying to get the second part done, as that is a way to get practical working experience with joins and data wrangling in general (it also connects these things into creating a network). You can also work on to the second part later during the course. Completing the second part should provide you a network, if there is such in your network data.
 
-The task of this first part is to briefly describe the status of your final project. We do not assume that you have already started, but have you thought about what data set to use, research questions to focus on or practicalities (e.g. is some of the data you ate interested about possibly missing). Definite answers are not needed, but reflect on these things for couple of sentences, less than 100 words is enough. You can use the template to return the report. If the file does not render without completing the second part, you can remove the second part.
+The task of this first part is to briefly describe the status of your final project. We do not assume that you have already started, but have you thought about what data set to use, research questions to focus on or practicalities (e.g. is some of the data you ate interested about possibly missing). Definite answers are not needed, but reflect on these things for couple of sentences. You can use the template to return the report. If the file does not render without completing the second part, you can remove the second part.
 
 Your project status update:  
 
 ## During the Class: Wrangling Twitter Data (Part 2, Completing is Extra)  
 
 This exercise is about getting a network out of the Twitter data set. Doing that, we will also practice the use of join and filter
-functions. The excercise combines linking and subsetting data with creating a network. You
-don't need to get it entirely done to pass
+functions. The excercise combines linking and subsetting data with creating a network.
 ```{r}
 
 library(igraph)
@@ -31,7 +30,6 @@ Load the hydrated Twitter data in the data frame tweet_data. Each row has a twee
 
 ```{r}
 # We have given the read_csv an additional parameter: col_types = c("user_id"="character","id"="character","retweet_id"="character","in_reply_to_status_id"="character","in_reply_to_user_id"="character","created_at"="character","quote_id"="character"). This ensures that R will not start thinking that the strings in the data are factors.
-#Keep the parameter, it helps the function to read the data in properly.
 tweet_data <- read_csv("Your data comes here",col_types = c("user_id"="character","id"="character","retweet_id"="character","in_reply_to_status_id"="character","in_reply_to_user_id"="character","created_at"="character","quote_id"="character"))
 
 ```
@@ -39,7 +37,7 @@ tweet_data <- read_csv("Your data comes here",col_types = c("user_id"="character
 
 ### Towards a network
 Next, we will go through a process of making a quotation network from your Twitter data set. The quotation network
-connects users to the users that they have quoted in Twitter. We will only cover individuals and tweets that belong to your data set. With these reservations, we start forming the network.
+connects users to the users that they have quoted in Twitter. We can only cover quotation happening within your data set. It is possible that there is no quotation happening within your data set. With these reservations, we start forming the network.
 
 The first step is simple. Select from your tweet data the id of each tweet (the field id) and the id of the user (user_id)
 to the table tweet_to_user_id. The idea is simple: we want the tweets and the users that send them to a separate table.
@@ -57,27 +55,27 @@ Second, filter empty and missing values out of this data frame.
 Third, join the tweet_to_user_id data frame to this data frame by matching the quote_id of this data frame to the id variable
 of the tweet_to_user_id data frame. Make this so that the user_id of tweet_to_user_id remains part of the resulting data frame. 
 Fourth, filter the resulting data frame so that empty and missing values of the field user_id are removed.
-Fifth, rename ( for example with the function rename of tidyverse, googling will provide examples of how the function is used) user_id to quote_user_id.
+Fifth, rename (for example with the function rename of Tidyverse: https://dplyr.tidyverse.org/reference/rename.html) user_id to quote_user_id.
 
 
 ```{r}
-quoted_tweets_user_ids <- "The five step come here"
+quoted_tweets_user_ids <- ""
 
 ```
 
-Next, join the quoted_tweets_user_ids data frame to the tweet_data data frame by the tweet id. Now every tweet also has the id of the user who was being quoted.
+Next, join the quoted_tweets_user_ids data frame to the tweet_data data frame by the tweet id. Now every tweet also has the id of the user who was being quoted. Save the end result to tweet_data_with_quoted 
 
 ```{r}
 
-tweet_data <- "join the quoted_tweets_user_ids to tweet_data"
+tweet_data_with_quoted <- "join the quoted_tweets_user_ids to tweet_data"
 
 ```
 
 ### Creating a network
 
-We are very close to creating a network now, as we have connected quoters to those who are being quoted. For the edge list, we need to take several steps, but all of them are fortunately quite simple. It is once again recommended to pipe the output of each step to the next one.
+We are very close to creating a network now, as we have connected quoters to those who are being quoted. For the edge list, we need to take three steps. It is once again recommended to pipe the output of each step to the next one.
 
-First, use the count function of tidyverse to the tweet_data data frame. Count the number of tweets per user id AND quote user id.
+First, use the count function of tidyverse to the tweet_data_with_quoted data frame. Count the number of tweets per user id AND quote_user_id.
 Second, filter empty and missing quote_user_id's out of this data set.
 Third, filter away instances in which the quote_user_id and the user_id are the same (self-quoters)
 Save the end result of these steps to the tweet_data_edge_list.
@@ -85,9 +83,8 @@ Save the end result of these steps to the tweet_data_edge_list.
 tweet_data_edge_list <- "the end result of piping these operations"
 ```
 
-You now have an edge list! The next steps are just about creating a list (the node list) of users that either
-quote or are being quoted in your edge list. Below, we create a a data frame of quoters and those being quoted 
-in the edge list. You don't need to change the code in the chunk below, but can you think how it could have been
+You now have an edge list! It connects users (nodes) by who has quoted whom. The variable n in the edge list tells how many times quoting has occured. Below, we create a a data frame of quoters and those being quoted 
+in the edge list. You don't need to change the code for that in the chunk below, but can you think how it could have been
 done with joins?
 
 ```{r}
@@ -107,8 +104,7 @@ tweet_data_nodes <- "Final steps to node list here"
 
 ```
 
-You are done, the only thing left is to create a network for you. Keep the below chunk as it is for the version you knit for return,
-but you could already start visualising the thing with the tools introduced in next weeks course book chapter. Congratulations on your (possibly) first network!
+You are done, the only thing left is to create a network. Keep the below chunk as it is for the version you knit for return, but the network could already be visualised and analysed. Congratulations on your (possibly) first network!
 
 ```{r}
 graph <- graph_from_data_frame(d=tweet_data_edge_list,vertices = tweet_data_nodes,directed = TRUE)
