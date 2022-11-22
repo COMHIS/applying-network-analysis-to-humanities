@@ -3,21 +3,30 @@ title: "Basic network measurements"
 output: html_notebook
 ---
 
-Before we get to coding our own networks tomorrow, first we'll use some ready-made tools to generate a set of network metrics. 
+Before we get to coding our own networks on Friday, first we'll use some ready-made tools to generate a set of network metrics and get familiar with them.
 
-Your task for this assignment is to load a network into an online tool called Network Navigator, available here: https://networknavigator.jrladd.com/, and report on its basic network statistics. 
+Your task for this assignment is to load a network into an online tool called Network Navigator, available here: <https://networknavigator.jrladd.com/>, and report on its basic network statistics.
 
-You can use any network data you like. We have prepared a sample dataset called `sample_publisher_network.csv`, available in the `applying_networks_to_humanities/data` folder, but you are welcome to use any other of the sample datasets or another dataset you have found online. 
+You can use any network data you like. We have prepared a sample dataset called `sample_publisher_network.csv`, available in the `applying_networks_to_humanities/data` folder, but you are welcome to use any other of the sample datasets or another dataset you have found online.
 
-The instructions to do this are available within the web application. In short, you should drag and drop the relevant .csv file into the appropriate box. Note that you can choose whether or not your csv has a header row. If it does, click the correct radio button. The application expects headers called `source`, `target`, and (optionally), `weight`. The `sample_publisher_network.csv` file has a header in this format, but if you are using other data you may need to edit the file first. 
+The instructions to upload the network data are available within the web application. In short, you should drag and drop the relevant .csv file into the appropriate box. Note that you can choose whether or not your csv has a header row. If it does, click the correct radio button. The application expects headers called `source`, `target`, and (optionally), `weight`. The `sample_publisher_network.csv` file has a header in this format, but if you are using other data you may need to edit the file first.
 
 Based on the information in today's lesson, write a short (about 10 bullet points) report on the structure of this network. Some information you could include:
 
 -   Global network metrics. Is it dense or sparse? Is it highly clustered?
--   The distribution of degree and other network metrics. Do a small number of nodes have most of the links, or is it evenly spread out?  
--   A description of the network graph itself.  
+-   The distribution of degree and other network metrics. Do a small number of nodes have most of the links, or is it evenly spread out?\
+-   A description of the network graph itself.\
 -   Who are the key nodes by degree, betweenness, and so forth? What does their position at the top of these rankings mean for their 'importance' in the network?
 -   Does it contain interesting information? Are you able to parse these things easily (such as the structure), or does it seem like a random 'mess'. What would help you to understand this network better? Could it be filtered, and if so, how would you go about that?
 
+IMPORTANT!
 
+We would like you to include a screenshot (or multiple) of your results from the Network Navigator tool. To do this, first make a copy of this notebook into your 'my work' folder, and make sure you are editing this copy.
 
+Take and save a screenshot and save it to your local machine. Upload it to the 'my work' folder on CSC Notebooks, using the file browser.
+
+Next, switch to the R studio 'Visual editor' interface using the button just above this window.
+
+The visual editor looks like a simple word processor, and has an option for inserting an image. Click this and insert the screenshot(s) you uploaded.
+
+Once you're finished, save and send your work as usual. 
