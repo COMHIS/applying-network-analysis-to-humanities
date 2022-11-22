@@ -6,3 +6,6 @@ output: html_notebook
 There is no code exercises, but written answers. Write them below each question, and then knit the document and send as usual. 
 
 The following chart plots the degree against betweenness. What does this tell us about the usefulness of the measurement?
+
+Without using R functions, what is the density of the following undirected graph:
+
