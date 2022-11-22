@@ -25,9 +25,14 @@ Speaker notes go here.
 -   Second, we'll talk briefly about some theories specific to *social network analysis* (or SNA). Social networks (that is, networks of people, where the connections and structure is governed by social factors) have their own set of concepts, which do not apply to all networks. We won't go into detail (that could be a whole other course), but it's useful to understand.
 :::
 
-## Steps to do well in the course {.center}
+## What do I need to know for this course? {.center}
 
 ![](images/paste-2D645A52.png)
+
+## R-Studio tips
+-   Save your work! Each CSC notebooks session lasts four hours. After this, any unsaved work will be lost. 
+-   You can also export your 'my work' folder at any time
+-   Come to the coding drop-in sessions (tomorrow, 14.15 - 15.45), and same time the following week. 
 
 ## What is a network metric?
 
