@@ -329,9 +329,11 @@
 <section id="todays-lecture" class="slide level2">
 <h2>Today’s lecture</h2>
 <ul>
-<li>Key network metrics (degree, betweenness, density.. )</li>
-<li>Node-level</li>
-<li>Global</li>
+<li>Key network metrics (degree, betweenness, density.. )
+<ul>
+<li><p>Node-level</p></li>
+<li><p>Global</p></li>
+</ul></li>
 <li>Key network concepts (degree distribution, clustering, triadic closure.. )</li>
 <li>Introduction to Social Network Analysis (more specific application of network analysis).</li>
 </ul>
@@ -396,7 +398,8 @@
 <section id="degree" class="slide level2">
 <h2>Degree</h2>
 <ul>
-<li>The most basic measurement of <em>importance</em> in a network, otherwise known as <em>centrality.</em></li>
+<li>Count of a node’s connections.</li>
+<li>The most basic measurement of <em>importance</em> in a network (otherwise known as <em>centrality.</em>)</li>
 </ul>
 
 <img data-src="4-1-fundamentals_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch"></section>
@@ -405,7 +408,7 @@
 
 <img data-src="4-1-fundamentals_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"></section>
 <section id="or-weighted" class="slide level2">
-<h2>Or Weighted…</h2>
+<h2>Or ‘weighted’</h2>
 <ul>
 <li>Weights can be any number of things, depending on the network:
 <ul>
@@ -423,23 +426,6 @@
 <li><p>Degree can be weighted and directed.</p></li>
 <li><p>In a directed network, the separate degree counts are called in-degree and out-degree.</p></li>
 <li><p>The total degree is the sum of the two.</p></li>
-</ul>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="degree-1" class="slide level2">
-<h2>Degree</h2>
-<aside class="notes">
-<ul>
 <li><p>In this graph, the ego is connected to each alter by an incoming and outgoing link.</p></li>
 <li><p>Weights can be added to the links: degree is a sum of the weights of the links, in that case.</p></li>
 <li><p>The edge weights are labelled in the diagram below, and the numbers inside each node give the in and out degree measurements.</p></li>
@@ -501,8 +487,7 @@
 <section id="betweenness-centrality" class="slide level2">
 <h2>Betweenness Centrality</h2>
 <ul>
-<li>A node has a high <strong>betweenness centrality</strong> if it is used as a ‘hop’ between many paths in a network</li>
-<li><strong>Node A</strong> is the only way through which any of the nodes on the left can reach any on the right, which means it scores highly for <strong>betweenness centrality</strong>.</li>
+<li>A node has a high <strong>betweenness centrality</strong> if it is used as a step along many of the shortest paths in a network.</li>
 </ul>
 <aside class="notes">
 <p>Betweenness centrality measures all the paths between every pair of nodes in a network.</p>
@@ -534,7 +519,7 @@
 <ul>
 <li><p>In the previous diagram, node A is the only way through which any of the nodes on the left can reach any on the right.</p></li>
 <li><p>In a social network, nodes with high betweenness are often thought of as important ‘brokers’, as we talked about in a previous lesson.</p></li>
-<li><p>However in practice, note that high degree nodes are often the ones which have the highest betweenness values too, and there are often multiple paths between the same pair of nodes, which can limit the use of this metric.</p></li>
+<li><p>However in practice, note that high degree nodes are often the ones which have the highest betweenness values too</p></li>
 </ul>
 <style type="text/css">
         span.MJX_Assistive_MathML {
@@ -722,11 +707,7 @@
 <section id="degree-distribution-1" class="slide level2">
 <h2>Degree distribution</h2>
 
-<img data-src="4-1-fundamentals_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
-<section id="degree-distribution-2" class="slide level2">
-<h2>Degree distribution</h2>
-
-<img data-src="4-1-fundamentals_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"><div class="notes{.smaller}">
+<img data-src="4-1-fundamentals_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"><aside class="notes">
 <p>Degree is used to measure structural properties of the network.</p>
 <p>We can do this using the <strong>degree distribution</strong>.</p>
 <p>A distribution counts how many nodes have a degree of 1, a degree of two, three, and so forth, or sometimes a range, such as a degree of between 1 and 5, 6 and 10, and so on.</p>
@@ -735,7 +716,41 @@
 <li><p>To illustrate the degree distribution, below is a histogram of the degree distribution for a randomly-created scale-free network with 1000 nodes and 1000 edges.</p></li>
 <li><p>It shows that 0 to 10 nodes have a degree score of 50, 11 - 20 have a degree score of 4, and at the other end, more than 400 nodes have a degree score of just 1.</p></li>
 </ul>
-</div>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="degree-distribution-2" class="slide level2">
+<h2>Degree distribution</h2>
+
+<img data-src="4-1-fundamentals_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"><aside class="notes">
+<p>Degree is used to measure structural properties of the network.</p>
+<p>We can do this using the <strong>degree distribution</strong>.</p>
+<p>A distribution counts how many nodes have a degree of 1, a degree of two, three, and so forth, or sometimes a range, such as a degree of between 1 and 5, 6 and 10, and so on.</p>
+<p>This degree distribution tells us some valuable structural properties about the network, such as the extent to which it is a collection of hubs and less important nodes (known as ‘scale-free’).</p>
+<ul>
+<li><p>To illustrate the degree distribution, below is a histogram of the degree distribution for a randomly-created scale-free network with 1000 nodes and 1000 edges.</p></li>
+<li><p>It shows that 0 to 10 nodes have a degree score of 50, 11 - 20 have a degree score of 4, and at the other end, more than 400 nodes have a degree score of just 1.</p></li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="log-log-plot-and-degree-distribution" class="slide level2">
 <h2>Log-Log Plot and Degree distribution</h2>
@@ -828,9 +843,9 @@
 <section id="communities" class="slide level2">
 <h2>Communities</h2>
 <ul>
-<li><p>Networks and communities are often thought of as analogous, but in network analysis, the latter are considered a subset of the former.</p></li>
 <li><p>Discovering discrete communities—often called sub-graphs—within a wider network has long been one of the fundamental applications of network science.</p></li>
 <li><p>In epidemiological networks, for example, the extent to which a network tends to break into sub-graphs and the constitution of those parts has important implications for understanding the spread of disease through a system.</p></li>
+<li><p>However if the graph is connected (i.e.&nbsp;if all nodes can reach all other nodes eventually), then the boundaries of any detected community that goes beyond a simple ego network are necessarily arbitrary.</p></li>
 </ul>
 <aside class="notes">
 <ul>
@@ -850,7 +865,7 @@
           display:block!important;
       }</style></aside>
 </section>
-<section id="communities-1" class="slide level2">
+<section id="communities-1" class="slide level2 smaller">
 <h2>Communities</h2>
 <ul>
 <li><p>In spite of these problems, this rigid way of thinking about communities can serve as a useful tool, to which we can bring our existing knowledge of historical communities and compare them to an algorithm’s results.</p></li>
@@ -881,28 +896,36 @@
 <img data-src="images/modularity.png" class="r-stretch"></section>
 <section id="modularity-2" class="slide level2">
 <h2>Modularity</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
 <ul>
-<li>As with the clustering coefficient, a high modularity indicates the extent to which the network might be described as a collection of densely-connected sub-groups, or whether the links are spread out evenly across the network.</li>
+<li>High modularity indicates the extent to which the network might be described as a collection of densely-connected sub-groups.</li>
 </ul>
-
-<img data-src="4-1-fundamentals_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch quarto-figure-center"><p class="caption">A network with high modularity. The given partitions (separate colours) successfully divide the network into groups with many more connections between the groups than to other groups.</p></section>
+</div><div class="column" style="width:60%;">
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="4-1-fundamentals_files/figure-revealjs/unnamed-chunk-14-1.png" width="960"></p>
+<p></p><figcaption>A network with high modularity. The given partitions (separate colours) successfully divide the network into groups with many more connections between the groups than to other groups.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="louvain-community-detection" class="slide level2 smaller">
 <h2>Louvain Community Detection</h2>
 <div class="columns">
 <div class="column" style="width:40%;">
 <ul>
 <li>The Louvain algorithm is one algorithm which uses modularity, developed specifically for use in large graphs.</li>
-<li>Each node starts off in a community of one, moved until modularity is maximised.</li>
+<li>Each node is temporarily moved to the community of each of its neighbours, and the modularity of the whole graph is re-checked.</li>
+<li>This continues until modularity does not increase any more.</li>
 </ul>
 </div><div class="column" style="width:60%;">
-<center>
-<div class="quarto-figure quarto-figure-center">
-<figure>
 <p><img data-src="images/louvain.png" width="500"></p>
-<p></p><figcaption>From Traag, V.A., Waltman, L. &amp; van Eck, N.J. From Louvain to Leiden: guaranteeing well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z</figcaption><p></p>
-</figure>
-</div>
-</center>
 </div>
 </div>
 <aside class="notes">
@@ -941,30 +964,64 @@
 <h1>Social network concepts: triadic closure, transitivity, brokerage</h1>
 
 </section>
+<section id="social-network-analysis" class="slide level2">
+<h2>Social Network Analysis</h2>
+<ul>
+<li>Deals with relationships between <em>people</em></li>
+<li>Generally uses complete (or nearly complete data)</li>
+</ul>
+</section>
 <section id="triads" class="slide level2">
 <h2>Triads</h2>
 <ul>
-<li><p>There are a number of different triad types, each of which, according to social theorists, tell us something about the particular role of that set of people.</p></li>
-<li><p>The proportion of various triad types in a network can tell us about its structure, and, in the case of a complex network, something of the process by which connections are formed.</p></li>
-<li><p>In this way, we connect the <em>micro</em> structure (the information on individual pairs or triads) with the <em>macro</em> (what this tells us about the overall formation and structure of a network).</p></li>
+<li>A triad is simply the name given to any set of three connected nodes in a network.</li>
+<li>There are a number of different triad combinations, or <strong>types</strong></li>
+<li>The proportion of various triad types in a network can tell us about its structure, and, in the case of a complex network, something of the process by which connections are formed.</li>
+<li>In this way, we connect the <em>micro</em> structure (the information on individual pairs or triads) with the <em>macro</em> (what this tells us about the overall formation and structure of a network).</li>
 </ul>
 </section>
-<section id="triads---undirected-network" class="slide level2">
+<section id="triads---undirected-network" class="slide level2 smaller">
 <h2>Triads - undirected network</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
 <ul>
-<li><p>In an undirected network, there are four possble triad types, as seen in the diagram below.</p></li>
-<li><p>The first, a <strong>closed triad</strong>, is when each node is connected to the other two.</p></li>
-<li><p>The other possibilities are <strong>open triad</strong>, where one of the three possible connections is not present, a <strong>closed pair</strong>, where just one pair of the three is connected, and a <strong>disconnected triad</strong>.</p></li>
+<li>In an undirected network, there are four possble triad types, as seen in the diagram below.</li>
+<li>The first, a <strong>closed triad</strong>, is when each node is connected to the other two.</li>
+<li>The other possibilities are <strong>open triad</strong>, where one of the three possible connections is not present, a <strong>closed pair</strong>, where just one pair of the three is connected, and a <strong>disconnected triad</strong>.</li>
 </ul>
-
-<img data-src="4-1-fundamentals_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch quarto-figure-center"><p class="caption">Four possible triad types in an undirected network</p></section>
+</div><div class="column" style="width:60%;">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="4-1-fundamentals_files/figure-revealjs/unnamed-chunk-15-1.png" width="960"></p>
+<p></p><figcaption>Four possible triad types in an undirected network</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="triads---directed-networks" class="slide level2">
 <h2>Triads - directed networks</h2>
+<aside class="notes">
 <ul>
 <li><p>In a directed network, the situation is more complex.</p></li>
 <li><p>Each of the connections can be incoming or outgoing, meaning there are 16 possible triad connections.</p></li>
 <li><p>Don’t worry, if you want to use these, network analysis software has methods for taking a ‘census’ of the various triads and their counts in a particular network.</p></li>
 </ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 <center>
 <div class="quarto-figure quarto-figure-center">
 <figure>

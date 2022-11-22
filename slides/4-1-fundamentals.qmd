@@ -7,8 +7,9 @@ editor: visual
 ## Today's lecture
 
 -   Key network metrics (degree, betweenness, density.. )
--   Node-level
--   Global
+    -   Node-level
+
+    -   Global
 -   Key network concepts (degree distribution, clustering, triadic closure.. )
 -   Introduction to Social Network Analysis (more specific application of network analysis).
 
@@ -51,7 +52,8 @@ Speaker notes go here.
 
 ## Degree
 
--   The most basic measurement of *importance* in a network, otherwise known as *centrality.*
+-   Count of a node's connections. 
+-   The most basic measurement of *importance* in a network (otherwise known as *centrality.*)
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -92,7 +94,7 @@ tibble(from = c('A', 'A', 'A', 'B', 'C'), to = c('B', 'C', 'D', 'D', 'A')) %>%
 
 ```
 
-## Or Weighted...
+## Or 'weighted'
 
 -   Weights can be any number of things, depending on the network:
     -   Number of letters sent, strength of friendship, linguistic similarity, etc., etc.
@@ -136,11 +138,7 @@ tibble(from = c('A', 'A', 'A', 'B', 'C'), to = c('B', 'C', 'D', 'D', 'A')) %>% m
 -   In a directed network, the separate degree counts are called in-degree and out-degree.
 
 -   The total degree is the sum of the two.
-:::
 
-## Degree
-
-::: notes
 -   In this graph, the ego is connected to each alter by an incoming and outgoing link.
 
 -   Weights can be added to the links: degree is a sum of the weights of the links, in that case.
@@ -172,15 +170,12 @@ tibble(from = c('A', 'A', 'A', 'B', 'C'), to = c('B', 'C', 'D', 'D', 'A')) %>% m
 -   The node with the highest absolute number of links will always be ranked highest, no matter which nodes those links point to.
 :::
 
-
 ## Betweenness Centrality
--   A node has a high **betweenness centrality** if it is used as a 'hop' between many paths in a network
--   **Node A** is the only way through which any of the nodes on the left can reach any on the right, which means it scores highly for **betweenness centrality**.
+
+-   A node has a high **betweenness centrality** if it is used as a step along many of the shortest paths in a network.
 
 ::: notes
 Betweenness centrality measures all the paths between every pair of nodes in a network.
-
-
 
 In the below diagram, A has a higher betweenness centrality than B, because it is needed to traverse from the left to the right side of the network.
 
@@ -202,7 +197,7 @@ In the below diagram, A has a higher betweenness centrality than B, because it i
 
 -   In a social network, nodes with high betweenness are often thought of as important 'brokers', as we talked about in a previous lesson.
 
--   However in practice, note that high degree nodes are often the ones which have the highest betweenness values too, and there are often multiple paths between the same pair of nodes, which can limit the use of this metric.
+-   However in practice, note that high degree nodes are often the ones which have the highest betweenness values too
 :::
 
 ## Betweenness centrality
@@ -240,7 +235,6 @@ In the below diagram, A has a higher betweenness centrality than B, because it i
 -   **A** and **B** have two incoming connections each, but **A** has a higher eigenvector centrality score because it is connected to more well-connected nodes.
 
 ::: notes
-
 -   A node that has a high eigenvector score is one that is adjacent to nodes that are themselves high scorers.
 
 -   Google's original **PageRank** algorithm used a version of this concept: ranking web pages higher in search results if they themselves were linked to by other high-scoring pages.
@@ -265,8 +259,8 @@ In the below diagram, A has a higher betweenness centrality than B, because it i
 ## Closeness centrality
 
 ::: notes
-
 -   Closeness centrality measures each node's path to every other node in the network: a node is declared more central if its paths to other nodes tend to be short by this measurement (the formula is 1 divided by the average of all the shortest paths from a given node to all other nodes).
+
 -   Closeness centrality might be thought of as a way of measuring how quickly something flowing through the network will arrive.
 
 -   In the diagram below, A has a higher closeness centrality than B, even though both have the same number of connections, because A is 'less far' to all other nodes, on average.
@@ -416,6 +410,20 @@ p1 + p2 + p3 + p4 +
   plot_layout(ncol = 2, heights = c(.6, .4))
 ```
 
+::: notes
+Degree is used to measure structural properties of the network.
+
+We can do this using the **degree distribution**.
+
+A distribution counts how many nodes have a degree of 1, a degree of two, three, and so forth, or sometimes a range, such as a degree of between 1 and 5, 6 and 10, and so on.
+
+This degree distribution tells us some valuable structural properties about the network, such as the extent to which it is a collection of hubs and less important nodes (known as 'scale-free').
+
+-   To illustrate the degree distribution, below is a histogram of the degree distribution for a randomly-created scale-free network with 1000 nodes and 1000 edges.
+
+-   It shows that 0 to 10 nodes have a degree score of 50, 11 - 20 have a degree score of 4, and at the other end, more than 400 nodes have a degree score of just 1.
+:::
+
 ## Degree distribution
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -430,7 +438,7 @@ g %>% ggplot() + geom_histogram(aes(degree), color = 'black') + theme_bw()
 
 ```
 
-::: notes{.smaller}
+::: notes
 Degree is used to measure structural properties of the network.
 
 We can do this using the **degree distribution**.
@@ -472,11 +480,11 @@ g %>%
 -   Removing unimportant nodes doesn't affect the overall system. At the same time, this can make them vulnerable, if hub nodes are specifically targeted.
 :::
 
-
 ## Clustering coefficient
 
--   Extent to which a network is 'clustered' into smaller groups. 
--   Measured by counting the number of complete triangles. 
+-   Extent to which a network is 'clustered' into smaller groups.
+-   Measured by counting the number of complete triangles.
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(patchwork)
 
@@ -558,23 +566,20 @@ g %>% as_tbl_graph() %>%
 
 ## Communities
 
--   Networks and communities are often thought of as analogous, but in network analysis, the latter are considered a subset of the former.
-
 -   Discovering discrete communities---often called sub-graphs---within a wider network has long been one of the fundamental applications of network science.
 
 -   In epidemiological networks, for example, the extent to which a network tends to break into sub-graphs and the constitution of those parts has important implications for understanding the spread of disease through a system.
+-   However if the graph is connected (i.e. if all nodes can reach all other nodes eventually), then the boundaries of any detected community that goes beyond a simple ego network are necessarily arbitrary.
 
-::: notes  
-
+::: notes
 -   In a network sense, a community might be generally defined as a sub-grouping within a network which is in some way more densely connected to its internal group members than to those outside the group.
 
 -   The problem, of course, is that if the graph is connected (i.e. if all nodes can reach all other nodes eventually), then the boundaries of any detected community that goes beyond a simple ego network are necessarily arbitrary, flexible, and subjective.
 
 -   It is true that many individuals will sit firmly in the core of a given cluster, but there will be those on the margins who might be considered as members of more than one community---or none.
-
 :::
 
-## Communities
+## Communities{.smaller}
 
 -   In spite of these problems, this rigid way of thinking about communities can serve as a useful tool, to which we can bring our existing knowledge of historical communities and compare them to an algorithm's results.
 
@@ -588,23 +593,29 @@ g %>% as_tbl_graph() %>%
 
 -   Network science has a large of algorithms for finding optimal communities in graphs. Many rely on a metric called modularity
 
-## Modularity  
-
+## Modularity
 
 -   Modularity is a score evaluating how well a given set of group labels describe the groups found in a network.
 
 -   It's calculated as the number of edges falling within groups minus the expected number in an equivalent network with edges placed at random.
 
-## Modularity  
-
+## Modularity
 
 -   Community detection algorithms work by trying to maximise this value.
 
 ![](images/modularity.png)
 
-## Modularity  
+## Modularity
 
--   As with the clustering coefficient, a high modularity indicates the extent to which the network might be described as a collection of densely-connected sub-groups, or whether the links are spread out evenly across the network.
+
+
+
+::: columns
+::: {.column width="40%"}
+-   High modularity indicates the extent to which the network might be described as a collection of densely-connected sub-groups.
+:::
+
+::: {.column width="60%"} 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.cap = 'A network with high modularity. The given partitions (separate colours) successfully divide the network into groups with many more connections between the groups than to other groups.'}
 
@@ -616,25 +627,25 @@ igraph::sample_islands(islands.n = 5, islands.pin = .5,islands.size = 20, n.inte
 
 ```
 
-## Louvain Community Detection{.smaller}
+:::
+:::
 
+
+## Louvain Community Detection{.smaller}
 
 ::: columns
 ::: {.column width="40%"}
 -   The Louvain algorithm is one algorithm which uses modularity, developed specifically for use in large graphs.
--   Each node starts off in a community of one, moved until modularity is maximised.
+-   Each node is temporarily moved to the community of each of its neighbours, and the modularity of the whole graph is re-checked.
+-   This continues until modularity does not increase any more. 
 :::
 
 ::: {.column width="60%"}
-<center>![From Traag, V.A., Waltman, L. & van Eck, N.J. From Louvain to Leiden: guaranteeing well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z](images/louvain.png){width="500"}</center>
-
+![](images/louvain.png){width="500"}
 :::
 :::
 
-::: notes  
-
-
-
+::: notes
 -   At first, each node in the network is assigned to a community of just itself.
 
 -   Then, one at a time, each node is temporarily moved to the community of each of its neighbours, and the modularity of the whole graph is re-checked using the method above.
@@ -652,8 +663,7 @@ igraph::sample_islands(islands.n = 5, islands.pin = .5,islands.size = 20, n.inte
 -   Also, while the method may be a useful way of finding communities without preconceived starting points, it does require us to think of the network as being divided into communities of some kind.
 
 -   Every node must be placed in a community - none can be placed outside the communities, and, perhaps more controversially, with this method, no node can be a member of more than one community. 
-
-:::  
+:::
 
 ## Louvain Community Detection
 
@@ -663,21 +673,28 @@ igraph::sample_islands(islands.n = 5, islands.pin = .5,islands.size = 20, n.inte
 
 # Social network concepts: triadic closure, transitivity, brokerage
 
+## Social Network Analysis
+
+-   Deals with relationships between *people*
+-   Generally uses complete (or nearly complete data)
+
 ## Triads
 
--   There are a number of different triad types, each of which, according to social theorists, tell us something about the particular role of that set of people.
-
+-   A triad is simply the name given to any set of three connected nodes in a network.
+-   There are a number of different triad combinations, or **types**
 -   The proportion of various triad types in a network can tell us about its structure, and, in the case of a complex network, something of the process by which connections are formed.
-
 -   In this way, we connect the *micro* structure (the information on individual pairs or triads) with the *macro* (what this tells us about the overall formation and structure of a network).
 
-## Triads - undirected network
+## Triads - undirected network{.smaller}
 
+::: columns
+::: {.column width="40%"}
 -   In an undirected network, there are four possble triad types, as seen in the diagram below.
-
 -   The first, a **closed triad**, is when each node is connected to the other two.
-
 -   The other possibilities are **open triad**, where one of the three possible connections is not present, a **closed pair**, where just one pair of the three is connected, and a **disconnected triad**.
+:::
+
+::: {.column width="60%"}
 
 ```{r echo=FALSE, message=FALSE,warning = FALSE, fig.cap="Four possible triad types in an undirected network", fig.align='center'}
 library(tidyverse)
@@ -738,14 +755,23 @@ d =  tibble(from = c('A', 'A', 'B'), to = c('B', 'C', 'C') ) %>%
 
 cowplot::plot_grid(a,b,c,d, labels = c('closed triad', 'open triad', 'connected pair', 'unconnected'), label_size = 8)
 ```
+:::
+:::
+
+
+
 
 ## Triads - directed networks
 
+
+::: notes  
 -   In a directed network, the situation is more complex.
 
 -   Each of the connections can be incoming or outgoing, meaning there are 16 possible triad connections.
 
 -   Don't worry, if you want to use these, network analysis software has methods for taking a 'census' of the various triads and their counts in a particular network.
+
+:::
 
 <center>![The 16 possible triad combinations in a directed network. The code underneath each triad refers to the numbers of mutual, asymmetric, and null dyads, with a further identifying letter: Up, Down, Cyclical, Transitive. E.g., 120D has 1 mutual, 2 asymmetric, 0 null dyads, and the Down orientation.](images/triad_census.jpg)</center>
 
