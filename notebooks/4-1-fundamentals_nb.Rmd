@@ -3,9 +3,21 @@ title: "Basic network measurements"
 output: html_notebook
 ---
 
-There is no code exercises, but written answers. Write them below each question, and then knit the document and send as usual. 
+Before we get to coding our own networks tomorrow, first we'll use some ready-made tools to generate a set of network metrics. 
 
-The following chart plots the degree against betweenness. What does this tell us about the usefulness of the measurement?
+Your task for this assignment is to load a network into an online tool called Network Navigator, available here: https://networknavigator.jrladd.com/, and report on its basic network statistics. 
 
-Without using R functions, what is the density of the following undirected graph:
+You can use any network data you like. We have prepared a sample dataset called `sample_publisher_network.csv`, available in the `applying_networks_to_humanities/data` folder, but you are welcome to use any other of the sample datasets or another dataset you have found online. 
+
+The instructions to do this are available within the web application. In short, you should drag and drop the relevant .csv file into the appropriate box. Note that you can choose whether or not your csv has a header row. If it does, click the correct radio button. The application expects headers called `source`, `target`, and (optionally), `weight`. The `sample_publisher_network.csv` file has a header in this format, but if you are using other data you may need to edit the file first. 
+
+Based on the information in today's lesson, write a short (about 10 bullet points) report on the structure of this network. Some information you could include:
+
+-   Global network metrics. Is it dense or sparse? Is it highly clustered?
+-   The distribution of degree and other network metrics. Do a small number of nodes have most of the links, or is it evenly spread out?  
+-   A description of the network graph itself.  
+-   Who are the key nodes by degree, betweenness, and so forth? What does their position at the top of these rankings mean for their 'importance' in the network?
+-   Does it contain interesting information? Are you able to parse these things easily (such as the structure), or does it seem like a random 'mess'. What would help you to understand this network better? Could it be filtered, and if so, how would you go about that?
+
+
 

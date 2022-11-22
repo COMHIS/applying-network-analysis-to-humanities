@@ -1758,15 +1758,48 @@ display: none;
 
 
 <!-- rnb-text-begin -->
-<p>There is no code exercises, but written answers. Write them below
-each question, and then knit the document and send as usual.</p>
-<p>The following chart plots the degree against betweenness. What does
-this tell us about the usefulness of the measurement?</p>
-<p>Without using R functions, what is the density of the following
-undirected graph:</p>
+<p>Before we get to coding our own networks tomorrow, first we’ll use
+some ready-made tools to generate a set of network metrics.</p>
+<p>Your task for this assignment is to load a network into an online
+tool called Network Navigator, available here: <a href="https://networknavigator.jrladd.com/" class="uri">https://networknavigator.jrladd.com/</a>, and report on its
+basic network statistics.</p>
+<p>You can use any network data you like. We have prepared a sample
+dataset called <code>sample_publisher_network.csv</code>, available in
+the <code>applying_networks_to_humanities/data</code> folder, but you
+are welcome to use any other of the sample datasets or another dataset
+you have found online.</p>
+<p>The instructions to do this are available within the web application.
+In short, you should drag and drop the relevant .csv file into the
+appropriate box. Note that you can choose whether or not your csv has a
+header row. If it does, click the correct radio button. The application
+expects headers called <code>source</code>, <code>target</code>, and
+(optionally), <code>weight</code>. The
+<code>sample_publisher_network.csv</code> file has a header in this
+format, but if you are using other data you may need to edit the file
+first.</p>
+<p>Based on the information in today’s lesson, write a short (about 10
+bullet points) report on the structure of this network. Some information
+you could include:</p>
+<ul>
+<li>Global network metrics. Is it dense or sparse? Is it highly
+clustered?</li>
+<li>The distribution of degree and other network metrics. Do a small
+number of nodes have most of the links, or is it evenly spread
+out?<br />
+</li>
+<li>A description of the network graph itself.<br />
+</li>
+<li>Who are the key nodes by degree, betweenness, and so forth? What
+does their position at the top of these rankings mean for their
+‘importance’ in the network?</li>
+<li>Does it contain interesting information? Are you able to parse these
+things easily (such as the structure), or does it seem like a random
+‘mess’. What would help you to understand this network better? Could it
+be filtered, and if so, how would you go about that?</li>
+</ul>
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiQmFzaWMgbmV0d29yayBtZWFzdXJlbWVudHMiCm91dHB1dDogaHRtbF9ub3RlYm9vawotLS0KClRoZXJlIGlzIG5vIGNvZGUgZXhlcmNpc2VzLCBidXQgd3JpdHRlbiBhbnN3ZXJzLiBXcml0ZSB0aGVtIGJlbG93IGVhY2ggcXVlc3Rpb24sIGFuZCB0aGVuIGtuaXQgdGhlIGRvY3VtZW50IGFuZCBzZW5kIGFzIHVzdWFsLiAKClRoZSBmb2xsb3dpbmcgY2hhcnQgcGxvdHMgdGhlIGRlZ3JlZSBhZ2FpbnN0IGJldHdlZW5uZXNzLiBXaGF0IGRvZXMgdGhpcyB0ZWxsIHVzIGFib3V0IHRoZSB1c2VmdWxuZXNzIG9mIHRoZSBtZWFzdXJlbWVudD8KCldpdGhvdXQgdXNpbmcgUiBmdW5jdGlvbnMsIHdoYXQgaXMgdGhlIGRlbnNpdHkgb2YgdGhlIGZvbGxvd2luZyB1bmRpcmVjdGVkIGdyYXBoOgoK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiQmFzaWMgbmV0d29yayBtZWFzdXJlbWVudHMiCm91dHB1dDogaHRtbF9ub3RlYm9vawotLS0KCkJlZm9yZSB3ZSBnZXQgdG8gY29kaW5nIG91ciBvd24gbmV0d29ya3MgdG9tb3Jyb3csIGZpcnN0IHdlJ2xsIHVzZSBzb21lIHJlYWR5LW1hZGUgdG9vbHMgdG8gZ2VuZXJhdGUgYSBzZXQgb2YgbmV0d29yayBtZXRyaWNzLiAKCllvdXIgdGFzayBmb3IgdGhpcyBhc3NpZ25tZW50IGlzIHRvIGxvYWQgYSBuZXR3b3JrIGludG8gYW4gb25saW5lIHRvb2wgY2FsbGVkIE5ldHdvcmsgTmF2aWdhdG9yLCBhdmFpbGFibGUgaGVyZTogaHR0cHM6Ly9uZXR3b3JrbmF2aWdhdG9yLmpybGFkZC5jb20vLCBhbmQgcmVwb3J0IG9uIGl0cyBiYXNpYyBuZXR3b3JrIHN0YXRpc3RpY3MuIAoKWW91IGNhbiB1c2UgYW55IG5ldHdvcmsgZGF0YSB5b3UgbGlrZS4gV2UgaGF2ZSBwcmVwYXJlZCBhIHNhbXBsZSBkYXRhc2V0IGNhbGxlZCBgc2FtcGxlX3B1Ymxpc2hlcl9uZXR3b3JrLmNzdmAsIGF2YWlsYWJsZSBpbiB0aGUgYGFwcGx5aW5nX25ldHdvcmtzX3RvX2h1bWFuaXRpZXMvZGF0YWAgZm9sZGVyLCBidXQgeW91IGFyZSB3ZWxjb21lIHRvIHVzZSBhbnkgb3RoZXIgb2YgdGhlIHNhbXBsZSBkYXRhc2V0cyBvciBhbm90aGVyIGRhdGFzZXQgeW91IGhhdmUgZm91bmQgb25saW5lLiAKClRoZSBpbnN0cnVjdGlvbnMgdG8gZG8gdGhpcyBhcmUgYXZhaWxhYmxlIHdpdGhpbiB0aGUgd2ViIGFwcGxpY2F0aW9uLiBJbiBzaG9ydCwgeW91IHNob3VsZCBkcmFnIGFuZCBkcm9wIHRoZSByZWxldmFudCAuY3N2IGZpbGUgaW50byB0aGUgYXBwcm9wcmlhdGUgYm94LiBOb3RlIHRoYXQgeW91IGNhbiBjaG9vc2Ugd2hldGhlciBvciBub3QgeW91ciBjc3YgaGFzIGEgaGVhZGVyIHJvdy4gSWYgaXQgZG9lcywgY2xpY2sgdGhlIGNvcnJlY3QgcmFkaW8gYnV0dG9uLiBUaGUgYXBwbGljYXRpb24gZXhwZWN0cyBoZWFkZXJzIGNhbGxlZCBgc291cmNlYCwgYHRhcmdldGAsIGFuZCAob3B0aW9uYWxseSksIGB3ZWlnaHRgLiBUaGUgYHNhbXBsZV9wdWJsaXNoZXJfbmV0d29yay5jc3ZgIGZpbGUgaGFzIGEgaGVhZGVyIGluIHRoaXMgZm9ybWF0LCBidXQgaWYgeW91IGFyZSB1c2luZyBvdGhlciBkYXRhIHlvdSBtYXkgbmVlZCB0byBlZGl0IHRoZSBmaWxlIGZpcnN0LiAKCkJhc2VkIG9uIHRoZSBpbmZvcm1hdGlvbiBpbiB0b2RheSdzIGxlc3Nvbiwgd3JpdGUgYSBzaG9ydCAoYWJvdXQgMTAgYnVsbGV0IHBvaW50cykgcmVwb3J0IG9uIHRoZSBzdHJ1Y3R1cmUgb2YgdGhpcyBuZXR3b3JrLiBTb21lIGluZm9ybWF0aW9uIHlvdSBjb3VsZCBpbmNsdWRlOgoKLSAgIEdsb2JhbCBuZXR3b3JrIG1ldHJpY3MuIElzIGl0IGRlbnNlIG9yIHNwYXJzZT8gSXMgaXQgaGlnaGx5IGNsdXN0ZXJlZD8KLSAgIFRoZSBkaXN0cmlidXRpb24gb2YgZGVncmVlIGFuZCBvdGhlciBuZXR3b3JrIG1ldHJpY3MuIERvIGEgc21hbGwgbnVtYmVyIG9mIG5vZGVzIGhhdmUgbW9zdCBvZiB0aGUgbGlua3MsIG9yIGlzIGl0IGV2ZW5seSBzcHJlYWQgb3V0PyAgCi0gICBBIGRlc2NyaXB0aW9uIG9mIHRoZSBuZXR3b3JrIGdyYXBoIGl0c2VsZi4gIAotICAgV2hvIGFyZSB0aGUga2V5IG5vZGVzIGJ5IGRlZ3JlZSwgYmV0d2Vlbm5lc3MsIGFuZCBzbyBmb3J0aD8gV2hhdCBkb2VzIHRoZWlyIHBvc2l0aW9uIGF0IHRoZSB0b3Agb2YgdGhlc2UgcmFua2luZ3MgbWVhbiBmb3IgdGhlaXIgJ2ltcG9ydGFuY2UnIGluIHRoZSBuZXR3b3JrPwotICAgRG9lcyBpdCBjb250YWluIGludGVyZXN0aW5nIGluZm9ybWF0aW9uPyBBcmUgeW91IGFibGUgdG8gcGFyc2UgdGhlc2UgdGhpbmdzIGVhc2lseSAoc3VjaCBhcyB0aGUgc3RydWN0dXJlKSwgb3IgZG9lcyBpdCBzZWVtIGxpa2UgYSByYW5kb20gJ21lc3MnLiBXaGF0IHdvdWxkIGhlbHAgeW91IHRvIHVuZGVyc3RhbmQgdGhpcyBuZXR3b3JrIGJldHRlcj8gQ291bGQgaXQgYmUgZmlsdGVyZWQsIGFuZCBpZiBzbywgaG93IHdvdWxkIHlvdSBnbyBhYm91dCB0aGF0PwoKCgo=</div>
 
 
 
