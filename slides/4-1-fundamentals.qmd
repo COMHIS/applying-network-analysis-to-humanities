@@ -30,9 +30,11 @@ Speaker notes go here.
 ![](images/paste-2D645A52.png)
 
 ## R-Studio tips
--   Save your work! Each CSC notebooks session lasts four hours. After this, any unsaved work will be lost. 
+
+-   Save your work! Each CSC notebooks session lasts four hours. After this, any unsaved work will be lost.
 -   You can also export your 'my work' folder at any time
--   Come to the coding drop-in sessions (tomorrow, 14.15 - 15.45), and same time the following week. 
+-   Come to the coding drop-in sessions (tomorrow, 14.15 - 15.45), and same time the following week.
+-   Check out the interactive 'introduction to R' course on CSC notebooks.
 
 ## What is a network metric?
 
@@ -57,7 +59,7 @@ Speaker notes go here.
 
 ## Degree
 
--   Count of a node's connections. 
+-   Count of a node's connections.
 -   The most basic measurement of *importance* in a network (otherwise known as *centrality.*)
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -574,6 +576,7 @@ g %>% as_tbl_graph() %>%
 -   Discovering discrete communities---often called sub-graphs---within a wider network has long been one of the fundamental applications of network science.
 
 -   In epidemiological networks, for example, the extent to which a network tends to break into sub-graphs and the constitution of those parts has important implications for understanding the spread of disease through a system.
+
 -   However if the graph is connected (i.e. if all nodes can reach all other nodes eventually), then the boundaries of any detected community that goes beyond a simple ego network are necessarily arbitrary.
 
 ::: notes
@@ -584,7 +587,7 @@ g %>% as_tbl_graph() %>%
 -   It is true that many individuals will sit firmly in the core of a given cluster, but there will be those on the margins who might be considered as members of more than one community---or none.
 :::
 
-## Communities{.smaller}
+## Communities {.smaller}
 
 -   In spite of these problems, this rigid way of thinking about communities can serve as a useful tool, to which we can bring our existing knowledge of historical communities and compare them to an algorithm's results.
 
@@ -612,16 +615,12 @@ g %>% as_tbl_graph() %>%
 
 ## Modularity
 
-
-
-
 ::: columns
 ::: {.column width="40%"}
 -   High modularity indicates the extent to which the network might be described as a collection of densely-connected sub-groups.
 :::
 
-::: {.column width="60%"} 
-
+::: {.column width="60%"}
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.cap = 'A network with high modularity. The given partitions (separate colours) successfully divide the network into groups with many more connections between the groups than to other groups.'}
 
 igraph::sample_islands(islands.n = 5, islands.pin = .5,islands.size = 20, n.inter = 2)  %>% as_tbl_graph() %>% 
@@ -631,18 +630,16 @@ igraph::sample_islands(islands.n = 5, islands.pin = .5,islands.size = 20, n.inte
   geom_node_point(aes(color = as.character(group)), size = 5) +  theme_void() + theme(legend.position = 'none')
 
 ```
-
 :::
 :::
 
-
-## Louvain Community Detection{.smaller}
+## Louvain Community Detection {.smaller}
 
 ::: columns
 ::: {.column width="40%"}
 -   The Louvain algorithm is one algorithm which uses modularity, developed specifically for use in large graphs.
 -   Each node is temporarily moved to the community of each of its neighbours, and the modularity of the whole graph is re-checked.
--   This continues until modularity does not increase any more. 
+-   This continues until modularity does not increase any more.
 :::
 
 ::: {.column width="60%"}
@@ -690,7 +687,7 @@ igraph::sample_islands(islands.n = 5, islands.pin = .5,islands.size = 20, n.inte
 -   The proportion of various triad types in a network can tell us about its structure, and, in the case of a complex network, something of the process by which connections are formed.
 -   In this way, we connect the *micro* structure (the information on individual pairs or triads) with the *macro* (what this tells us about the overall formation and structure of a network).
 
-## Triads - undirected network{.smaller}
+## Triads - undirected network {.smaller}
 
 ::: columns
 ::: {.column width="40%"}
@@ -700,7 +697,6 @@ igraph::sample_islands(islands.n = 5, islands.pin = .5,islands.size = 20, n.inte
 :::
 
 ::: {.column width="60%"}
-
 ```{r echo=FALSE, message=FALSE,warning = FALSE, fig.cap="Four possible triad types in an undirected network", fig.align='center'}
 library(tidyverse)
 library(igraph)
@@ -763,19 +759,14 @@ cowplot::plot_grid(a,b,c,d, labels = c('closed triad', 'open triad', 'connected 
 :::
 :::
 
-
-
-
 ## Triads - directed networks
 
-
-::: notes  
+::: notes
 -   In a directed network, the situation is more complex.
 
 -   Each of the connections can be incoming or outgoing, meaning there are 16 possible triad connections.
 
 -   Don't worry, if you want to use these, network analysis software has methods for taking a 'census' of the various triads and their counts in a particular network.
-
 :::
 
 <center>![The 16 possible triad combinations in a directed network. The code underneath each triad refers to the numbers of mutual, asymmetric, and null dyads, with a further identifying letter: Up, Down, Cyclical, Transitive. E.g., 120D has 1 mutual, 2 asymmetric, 0 null dyads, and the Down orientation.](images/triad_census.jpg)</center>
@@ -868,7 +859,7 @@ b
 -   As these methods rely heavily on these 'micro' structures (such as the presence or absence of a particular tie), they may be particularly sensitive to the kinds of missing data often found in historical sources, which are not usually collected systematically.
 :::
 
-## Conclusions
+## Conclusions {.smaller}
 
 -   This tour of network metrics has just introduced some of the more common ways a network can be measured.
 
@@ -877,3 +868,13 @@ b
 -   In many other network types (books, or cities for example), there may be hidden factors and other constraints guiding the structure of the network.
 
 -   This is not to say that the metrics cannot be used, but just that the conclusions from them may not be the same as those in SNA literature.
+
+## Class Assignment
+
+![](images/paste-4076EDBC.png)
+
+## Don't forget the reading for Friday!
+
+Jonathan Blaney, "Introduction to the Principles of Linked Open Data," Programming Historian 6 (2017), https://doi.org/10.46430/phen0068.
+
+Specifically, four sections from it (linked in the course book)
