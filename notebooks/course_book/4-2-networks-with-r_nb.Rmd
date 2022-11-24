@@ -1,8 +1,9 @@
 ---
-title: "Analysing Networks with Tidygraph"
-format: revealjs
-editor: visual
+title: "Week 4, Class 2: Network Analysis with R"
+output: html_notebook
 ---
+
+
 
 ## Introduction
 
@@ -22,7 +23,7 @@ One of the easiest data formats to construct a network is an edge list: a simple
 
 We will use three R network libraries to do almost everything network-related, from analysis to visualisation: `igraph`, `tidygraph` and `ggraph`. The goal is to port everything to a format which is easy to work with using existing an established data analysis workflow. That format is known as 'tidy data', and it is a way of working with data which is easily transferable across a range of uses. It also means you need to learn very little new programming to do network analysis if you stay within this 'ecosystem'.
 
-## Import Network Data
+### Import Network Data
 
 The workflow uses a number of R packages. In the CSC Notebooks environment, these have already been installed and can be loaded using the commands below. If you are doing this on a local machine, you may have to install them first using the command `install.packages()`, with the package name specified as a string, for example `install.packages('igraph')`.
 
@@ -34,15 +35,19 @@ library(tidygraph)
 
 ```
 
-In this class, we'll use a dataset derived from the English State Papers. It takes the form of a .csv containing the information on the author, recipient, and date of sending for a small sample of state letters sent between 1670 and 1672.
+In this class, we'll use a dataset derived from the English State Papers during the Stuart era (1603-1714). It takes the form of a .csv containing the information on the author, recipient, and date of sending for a small sample of state letters received between 1670 and 1672.
 
 Read the file into R with the `read_csv()` function from a previous lesson:
 
 ```{r}
-letters = read_csv("../data/letter_data.csv", col_types = cols(.default = "c"))
+letters = read_csv("letter_data.csv", col_types = cols(.default = "c"))
+
+letters
 ```
 
 The letters dataset is a simple dataframe. Each row represents a letter record, and has a unique ID. Essentially, each row is a record of who the author and recipient of the letter. Each of these senders and recipients also have both a unique ID, and the original name of the letter writer and sender. The unique ID is used because it's quite likely that the names are not unique, and the network could combine two nodes with the same name together, for example.
+
+### Make an edge list
 
 This is used to construct an edge list. If you have multiple letters between individuals, you can count them and use as a weight in the network, or you can ignore it. This is done with `tidyverse` commands we learned previously: `group_by()` and `tally()`, changing the name of the new column to 'weight'.
 
@@ -58,7 +63,7 @@ edge_list
 
 Now you see each unique combination of sender and recipient. If there are multiple letters, this is now signified by a weight of more than one in the weight column. You'll also notice that the other information (letter IDs and actual names) has disappeared. This is not needed to make the network, but we can bring the name information back later.
 
-## Turn the edge list into a tbl_graph
+### Turn the edge list into a tbl_graph
 
 Next transform the edge list into a network object called a tbl_graph, using [tidygraph](https://www.data-imaginist.com/2017/introducing-tidygraph/). A tbl_graph is a graph object which can be manipulated using tidyverse grammar. This means you can create a network and then use a range of standard data analysis functions on it as needed.
 
@@ -72,7 +77,11 @@ sample_tbl_graph = edge_list %>%
 sample_tbl_graph
 ```
 
-The tbl_graph is an object containing two linked tables, one for the edges and one for the nodes. You can access each of the tables using the function `activate(nodes)` or `activate(edges)`. The active table is listed first and has the word 'active' in the description.
+The `tbl_graph` is an object containing two linked dataframes, one for the edges and one for the nodes. The node table is currently a table containing a row for each unique node in the dataframe, with one column, **name**, which is that node's ID. When we calculate additional node-level metrics, they will be added as additional columns to this node table.
+
+The edges dataframe currently contains three columns: **from**, **to**, and **weight**. The **from** and **to** columns contain the edge information: the first row tells us that there is an edge running from node 1 to node 89. These node numbers are not the node IDs but rather correspond to the order of the node table (or the numbers just to the left of the name column). So this tells us that there is an edge going from the node in position 1 (E00145-S012650-T000000) to that in position 89.
+
+You can access each of the tables using the function `activate(nodes)` or `activate(edges)`. The active table is listed first and has the word 'active' in the description. Any commands you do (filtering, joining and so forth) will happen on the *active* table.
 
 ```{r}
 
@@ -91,11 +100,11 @@ sample_tbl_graph %>%
 
 ## Calculating Network Metrics
 
-## Global metrics
+### Global metrics
 
 The first thing we want to do with this network is to calculate some global network statistics. Because the outputs to these are generally a single number, we don't need to worry about storing them in a table, as we'll do with the node-level metrics later. To calculate these metrics, generally just pass the network to a relevant function. These metrics were covered in more detail in the previous class.
 
-## Density
+#### Density
 
 (the number of links present out of all possible links):
 
@@ -103,7 +112,7 @@ The first thing we want to do with this network is to calculate some global netw
 sample_tbl_graph %>% igraph::graph.density()
 ```
 
-## Average path length
+#### Average path length
 
 (the average number of hops between every pair of nodes in the network):
 
@@ -111,7 +120,7 @@ sample_tbl_graph %>% igraph::graph.density()
 sample_tbl_graph %>% igraph::average.path.length()
 ```
 
-## Clustering coefficient:
+#### Clustering coefficient:
 
 Because there are a number of ways to calculate clustering in a network, a method needs to be specified. The clustering coefficient is also known as *transitivity*, and it is defined as the ratio of completed triangles and connected triples in the graph. This measurement can be *global* (which counts the overall ratio) or *local* (which counts the individual ratio for each node). Because we want the global measurement, specific this with the `type =` argument.
 
@@ -119,15 +128,24 @@ Because there are a number of ways to calculate clustering in a network, a metho
 sample_tbl_graph %>% igraph::transitivity(type = 'global')
 ```
 
-## Node-level metrics.
+### Node-level metrics.
 
-There are a number of ways to calculate node-level metrics (these are things like degree, betweenness as explained in the previous class). For example, you can use igraph functions to calculate the degree of single node or group of nodes. The following code returns the degree for the node with the ID `E004654-S006979-T000000` (King Charles II of England). The argument `mode =` specifies the type of degree: in, out, or all, as we learned in the previous lesson.
+There are a number of ways to calculate node-level metrics (these are things like degree, betweenness as explained in the previous class). For example, you can use igraph functions to calculate the degree of single node or group of nodes. The following code returns the degree for the node with the ID `E004654-S006979-T000000` (King Charles II of England). You can return to the original dataset to find the relevant IDs for a node of interest. The argument `mode =` specifies the type of degree: `in`, `out`, or `all`, as we learned in the previous lesson.
 
 ```{r}
 sample_tbl_graph %>% igraph::degree(v = 'E004654-S006979-T000000', mode = 'all') 
 ```
 
-For most purposes, a table containing each of the nodes and the relevant metrics would be more useful (and something that can be analysed using R later). To do this, we use a function called `mutate()`. Mutate creates a new column containing the value from some calculation, which is performed on each row in the dataset.
+You can also look up the degree of multiple IDs by passing them as a vector, using `c()`. 
+
+`
+```{r}
+sample_tbl_graph %>% igraph::degree(v = c('E004654-S006979-T000000','E006019-S012734-T000000'), mode = 'all') 
+```
+
+#### Adding node-level metrics as a column with tidygraph.
+
+Remember that our tidygraph object is made up of two dataframes, one of nodes and one of edges? We can use the format to add node-level metrics to the node dataframe as additional columns, making them easy to analyse using R later. To do this, we use a function called `mutate()`. Mutate creates a new column containing the value from some calculation, which is performed on each row in the dataset.
 
 Assign the name `degree` to the new column with `degree =`. The column should contain the total degree score for each node. This is done using the function `centrality_degree()`. With the two additional arguments in this function, specify the mode (in, out, or all) and, if a weighted degree score is desired, the column to be used as weights.
 
@@ -148,7 +166,22 @@ sample_tbl_graph %>%
 
 ```
 
-## Summarising the network data
+```{css}
+.infobox {
+  padding: 1em 1em 1em 1em;
+  margin-bottom: 2px;
+  border: 2px solid orange;
+  border-radius: 10px;
+  background: #f5f5f5 5px center/3em no-repeat;
+}
+```
+
+::: {.infobox}
+Note that the calculations are done one at a time. What difference would it make to your results if you filtered (for example based on a set of dates) and then calculated degree, rather than the other way around?
+:::
+
+
+### Summarising the network data
 
 To work with your new network metrics, the data can be outputted to a standard R dataframe. Create a new dataframe by doing this, using the tidyverse function for creating dataframes, `as_tibble()`:
 
@@ -168,12 +201,14 @@ network_metrics_df %>% arrange(desc(degree))
 
 ## Joining additional data
 
-The value of working with a data model and tidygraph is that we can merge additional tables of data attributes to our nodes or edges. In a separate table, we have a dataset of attributes about this set of nodes, including place and dates of birth and death, and gender. Using the `join()` commands, we can merge this table to the network data, and use it to sort, filter (and later visualise) the data:
+The value of working with a data model and tidygraph is that we can merge additional tables of data attributes to our nodes or edges. Earlier, we explained how important it is that every node in your data has a unique ID. The downside of this, particularly for humanities research, is that it's not easy to see who or what is behind a particular node. This can be solved by using a `join` command.
+
+In a separate table, we have a dataset of attributes about this set of nodes, including place and dates of birth and death, and gender. Using the `join()` commands, we can merge this table to the network data, and use it to sort, filter (and later visualise) the data:
 
 First, load the table of data using `read_csv`:
 
 ```{r}
-node_attributes = read_csv('../data/node_attributes.csv')
+node_attributes = read_csv('node_attributes.csv')
 
 node_attributes
 ```
@@ -222,7 +257,7 @@ as_tibble() %>%
 
 This last part goes through some of the functions which are more related to the 'social network analysis'. Many of these are accessed directly through the package `igraph`.
 
-## Transitivity, Triads, structural balance
+### Transitivity, Triads, structural balance
 
 As we learned in the last lesson, counting the ratio of completed triangles in a network is a good way to understand its structure. This ratio is known as the **clustering coefficient**, and there are two types: **global**, which measures the ratio of complete and not complete triangles in the entire network, and **local**, which measures the complete triangles for each individual node. This measurement is also known as **transitivity**.
 
@@ -290,7 +325,9 @@ Another global metric we can calculate is the number of **cliques** in a network
 sample_tbl_graph %>% igraph::clique_num()
 ```
 
-Another way to look at groups in networks is to use community detection. As explained in the previous chapter, community detection attempts to find groups of nodes which are more connected to each other than they are to nodes outside the group. Unlike components or cliques, communities can be found using a number of methods. Here, we'll use the louvain algorithm. To make it easy to use the results, we'll calculate the community for each node using tidygraph. This particularly implementation of the algorithm only works for undirected graphs, so we have to create our network again from scratch, this time specifying that it's undirected.
+## Louvain community detection
+
+Another way to look at groups in networks is to use community detection. As explained in the previous chapter, community detection attempts to find groups of nodes which are more connected to each other than they are to nodes outside the group. Unlike components or cliques, communities can be found using a number of methods. Here, we'll use the Louvain algorithm, which was introduced in the previous lesson. To make it easy to use the results, we'll calculate the community for each node using tidygraph. This particular implementation of the algorithm only works for undirected graphs, so we have to create our network again from scratch, this time specifying that it's **undirected**.
 
 ```{r}
 
@@ -314,3 +351,11 @@ sample_tbl_graph_u %>%
   ggplot() + geom_col(aes(x = group, y = value)) + facet_wrap(~name, scales = 'free')
 
 ```
+
+## Reading for next week
+
+**Week 4:** Ahnert et. al. (2021). *The Network Turn: Changing Perspectives in the Humanities* (Elements in Publishing and Book Culture). **Chapter 5, \'Quantifying Culture\' (<https://www.cambridge.org/core/elements/network-turn/CC38F2EA9F51A6D1AFCB7E005218BBE5>)**
+
+Questions:
+
+-   
