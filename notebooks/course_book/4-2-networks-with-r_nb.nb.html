@@ -1825,512 +1825,755 @@ for a small sample of state letters received between 1670 and 1672.</p>
 previous lesson:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGV0dGVycyA9IHJlYWRfY3N2KFwibGV0dGVyX2RhdGEuY3N2XCIsIGNvbF90eXBlcyA9IGNvbHMoLmRlZmF1bHQgPSBcImNcIikpXG5cbmxldHRlcnNcbmBgYCJ9 -->
-<pre class="r"><code>letters = read_csv(&quot;letter_data.csv&quot;, col_types = cols(.default = &quot;c&quot;))
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubGV0dGVycyA9IHJlYWRfY3N2KFxcbGV0dGVyX2RhdGEuY3N2XFwsIGNvbF90eXBlcyA9IGNvbHMoLmRlZmF1bHQgPSBcXGNcXCkpXG5cbmxldHRlcnNcbmBgYFxuYGBgIn0= -->
+<pre class="r"><code>```r
+letters = read_csv(\letter_data.csv\, col_types = cols(.default = \c\))
 
 letters</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>The letters dataset is a simple dataframe. Each row represents a
-letter record, and has a unique ID. Essentially, each row is a record of
-who the author and recipient of the letter. Each of these senders and
-recipients also have both a unique ID, and the original name of the
-letter writer and sender. The unique ID is used because it’s quite
-likely that the names are not unique, and the network could combine two
-nodes with the same name together, for example.</p>
-</div>
-<div id="make-an-edge-list" class="section level3">
-<h3>Make an edge list</h3>
-<p>This is used to construct an edge list. If you have multiple letters
-between individuals, you can count them and use as a weight in the
-network, or you can ignore it. This is done with <code>tidyverse</code>
-commands we learned previously: <code>group_by()</code> and
-<code>tally()</code>, changing the name of the new column to
-‘weight’.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5lZGdlX2xpc3QgPSBsZXR0ZXJzICU+JSBcbiAgZ3JvdXBfYnkoZnJvbV9pZCwgdG9faWQpICU+JSBcbiAgdGFsbHkobmFtZSA9ICd3ZWlnaHQnKVxuXG5lZGdlX2xpc3RcblxuYGBgIn0= -->
-<pre class="r"><code>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+The letters dataset is a simple dataframe. Each row represents a letter record, and has a unique ID. Essentially, each row is a record of who the author and recipient of the letter. Each of these senders and recipients also have both a unique ID, and the original name of the letter writer and sender. The unique ID is used because it&#39;s quite likely that the names are not unique, and the network could combine two nodes with the same name together, for example.
+
+### Make an edge list
+
+This is used to construct an edge list. If you have multiple letters between individuals, you can count them and use as a weight in the network, or you can ignore it. This is done with `tidyverse` commands we learned previously: `group_by()` and `tally()`, changing the name of the new column to &#39;weight&#39;.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuXG5lZGdlX2xpc3QgPSBsZXR0ZXJzICU+JSBcbiAgZ3JvdXBfYnkoZnJvbV9pZCwgdG9faWQpICU+JSBcbiAgdGFsbHkobmFtZSA9ICd3ZWlnaHQnKVxuXG5lZGdlX2xpc3RcblxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+
 edge_list = letters %&gt;% 
   group_by(from_id, to_id) %&gt;% 
   tally(name = &#39;weight&#39;)
 
 edge_list
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Now you see each unique combination of sender and recipient. If there
-are multiple letters, this is now signified by a weight of more than one
-in the weight column. You’ll also notice that the other information
-(letter IDs and actual names) has disappeared. This is not needed to
-make the network, but we can bring the name information back later.</p>
-</div>
-<div id="turn-the-edge-list-into-a-tbl_graph" class="section level3">
-<h3>Turn the edge list into a tbl_graph</h3>
-<p>Next transform the edge list into a network object called a
-tbl_graph, using <a href="https://www.data-imaginist.com/2017/introducing-tidygraph/">tidygraph</a>.
-A tbl_graph is a graph object which can be manipulated using tidyverse
-grammar. This means you can create a network and then use a range of
-standard data analysis functions on it as needed.</p>
-<p>Use <code>as_tbl_graph()</code> to turn the edge list into a network.
-The first two columns will be taken as the from and to data, and any
-additional columns added as attributes. An important option is the
-<code>directed =</code> argument. This will specify whether the network
-is directed (the path goes from the first column to the second) or
-undirected. Because this network is inherently directed (a letter is
-sent from one person to another), we use <code>directed = TRUE</code>.
-In many cases, the network will be undirected, and this should be
-specified using <code>directed = FALSE</code>.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5zYW1wbGVfdGJsX2dyYXBoID0gZWRnZV9saXN0ICU+JSBcbiAgYXNfdGJsX2dyYXBoKGRpcmVjdGVkID0gVClcblxuc2FtcGxlX3RibF9ncmFwaFxuYGBgIn0= -->
-<pre class="r"><code>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Now you see each unique combination of sender and recipient. If there are multiple letters, this is now signified by a weight of more than one in the weight column. You&#39;ll also notice that the other information (letter IDs and actual names) has disappeared. This is not needed to make the network, but we can bring the name information back later.
+
+### Turn the edge list into a tbl_graph
+
+Next transform the edge list into a network object called a tbl_graph, using [tidygraph](https://www.data-imaginist.com/2017/introducing-tidygraph/). A tbl_graph is a graph object which can be manipulated using tidyverse grammar. This means you can create a network and then use a range of standard data analysis functions on it as needed.
+
+Use `as_tbl_graph()` to turn the edge list into a network. The first two columns will be taken as the from and to data, and any additional columns added as attributes. An important option is the `directed =` argument. This will specify whether the network is directed (the path goes from the first column to the second) or undirected. Because this network is inherently directed (a letter is sent from one person to another), we use `directed = TRUE`. In many cases, the network will be undirected, and this should be specified using `directed = FALSE`.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuXG5zYW1wbGVfdGJsX2dyYXBoID0gZWRnZV9saXN0ICU+JSBcbiAgYXNfdGJsX2dyYXBoKGRpcmVjdGVkID0gVClcblxuc2FtcGxlX3RibF9ncmFwaFxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+
 sample_tbl_graph = edge_list %&gt;% 
   as_tbl_graph(directed = T)
 
 sample_tbl_graph</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>The <code>tbl_graph</code> is an object containing two linked
-dataframes, one for the edges and one for the nodes. The node table is
-currently a table containing a row for each unique node in the
-dataframe, with one column, <strong>name</strong>, which is that node’s
-ID. When we calculate additional node-level metrics, they will be added
-as additional columns to this node table.</p>
-<p>The edges dataframe currently contains three columns:
-<strong>from</strong>, <strong>to</strong>, and <strong>weight</strong>.
-The <strong>from</strong> and <strong>to</strong> columns contain the
-edge information: the first row tells us that there is an edge running
-from node 1 to node 89. These node numbers are not the node IDs but
-rather correspond to the order of the node table (or the numbers just to
-the left of the name column). So this tells us that there is an edge
-going from the node in position 1 (E00145-S012650-T000000) to that in
-position 89.</p>
-<p>You can access each of the tables using the function
-<code>activate(nodes)</code> or <code>activate(edges)</code>. The active
-table is listed first and has the word ‘active’ in the description. Any
-commands you do (filtering, joining and so forth) will happen on the
-<em>active</em> table.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5zYW1wbGVfdGJsX2dyYXBoICU+JSBcbiAgYWN0aXZhdGUoZWRnZXMpXG5cbmBgYCJ9 -->
-<pre class="r"><code>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+The `tbl_graph` is an object containing two linked dataframes, one for the edges and one for the nodes. The node table is currently a table containing a row for each unique node in the dataframe, with one column, **name**, which is that node&#39;s ID. When we calculate additional node-level metrics, they will be added as additional columns to this node table.
+
+The edges dataframe currently contains three columns: **from**, **to**, and **weight**. The **from** and **to** columns contain the edge information: the first row tells us that there is an edge running from node 1 to node 89. These node numbers are not the node IDs but rather correspond to the order of the node table (or the numbers just to the left of the name column). So this tells us that there is an edge going from the node in position 1 (E00145-S012650-T000000) to that in position 89.
+
+You can access each of the tables using the function `activate(nodes)` or `activate(edges)`. The active table is listed first and has the word &#39;active&#39; in the description. Any commands you do (filtering, joining and so forth) will happen on the *active* table.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuXG5zYW1wbGVfdGJsX2dyYXBoICU+JSBcbiAgYWN0aXZhdGUoZWRnZXMpXG5cbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+
 sample_tbl_graph %&gt;% 
   activate(edges)
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>You can use many of the tidyverse commands we learned in the earlier
-lesson on this object, for example filtering to include only edges with
-a weight of more than 1:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGFjdGl2YXRlKGVkZ2VzKSAlPiVcbiAgZmlsdGVyKHdlaWdodD4xKVxuYGBgIn0= -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+You can use many of the tidyverse commands we learned in the earlier lesson on this object, for example filtering to include only edges with a weight of more than 1:
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGFjdGl2YXRlKGVkZ2VzKSAlPiVcbiAgZmlsdGVyKHdlaWdodD4xKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+sample_tbl_graph %&gt;% 
   activate(edges) %&gt;%
   filter(weight&gt;1)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-</div>
-<div id="calculating-network-metrics" class="section level2">
-<h2>Calculating Network Metrics</h2>
-<div id="global-metrics" class="section level3">
-<h3>Global metrics</h3>
-<p>The first thing we want to do with this network is to calculate some
-global network statistics. Because the outputs to these are generally a
-single number, we don’t need to worry about storing them in a table, as
-we’ll do with the node-level metrics later. To calculate these metrics,
-generally just pass the network to a relevant function. These metrics
-were covered in more detail in the previous class.</p>
-<div id="density" class="section level4">
-<h4>Density</h4>
-<p>(the number of links present out of all possible links):</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjpncmFwaC5kZW5zaXR5KClcbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph %&gt;% igraph::graph.density()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="average-path-length" class="section level4">
-<h4>Average path length</h4>
-<p>(the average number of hops between every pair of nodes in the
-network):</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjphdmVyYWdlLnBhdGgubGVuZ3RoKClcbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph %&gt;% igraph::average.path.length()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="clustering-coefficient" class="section level4">
-<h4>Clustering coefficient:</h4>
-<p>Because there are a number of ways to calculate clustering in a
-network, a method needs to be specified. The clustering coefficient is
-also known as <em>transitivity</em>, and it is defined as the ratio of
-completed triangles and connected triples in the graph. This measurement
-can be <em>global</em> (which counts the overall ratio) or
-<em>local</em> (which counts the individual ratio for each node).
-Because we want the global measurement, specific this with the
-<code>type =</code> argument.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjp0cmFuc2l0aXZpdHkodHlwZSA9ICdnbG9iYWwnKVxuYGBgIn0= -->
-<pre class="r"><code>sample_tbl_graph %&gt;% igraph::transitivity(type = &#39;global&#39;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-</div>
-<div id="node-level-metrics." class="section level3">
-<h3>Node-level metrics.</h3>
-<p>There are a number of ways to calculate node-level metrics (these are
-things like degree, betweenness as explained in the previous class). For
-example, you can use igraph functions to calculate the degree of single
-node or group of nodes. The following code returns the degree for the
-node with the ID <code>E004654-S006979-T000000</code> (King Charles II
-of England). You can return to the original dataset to find the relevant
-IDs for a node of interest. The argument <code>mode =</code> specifies
-the type of degree: <code>in</code>, <code>out</code>, or
-<code>all</code>, as we learned in the previous lesson.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjpkZWdyZWUodiA9ICdFMDA0NjU0LVMwMDY5NzktVDAwMDAwMCcsIG1vZGUgPSAnYWxsJykgXG5gYGAifQ== -->
-<pre class="r"><code>sample_tbl_graph %&gt;% igraph::degree(v = &#39;E004654-S006979-T000000&#39;, mode = &#39;all&#39;) </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>You can also look up the degree of multiple IDs by passing them as a
-vector, using <code>c()</code>.</p>
-<p>`</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjpkZWdyZWUodiA9IGMoJ0UwMDQ2NTQtUzAwNjk3OS1UMDAwMDAwJywnRTAwNjAxOS1TMDEyNzM0LVQwMDAwMDAnKSwgbW9kZSA9ICdhbGwnKSBcbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph %&gt;% igraph::degree(v = c(&#39;E004654-S006979-T000000&#39;,&#39;E006019-S012734-T000000&#39;), mode = &#39;all&#39;) </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<div id="adding-node-level-metrics-as-a-column-with-tidygraph." class="section level4">
-<h4>Adding node-level metrics as a column with tidygraph.</h4>
-<p>Remember that our tidygraph object is made up of two dataframes, one
-of nodes and one of edges? We can use the format to add node-level
-metrics to the node dataframe as additional columns, making them easy to
-analyse using R later. To do this, we use a function called
-<code>mutate()</code>. Mutate creates a new column containing the value
-from some calculation, which is performed on each row in the
-dataset.</p>
-<p>Assign the name <code>degree</code> to the new column with
-<code>degree =</code>. The column should contain the total degree score
-for each node. This is done using the function
-<code>centrality_degree()</code>. With the two additional arguments in
-this function, specify the mode (in, out, or all) and, if a weighted
-degree score is desired, the column to be used as weights.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGFjdGl2YXRlKG5vZGVzKSAlPiUgIyBtYWtlIHN1cmUgdGhlIG5vZGVzIHRhYmxlIGlzIGFjdGl2ZVxuICBtdXRhdGUoZGVncmVlID0gY2VudHJhbGl0eV9kZWdyZWUobW9kZSA9ICdhbGwnLCB3ZWlnaHRzID0gd2VpZ2h0KSlcbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+## Calculating Network Metrics
+
+### Global metrics
+
+The first thing we want to do with this network is to calculate some global network statistics. Because the outputs to these are generally a single number, we don&#39;t need to worry about storing them in a table, as we&#39;ll do with the node-level metrics later. To calculate these metrics, generally just pass the network to a relevant function. These metrics were covered in more detail in the previous class.
+
+#### Density
+
+(the number of links present out of all possible links):
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjpncmFwaC5kZW5zaXR5KClcbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+sample_tbl_graph %&gt;% igraph::graph.density()</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+#### Average path length
+
+(the average number of hops between every pair of nodes in the network):
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjphdmVyYWdlLnBhdGgubGVuZ3RoKClcbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+sample_tbl_graph %&gt;% igraph::average.path.length()</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+#### Clustering coefficient:
+
+Because there are a number of ways to calculate clustering in a network, a method needs to be specified. The clustering coefficient is also known as *transitivity*, and it is defined as the ratio of completed triangles and connected triples in the graph. This measurement can be *global* (which counts the overall ratio) or *local* (which counts the individual ratio for each node). Because we want the global measurement, specific this with the `type =` argument.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjp0cmFuc2l0aXZpdHkodHlwZSA9ICdnbG9iYWwnKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+sample_tbl_graph %&gt;% igraph::transitivity(type = &#39;global&#39;)</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+### Node-level metrics.
+
+There are a number of ways to calculate node-level metrics (these are things like degree, betweenness as explained in the previous class). For example, you can use igraph functions to calculate the degree of single node or group of nodes. The following code returns the degree for the node with the ID `E004654-S006979-T000000` (King Charles II of England). You can return to the original dataset to find the relevant IDs for a node of interest. The argument `mode =` specifies the type of degree: `in`, `out`, or `all`, as we learned in the previous lesson.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjpkZWdyZWUodiA9ICdFMDA0NjU0LVMwMDY5NzktVDAwMDAwMCcsIG1vZGUgPSAnYWxsJykgXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+sample_tbl_graph %&gt;% igraph::degree(v = &#39;E004654-S006979-T000000&#39;, mode = &#39;all&#39;) </code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+You can also look up the degree of multiple IDs by passing them as a vector, using `c()`. 
+
+`
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjpkZWdyZWUodiA9IGMoJ0UwMDQ2NTQtUzAwNjk3OS1UMDAwMDAwJywnRTAwNjAxOS1TMDEyNzM0LVQwMDAwMDAnKSwgbW9kZSA9ICdhbGwnKSBcbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+sample_tbl_graph %&gt;% igraph::degree(v = c(&#39;E004654-S006979-T000000&#39;,&#39;E006019-S012734-T000000&#39;), mode = &#39;all&#39;) </code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+#### Adding node-level metrics as a column with tidygraph.
+
+Remember that our tidygraph object is made up of two dataframes, one of nodes and one of edges? We can use the format to add node-level metrics to the node dataframe as additional columns, making them easy to analyse using R later. To do this, we use a function called `mutate()`. Mutate creates a new column containing the value from some calculation, which is performed on each row in the dataset.
+
+Assign the name `degree` to the new column with `degree =`. The column should contain the total degree score for each node. This is done using the function `centrality_degree()`. With the two additional arguments in this function, specify the mode (in, out, or all) and, if a weighted degree score is desired, the column to be used as weights.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGFjdGl2YXRlKG5vZGVzKSAlPiUgIyBtYWtlIHN1cmUgdGhlIG5vZGVzIHRhYmxlIGlzIGFjdGl2ZVxuICBtdXRhdGUoZGVncmVlID0gY2VudHJhbGl0eV9kZWdyZWUobW9kZSA9ICdhbGwnLCB3ZWlnaHRzID0gd2VpZ2h0KSlcbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+sample_tbl_graph %&gt;% 
   activate(nodes) %&gt;% # make sure the nodes table is active
   mutate(degree = centrality_degree(mode = &#39;all&#39;, weights = weight))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>The data format allows you to use dplyr pipes <code>%&gt;%</code> to
-perform one calculation on the data, then pass that new dataframe along
-to the next function. Here we calculate the degree scores first, then
-filter to include only nodes with a degree score over two:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5zYW1wbGVfdGJsX2dyYXBoICU+JSBcbiAgYWN0aXZhdGUobm9kZXMpICU+JSBcbiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKG1vZGUgPSAndG90YWwnKSkgJT4lIFxuICBmaWx0ZXIoZGVncmVlID4yKVxuXG5gYGAifQ== -->
-<pre class="r"><code>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+The data format allows you to use dplyr pipes `%&gt;%` to perform one calculation on the data, then pass that new dataframe along to the next function. Here we calculate the degree scores first, then filter to include only nodes with a degree score over two:
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuXG5zYW1wbGVfdGJsX2dyYXBoICU+JSBcbiAgYWN0aXZhdGUobm9kZXMpICU+JSBcbiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKG1vZGUgPSAndG90YWwnKSkgJT4lIFxuICBmaWx0ZXIoZGVncmVlID4yKVxuXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+
 sample_tbl_graph %&gt;% 
   activate(nodes) %&gt;% 
   mutate(degree = centrality_degree(mode = &#39;total&#39;)) %&gt;% 
   filter(degree &gt;2)
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<style type="text/css">
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+&lt;style type=&quot;text/css&quot;&gt;
 .infobox {
-padding: 1em 1em 1em 1em;
-margin-bottom: 2px;
-border: 2px solid orange;
-border-radius: 10px;
-background: #f5f5f5 5px center/3em no-repeat;
+  padding: 1em 1em 1em 1em;
+  margin-bottom: 2px;
+  border: 2px solid orange;
+  border-radius: 10px;
+  background: #f5f5f5 5px center/3em no-repeat;
 }
-</style>
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<div class="infobox">
-<p>Note that the calculations are done one at a time. What difference
-would it make to your results if you filtered (for example based on a
-set of dates) and then calculated degree, rather than the other way
-around?</p>
-</div>
-</div>
-</div>
-<div id="summarising-the-network-data" class="section level3">
-<h3>Summarising the network data</h3>
-<p>To work with your new network metrics, the data can be outputted to a
-standard R dataframe. Create a new dataframe by doing this, using the
-tidyverse function for creating dataframes,
-<code>as_tibble()</code>:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmV0d29ya19tZXRyaWNzX2RmID0gc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGFjdGl2YXRlKG5vZGVzKSAlPiUgIyBtYWtlIHN1cmUgY29ycmVjdCB0YWJsZSBpcyBhY3RpdmVcbiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKHdlaWdodHMgPSB3ZWlnaHQsIG1vZGUgPSAnYWxsJykpICU+JSAjIGNhbGN1bGF0ZSBkZWdyZWVcbiAgbXV0YXRlKGJldHdlZW4gPSBjZW50cmFsaXR5X2JldHdlZW5uZXNzKHdlaWdodHMgPSB3ZWlnaHQsZGlyZWN0ZWQgPSBGKSkgJT4lICAjIGNhbGN1bGF0ZSBiZXR3ZWVubmVzcyBjZW50cmFsaXR5XG4gIGFzX3RpYmJsZSgpICMgdHVybiB0aGUgbm9kZXMgdGFibGUgaW50byBhIHBsYWluIGRhdGFmcmFtZVxuYGBgIn0= -->
-<pre class="r"><code>network_metrics_df = sample_tbl_graph %&gt;% 
+&lt;/style&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+::: {.infobox}
+Note that the calculations are done one at a time. What difference would it make to your results if you filtered (for example based on a set of dates) and then calculated degree, rather than the other way around?
+:::
+
+
+### Summarising the network data
+
+To work with your new network metrics, the data can be outputted to a standard R dataframe. Create a new dataframe by doing this, using the tidyverse function for creating dataframes, `as_tibble()`:
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubmV0d29ya19tZXRyaWNzX2RmID0gc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGFjdGl2YXRlKG5vZGVzKSAlPiUgIyBtYWtlIHN1cmUgY29ycmVjdCB0YWJsZSBpcyBhY3RpdmVcbiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKHdlaWdodHMgPSB3ZWlnaHQsIG1vZGUgPSAnYWxsJykpICU+JSAjIGNhbGN1bGF0ZSBkZWdyZWVcbiAgbXV0YXRlKGJldHdlZW4gPSBjZW50cmFsaXR5X2JldHdlZW5uZXNzKHdlaWdodHMgPSB3ZWlnaHQsZGlyZWN0ZWQgPSBGKSkgJT4lICAjIGNhbGN1bGF0ZSBiZXR3ZWVubmVzcyBjZW50cmFsaXR5XG4gIGFzX3RpYmJsZSgpICMgdHVybiB0aGUgbm9kZXMgdGFibGUgaW50byBhIHBsYWluIGRhdGFmcmFtZVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+network_metrics_df = sample_tbl_graph %&gt;% 
   activate(nodes) %&gt;% # make sure correct table is active
   mutate(degree = centrality_degree(weights = weight, mode = &#39;all&#39;)) %&gt;% # calculate degree
   mutate(between = centrality_betweenness(weights = weight,directed = F)) %&gt;%  # calculate betweenness centrality
   as_tibble() # turn the nodes table into a plain dataframe</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>This new table can be sorted, totals counted, and so forth:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmV0d29ya19tZXRyaWNzX2RmICU+JSBhcnJhbmdlKGRlc2MoZGVncmVlKSlcbmBgYCJ9 -->
-<pre class="r"><code>network_metrics_df %&gt;% arrange(desc(degree))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-</div>
-<div id="joining-additional-data" class="section level2">
-<h2>Joining additional data</h2>
-<p>The value of working with a data model and tidygraph is that we can
-merge additional tables of data attributes to our nodes or edges.
-Earlier, we explained how important it is that every node in your data
-has a unique ID. The downside of this, particularly for humanities
-research, is that it’s not easy to see who or what is behind a
-particular node. This can be solved by using a <code>join</code>
-command.</p>
-<p>In a separate table, we have a dataset of attributes about this set
-of nodes, including place and dates of birth and death, and gender.
-Using the <code>join()</code> commands, we can merge this table to the
-network data, and use it to sort, filter (and later visualise) the
-data:</p>
-<p>First, load the table of data using <code>read_csv</code>:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubm9kZV9hdHRyaWJ1dGVzID0gcmVhZF9jc3YoJ25vZGVfYXR0cmlidXRlcy5jc3YnKVxuXG5ub2RlX2F0dHJpYnV0ZXNcbmBgYCJ9 -->
-<pre class="r"><code>node_attributes = read_csv(&#39;node_attributes.csv&#39;)
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+This new table can be sorted, totals counted, and so forth:
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubmV0d29ya19tZXRyaWNzX2RmICU+JSBhcnJhbmdlKGRlc2MoZGVncmVlKSlcbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+network_metrics_df %&gt;% arrange(desc(degree))</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+## Joining additional data
+
+The value of working with a data model and tidygraph is that we can merge additional tables of data attributes to our nodes or edges. Earlier, we explained how important it is that every node in your data has a unique ID. The downside of this, particularly for humanities research, is that it&#39;s not easy to see who or what is behind a particular node. This can be solved by using a `join` command.
+
+In a separate table, we have a dataset of attributes about this set of nodes, including place and dates of birth and death, and gender. Using the `join()` commands, we can merge this table to the network data, and use it to sort, filter (and later visualise) the data:
+
+First, load the table of data using `read_csv`:
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubm9kZV9hdHRyaWJ1dGVzID0gcmVhZF9jc3YoJ25vZGVfYXR0cmlidXRlcy5jc3YnKVxuXG5ub2RlX2F0dHJpYnV0ZXNcbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+node_attributes = read_csv(&#39;node_attributes.csv&#39;)
 
 node_attributes</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>This table contains further information about the nodes, each of
-which are identified by their unique ID. This can be joined to the
-network object using <code>join()</code> commands:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGxlZnRfam9pbihub2RlX2F0dHJpYnV0ZXMsIGJ5ID0gJ25hbWUnKVxuYGBgIn0= -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+This table contains further information about the nodes, each of which are identified by their unique ID. This can be joined to the network object using `join()` commands:
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGxlZnRfam9pbihub2RlX2F0dHJpYnV0ZXMsIGJ5ID0gJ25hbWUnKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+sample_tbl_graph %&gt;% 
   left_join(node_attributes, by = &#39;name&#39;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Using this approach you can now make subsets of the network, and
-calculate global or node-level statistics for these. This example would
-return a network containing only individuals with politician listed as
-one of their occupations, for example:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGxlZnRfam9pbihub2RlX2F0dHJpYnV0ZXMsIGJ5ID0gJ25hbWUnKSAlPiUgIyBmaXJzdCBqb2luIHRoZSBhdHRyaWJ1dGVzIHRhYmxlIGFnYWluXG4gIGZpbHRlcihzdHJfZGV0ZWN0KG9jY3VwYXRpb25zLCBcInBvbGl0aWNpYW5cIikpICU+JSAjIHJldHVybnMgYW55IHJvdyB3aXRoIHRoZSBzdHJpbmcgJ3BvbGl0aWNpYW4nIGluIGl0XG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSh3ZWlnaHRzID0gd2VpZ2h0LCBtb2RlID0gJ2FsbCcpKSAjIGNhbGN1bGF0ZSBuZXR3b3JrIG1ldHJpY3Mgb24gdGhpcyBuZXcgc3Vic2V0IG9mIHRoZSBkYXRhLlxuICBcbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Using this approach you can now make subsets of the network, and calculate global or node-level statistics for these. This example would return a network containing only individuals with politician listed as one of their occupations, for example:
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGxlZnRfam9pbihub2RlX2F0dHJpYnV0ZXMsIGJ5ID0gJ25hbWUnKSAlPiUgIyBmaXJzdCBqb2luIHRoZSBhdHRyaWJ1dGVzIHRhYmxlIGFnYWluXG4gIGZpbHRlcihzdHJfZGV0ZWN0KG9jY3VwYXRpb25zLCBcXHBvbGl0aWNpYW5cXCkpICU+JSAjIHJldHVybnMgYW55IHJvdyB3aXRoIHRoZSBzdHJpbmcgJ3BvbGl0aWNpYW4nIGluIGl0XG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSh3ZWlnaHRzID0gd2VpZ2h0LCBtb2RlID0gJ2FsbCcpKSAjIGNhbGN1bGF0ZSBuZXR3b3JrIG1ldHJpY3Mgb24gdGhpcyBuZXcgc3Vic2V0IG9mIHRoZSBkYXRhLlxuICBcbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+sample_tbl_graph %&gt;% 
   left_join(node_attributes, by = &#39;name&#39;) %&gt;% # first join the attributes table again
-  filter(str_detect(occupations, &quot;politician&quot;)) %&gt;% # returns any row with the string &#39;politician&#39; in it
+  filter(str_detect(occupations, \politician\)) %&gt;% # returns any row with the string &#39;politician&#39; in it
   mutate(degree = centrality_degree(weights = weight, mode = &#39;all&#39;)) # calculate network metrics on this new subset of the data.
   </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<details>
-<p><br></p>
-<summary>
-Node attributes could be added and used to filter at several steps:
-before the network is created, and before or after network metrics are
-calculated. What differences might these make?
-</summary>
-<p>Make sure you know at which stage you are calculating network
-metrics. If you calculate them after filtering, you’ll get a set of
-metrics based on a new, subsetted network.</p>
-</details>
-<p><br></p>
-<p>This new table can be outputted as a dataframe, as above. Here we use
-this to calculate the highest-degree nodes from the ‘polticians
-network’, keep their real names, and sort in descending order of
-degree:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGxlZnRfam9pbihub2RlX2F0dHJpYnV0ZXMsIGJ5ID0gJ25hbWUnKSAlPiUgIyBmaXJzdCBqb2luIHRoZSBhdHRyaWJ1dGVzIHRhYmxlIGFnYWluXG4gIGZpbHRlcihzdHJfZGV0ZWN0KG9jY3VwYXRpb25zLCBcInBvbGl0aWNpYW5cIikpICU+JSAjIHJldHVybnMgYW55IHJvdyBjb250YWluaW5nIHRoZSBzdHJpbmcgJ3BvbGl0aWNpYW4nXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSh3ZWlnaHRzID0gd2VpZ2h0LCBtb2RlID0gJ2FsbCcpKSAgJT4lICAgIyBjYWxjdWxhdGUgbmV0d29yayBtZXRyaWNzIG9uIHRoaXMgbmV3IHN1YnNldCBvZiB0aGUgZGF0YS5cbmFzX3RpYmJsZSgpICU+JSBcbiAgYXJyYW5nZShkZXNjKGRlZ3JlZSkpICU+JSBzZWxlY3QobmFtZSwgbWFpbl9uYW1lLCBkZWdyZWUpXG5gYGAifQ== -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+&lt;details&gt;
+
+&lt;br&gt;
+
+&lt;summary&gt;Node attributes could be added and used to filter at several steps: before the network is created, and before or after network metrics are calculated. What differences might these make?&lt;/summary&gt;
+
+Make sure you know at which stage you are calculating network metrics. If you calculate them after filtering, you&#39;ll get a set of metrics based on a new, subsetted network.
+
+&lt;/details&gt;
+
+&lt;br&gt;
+
+This new table can be outputted as a dataframe, as above. Here we use this to calculate the highest-degree nodes from the &#39;polticians network&#39;, keep their real names, and sort in descending order of degree:
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGxlZnRfam9pbihub2RlX2F0dHJpYnV0ZXMsIGJ5ID0gJ25hbWUnKSAlPiUgIyBmaXJzdCBqb2luIHRoZSBhdHRyaWJ1dGVzIHRhYmxlIGFnYWluXG4gIGZpbHRlcihzdHJfZGV0ZWN0KG9jY3VwYXRpb25zLCBcXHBvbGl0aWNpYW5cXCkpICU+JSAjIHJldHVybnMgYW55IHJvdyBjb250YWluaW5nIHRoZSBzdHJpbmcgJ3BvbGl0aWNpYW4nXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSh3ZWlnaHRzID0gd2VpZ2h0LCBtb2RlID0gJ2FsbCcpKSAgJT4lICAgIyBjYWxjdWxhdGUgbmV0d29yayBtZXRyaWNzIG9uIHRoaXMgbmV3IHN1YnNldCBvZiB0aGUgZGF0YS5cbmFzX3RpYmJsZSgpICU+JSBcbiAgYXJyYW5nZShkZXNjKGRlZ3JlZSkpICU+JSBzZWxlY3QobmFtZSwgbWFpbl9uYW1lLCBkZWdyZWUpXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+sample_tbl_graph %&gt;% 
   left_join(node_attributes, by = &#39;name&#39;) %&gt;% # first join the attributes table again
-  filter(str_detect(occupations, &quot;politician&quot;)) %&gt;% # returns any row containing the string &#39;politician&#39;
+  filter(str_detect(occupations, \politician\)) %&gt;% # returns any row containing the string &#39;politician&#39;
   mutate(degree = centrality_degree(weights = weight, mode = &#39;all&#39;))  %&gt;%   # calculate network metrics on this new subset of the data.
 as_tibble() %&gt;% 
   arrange(desc(degree)) %&gt;% select(name, main_name, degree)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="social-network-analysis-with-r" class="section level2">
-<h2>Social Network Analysis with R</h2>
-<p>This last part goes through some of the functions which are more
-related to the ‘social network analysis’. Many of these are accessed
-directly through the package <code>igraph</code>.</p>
-<div id="transitivity-triads-structural-balance" class="section level3">
-<h3>Transitivity, Triads, structural balance</h3>
-<p>As we learned in the last lesson, counting the ratio of completed
-triangles in a network is a good way to understand its structure. This
-ratio is known as the <strong>clustering coefficient</strong>, and there
-are two types: <strong>global</strong>, which measures the ratio of
-complete and not complete triangles in the entire network, and
-<strong>local</strong>, which measures the complete triangles for each
-individual node. This measurement is also known as
-<strong>transitivity</strong>.</p>
-<p>Use the following command to calculate the global clustering, or
-transitivity of the network. It returns a single number, which is just
-the ratio of completed triangles to the total possible number of
-triangles in the graph:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgdHJhbnNpdGl2aXR5KHR5cGUgPSAnZ2xvYmFsJylcbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph %&gt;% transitivity(type = &#39;global&#39;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Use the following to measure the local clustering coefficient for
-each node in the graph. It returns a vector of numbers, one for each
-node:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgdHJhbnNpdGl2aXR5KHR5cGUgPSAnbG9jYWwnKSBcblxuYGBgIn0= -->
-<pre class="r"><code>sample_tbl_graph %&gt;% transitivity(type = &#39;local&#39;) 
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Anoter related measurement is the average local clustering,
-calculated using the following:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgdHJhbnNpdGl2aXR5KHR5cGUgPSAnYXZlcmFnZScpIFxuXG5cbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph %&gt;% transitivity(type = &#39;average&#39;) 
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>We can also calculate the total reciprocity of a graph (the
-proportion of links which are reciprocated):</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgcmVjaXByb2NpdHkoKVxuXG5cbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph %&gt;% reciprocity()
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>We can also calculate the ‘triad census’, the number of each type of
-triad in a directed network. First, run the <code>triad_census()</code>
-function, and turn it into a dataframe with one column. Next add the
-correct triad codes as a second column.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2Vuc3VzID0gc2FtcGxlX3RibF9ncmFwaCAlPiUgdHJpYWRfY2Vuc3VzKCkgJT4lIGFzX3RpYmJsZSgpXG5cbmNlbnN1cyR0eXBlIDwtIGMoXCIwMDNcIixcIjAxMlwiLFwiMTAyXCIsXCIwMjFEXCIsXCIwMjFVXCIsXCIwMjFDXCIsXCIxMTFEXCIsXCIxMTFVXCIsXG4gICAgICAgICAgICAgICAgICAgICAgICAgXCIwMzBUXCIsXCIwMzBDXCIsXCIyMDFcIixcIjEyMERcIixcIjEyMFVcIixcIjEyMENcIixcIjIxMFwiLFwiMzAwXCIpXG5cbmNlbnN1c1xuYGBgIn0= -->
-<pre class="r"><code>census = sample_tbl_graph %&gt;% triad_census() %&gt;% as_tibble()
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
 
-census$type &lt;- c(&quot;003&quot;,&quot;012&quot;,&quot;102&quot;,&quot;021D&quot;,&quot;021U&quot;,&quot;021C&quot;,&quot;111D&quot;,&quot;111U&quot;,
-                         &quot;030T&quot;,&quot;030C&quot;,&quot;201&quot;,&quot;120D&quot;,&quot;120U&quot;,&quot;120C&quot;,&quot;210&quot;,&quot;300&quot;)
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+## Social Network Analysis with R
+
+This last part goes through some of the functions which are more related to the &#39;social network analysis&#39;. Many of these are accessed directly through the package `igraph`.
+
+### Transitivity, Triads, structural balance
+
+As we learned in the last lesson, counting the ratio of completed triangles in a network is a good way to understand its structure. This ratio is known as the **clustering coefficient**, and there are two types: **global**, which measures the ratio of complete and not complete triangles in the entire network, and **local**, which measures the complete triangles for each individual node. This measurement is also known as **transitivity**.
+
+Use the following command to calculate the global clustering, or transitivity of the network. It returns a single number, which is just the ratio of completed triangles to the total possible number of triangles in the graph:
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgdHJhbnNpdGl2aXR5KHR5cGUgPSAnZ2xvYmFsJylcbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+sample_tbl_graph %&gt;% transitivity(type = &#39;global&#39;)</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Use the following to measure the local clustering coefficient for each node in the graph. It returns a vector of numbers, one for each node:
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgdHJhbnNpdGl2aXR5KHR5cGUgPSAnbG9jYWwnKSBcblxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+sample_tbl_graph %&gt;% transitivity(type = &#39;local&#39;) 
+</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Anoter related measurement is the average local clustering, calculated using the following:
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgdHJhbnNpdGl2aXR5KHR5cGUgPSAnYXZlcmFnZScpIFxuXG5cbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+sample_tbl_graph %&gt;% transitivity(type = &#39;average&#39;) 
+</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+We can also calculate the total reciprocity of a graph (the proportion of links which are reciprocated):
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgcmVjaXByb2NpdHkoKVxuXG5cbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+sample_tbl_graph %&gt;% reciprocity()
+</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+We can also calculate the &#39;triad census&#39;, the number of each type of triad in a directed network. First, run the `triad_census()` function, and turn it into a dataframe with one column. Next add the correct triad codes as a second column.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuY2Vuc3VzID0gc2FtcGxlX3RibF9ncmFwaCAlPiUgdHJpYWRfY2Vuc3VzKCkgJT4lIGFzX3RpYmJsZSgpXG5cbmNlbnN1cyR0eXBlIDwtIGMoXFwwMDNcXCxcXDAxMlxcLFxcMTAyXFwsXFwwMjFEXFwsXFwwMjFVXFwsXFwwMjFDXFwsXFwxMTFEXFwsXFwxMTFVXFwsXG4gICAgICAgICAgICAgICAgICAgICAgICAgXFwwMzBUXFwsXFwwMzBDXFwsXFwyMDFcXCxcXDEyMERcXCxcXDEyMFVcXCxcXDEyMENcXCxcXDIxMFxcLFxcMzAwXFwpXG5cbmNlbnN1c1xuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+census = sample_tbl_graph %&gt;% triad_census() %&gt;% as_tibble()
+
+census$type &lt;- c(\003\,\012\,\102\,\021D\,\021U\,\021C\,\111D\,\111U\,
+                         \030T\,\030C\,\201\,\120D\,\120U\,\120C\,\210\,\300\)
 
 census</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>You can now connect these codes to the triad diagrams from the last
-chapter, and use them to infer things about the structure and formation
-of the network.</p>
-<details>
-<summary>
-Imagine that this is a complete network. Why, for example, might 021U (A
-and B both send a letter to C, but there’s not reciprocation, and they
-are not connected to each other) be such a common triad?
-</summary>
-<p>The answer lies in the origin of this network, as a letter archive.
-Because a letter archive contains mostly incoming letters to an ego
-node, many of the triads are pairs of nodes who both have an incoming
-connection to one of these ego nodes, but are not themselves
-connected.</p>
-</details>
-<p><br></p>
-<p>Another set of metrics are to do with groups found in a network.
-First, components. A component is a group of nodes which are connected
-together through a path in the network. The <code>components()</code>
-function returns a list which includes a named vector with a component
-number for each node, along with the number of nodes in each component,
-and the total number of components. Looking at this list with
-<code>glimpse</code> tells us that there are six components, the largest
-being 237 nodes and the smallest has 2.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjpjb21wb25lbnRzKCkgJT4lIGdsaW1wc2UoKVxuYGBgIn0= -->
-<pre class="r"><code>sample_tbl_graph %&gt;% igraph::components() %&gt;% glimpse()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Another global metric we can calculate is the number of
-<strong>cliques</strong> in a network. A clique is a fully connected set
-of nodes. We can calculate the total number of cliques with
-<code>clique_num</code>:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-</div>
-<div id="louvain-community-detection" class="section level2">
-<h2>Louvain community detection</h2>
-<p>Another way to look at groups in networks is to use community
-detection. As explained in the previous chapter, community detection
-attempts to find groups of nodes which are more connected to each other
-than they are to nodes outside the group. Unlike components or cliques,
-communities can be found using a number of methods. Here, we’ll use the
-Louvain algorithm, which was introduced in the previous lesson. To make
-it easy to use the results, we’ll calculate the community for each node
-using tidygraph. This particular implementation of the algorithm only
-works for undirected graphs, so we have to create our network again from
-scratch, this time specifying that it’s <strong>undirected</strong>.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5zYW1wbGVfdGJsX2dyYXBoX3UgPSBlZGdlX2xpc3QgJT4lIFxuICBhc190YmxfZ3JhcGgoZGlyZWN0ZWQgPSBGQUxTRSlcblxuc2FtcGxlX3RibF9ncmFwaF91ICU+JSBcbiAgbXV0YXRlKGdyb3VwID0gZ3JvdXBfbG91dmFpbigpKVxuYGBgIn0= -->
-<pre class="r"><code>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+You can now connect these codes to the triad diagrams from the last chapter, and use them to infer things about the structure and formation of the network.
+
+&lt;details&gt;
+
+&lt;summary&gt;Imagine that this is a complete network. Why, for example, might 021U (A and B both send a letter to C, but there&#39;s not reciprocation, and they are not connected to each other) be such a common triad?&lt;/summary&gt;
+
+The answer lies in the origin of this network, as a letter archive. Because a letter archive contains mostly incoming letters to an ego node, many of the triads are pairs of nodes who both have an incoming connection to one of these ego nodes, but are not themselves connected.
+
+&lt;/details&gt;
+
+&lt;br&gt;
+
+Another set of metrics are to do with groups found in a network. First, components. A component is a group of nodes which are connected together through a path in the network. The `components()` function returns a list which includes a named vector with a component number for each node, along with the number of nodes in each component, and the total number of components. Looking at this list with `glimpse` tells us that there are six components, the largest being 237 nodes and the smallest has 2.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjpjb21wb25lbnRzKCkgJT4lIGdsaW1wc2UoKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+sample_tbl_graph %&gt;% igraph::components() %&gt;% glimpse()</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Another global metric we can calculate is the number of **cliques** in a network. A clique is a fully connected set of nodes. We can calculate the total number of cliques with `clique_num`:
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+## Louvain community detection
+
+Another way to look at groups in networks is to use community detection. As explained in the previous chapter, community detection attempts to find groups of nodes which are more connected to each other than they are to nodes outside the group. Unlike components or cliques, communities can be found using a number of methods. Here, we&#39;ll use the Louvain algorithm, which was introduced in the previous lesson. To make it easy to use the results, we&#39;ll calculate the community for each node using tidygraph. This particular implementation of the algorithm only works for undirected graphs, so we have to create our network again from scratch, this time specifying that it&#39;s **undirected**.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuXG5zYW1wbGVfdGJsX2dyYXBoX3UgPSBlZGdlX2xpc3QgJT4lIFxuICBhc190YmxfZ3JhcGgoZGlyZWN0ZWQgPSBGQUxTRSlcblxuc2FtcGxlX3RibF9ncmFwaF91ICU+JSBcbiAgbXV0YXRlKGdyb3VwID0gZ3JvdXBfbG91dmFpbigpKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+
 sample_tbl_graph_u = edge_list %&gt;% 
   as_tbl_graph(directed = FALSE)
 
 sample_tbl_graph_u %&gt;% 
   mutate(group = group_louvain())</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>By turning this information into a dataframe, we can get some basic
-statistics on the groups. By adding this information to the node
-information we collected earlier, we can get a summary of the average
-degree and betweenness scores for each of the detected communities:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaF91ICU+JSBcbiAgbXV0YXRlKGdyb3VwID0gZ3JvdXBfbG91dmFpbigpKSU+JSBcbiAgYWN0aXZhdGUobm9kZXMpICU+JSAjIG1ha2Ugc3VyZSBjb3JyZWN0IHRhYmxlIGlzIGFjdGl2ZVxuICBtdXRhdGUoZGVncmVlID0gY2VudHJhbGl0eV9kZWdyZWUod2VpZ2h0cyA9IHdlaWdodCwgbW9kZSA9ICdhbGwnKSkgJT4lICMgY2FsY3VsYXRlIGRlZ3JlZVxuICBtdXRhdGUoYmV0d2VlbiA9IGNlbnRyYWxpdHlfYmV0d2Vlbm5lc3Mod2VpZ2h0cyA9IHdlaWdodCxkaXJlY3RlZCA9IEYpKSAlPiUgICMgY2FsY3VsYXRlIGJldHdlZW5uZXNzIGNlbnRyYWxpdHlcbiAgYXNfdGliYmxlKCkgICU+JSBncm91cF9ieShncm91cCkgJT4lXG4gIHN1bW1hcmlzZShtZWFuX2RlZ3JlZSA9IG1lYW4oZGVncmVlLG5hLnJtID0gVFJVRSksIG1lYW5fYmV0d2VlbiA9IG1lYW4oYmV0d2VlbiwgbmEucm0gPSBUUlVFKSwgbm9kZXMgPSBuKCkpICU+JSBwaXZvdF9sb25nZXIoMjo0KSAlPiUgXG4gIGdncGxvdCgpICsgZ2VvbV9jb2woYWVzKHggPSBncm91cCwgeSA9IHZhbHVlKSkgKyBmYWNldF93cmFwKH5uYW1lLCBzY2FsZXMgPSAnZnJlZScpXG5cbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph_u %&gt;% 
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+By turning this information into a dataframe, we can get some basic statistics on the groups. By adding this information to the node information we collected earlier, we can get a summary of the average degree and betweenness scores for each of the detected communities:
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlX3RibF9ncmFwaF91ICU+JSBcbiAgbXV0YXRlKGdyb3VwID0gZ3JvdXBfbG91dmFpbigpKSU+JSBcbiAgYWN0aXZhdGUobm9kZXMpICU+JSAjIG1ha2Ugc3VyZSBjb3JyZWN0IHRhYmxlIGlzIGFjdGl2ZVxuICBtdXRhdGUoZGVncmVlID0gY2VudHJhbGl0eV9kZWdyZWUod2VpZ2h0cyA9IHdlaWdodCwgbW9kZSA9ICdhbGwnKSkgJT4lICMgY2FsY3VsYXRlIGRlZ3JlZVxuICBtdXRhdGUoYmV0d2VlbiA9IGNlbnRyYWxpdHlfYmV0d2Vlbm5lc3Mod2VpZ2h0cyA9IHdlaWdodCxkaXJlY3RlZCA9IEYpKSAlPiUgICMgY2FsY3VsYXRlIGJldHdlZW5uZXNzIGNlbnRyYWxpdHlcbiAgYXNfdGliYmxlKCkgICU+JSBncm91cF9ieShncm91cCkgJT4lXG4gIHN1bW1hcmlzZShtZWFuX2RlZ3JlZSA9IG1lYW4oZGVncmVlLG5hLnJtID0gVFJVRSksIG1lYW5fYmV0d2VlbiA9IG1lYW4oYmV0d2VlbiwgbmEucm0gPSBUUlVFKSwgbm9kZXMgPSBuKCkpICU+JSBwaXZvdF9sb25nZXIoMjo0KSAlPiUgXG4gIGdncGxvdCgpICsgZ2VvbV9jb2woYWVzKHggPSBncm91cCwgeSA9IHZhbHVlKSkgKyBmYWNldF93cmFwKH5uYW1lLCBzY2FsZXMgPSAnZnJlZScpXG5cbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+sample_tbl_graph_u %&gt;% 
   mutate(group = group_louvain())%&gt;% 
   activate(nodes) %&gt;% # make sure correct table is active
   mutate(degree = centrality_degree(weights = weight, mode = &#39;all&#39;)) %&gt;% # calculate degree
@@ -2339,9 +2582,11 @@ degree and betweenness scores for each of the detected communities:</p>
   summarise(mean_degree = mean(degree,na.rm = TRUE), mean_between = mean(between, na.rm = TRUE), nodes = n()) %&gt;% pivot_longer(2:4) %&gt;% 
   ggplot() + geom_col(aes(x = group, y = value)) + facet_wrap(~name, scales = &#39;free&#39;)
 </code></pre>
+<p>```</p>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+</div>
 </div>
 <div id="reading-for-next-week" class="section level2">
 <h2>Reading for next week</h2>
@@ -2355,7 +2600,7 @@ Book Culture). <strong>Chapter 5, &#39;Quantifying Culture&#39; (<a href="https:
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiV2VlayA0LCBDbGFzcyAyOiBOZXR3b3JrIEFuYWx5c2lzIHdpdGggUiIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKCgojIyBJbnRyb2R1Y3Rpb24KCkluIHRoaXMgY2xhc3MsIHdlJ2xsIHRhbGsgdGhyb3VnaCBjcmVhdGluZyBhbmQgYW5hbHlzaW5nIGEgbmV0d29yayBvYmplY3QgaW4gUi4gVGhlIG5ldHdvcmsgd2UnbGwgd29yayB3aXRoIGlzIGEgc2FtcGxlIG9mIGNvcnJlc3BvbmRlbmNlIGRhdGEgdGFrZW4gZnJvbSB0aGUgQnJpdGlzaCBTdGF0ZSBQYXBlcnMgaW4gdGhlIHNldmVudGVlbnRoIGNlbnR1cnkuCgojIyBOZXR3b3JrIGRhdGEgc3RydWN0dXJlcwoKTmV0d29yayBkYXRhIGNvbWVzIGluIGEgbnVtYmVyIG9mIGZvcm1zLiBUd28gY29tbW9uIG9uZXMgYXJlIGFkamFjZW5jeSBtYXRyaWNlcyBhbmQgZWRnZSBsaXN0cy4gQW4gYWRqYWNlbmN5IG1hdHJpeCBpcyBhIG1hdHJpeCBvZiByb3dzIGFuZCBjb2x1bW5zLCBvbmUgZm9yIGVhY2ggbm9kZS4gSWYgdGhlcmUgaXMgYSBsaW5rIGJldHdlZW4gdHdvIG5vZGVzLCBhIDEgaXMgcHV0IGluIGF0IHRoYXQgcG9pbnQuIElmIGl0IGlzIGEgd2VpZ2h0ZWQgbmV0d29yaywgdGhlIHdlaWdodCBjYW4gYmUgZW50ZXJlZCBpbiB0aGUgY29ycmVjdCBzcGFjZS4gSW4gc29tZSBjYXNlcywgeW91ciBkYXRhIG1heSBiZSBpbiBhIGZvcm1hdCB3aGVyZSBpdCBpcyBlYXN5IHRvIHVzZSBpdCBhcyBhbiBhZGphY2VuY3kgbWF0cml4LgoKQWRqYWNlbmN5IG1hdHJpY2VzIGNhbiBiZSBlYXNpbHkgcmVhZCBpbnRvIFIgdXNpbmcgYGlncmFwaGAgYW5kIGBncmFwaF9mcm9tX2FkamFjZW5jeV9tYXRyaXgoKWAuCgpUaGUgb3RoZXIgY29tbW9uIHR5cGUgaXMgd2hhdCB3ZSB3aWxsIHdvcmsgd2l0aCBpbiB0aGlzIGxlc3NvbjogYW4gZWRnZSBsaXN0LiBBbiBlZGdlIGxpc3QgaXMgYWN0dWFsbHkgYWxzbyBhICdzcGFyc2UgbWF0cml4Jy4KCiMjIENyZWF0aW5nIGEgTmV0d29yayBPYmplY3QgaW4gUiBmcm9tIGFuIEVkZ2UgTGlzdAoKT25lIG9mIHRoZSBlYXNpZXN0IGRhdGEgZm9ybWF0cyB0byBjb25zdHJ1Y3QgYSBuZXR3b3JrIGlzIGFuIGVkZ2UgbGlzdDogYSBzaW1wbGUgZGF0YWZyYW1lIHdpdGggdHdvIGNvbHVtbnMsIHJlcHJlc2VudGluZyB0aGUgY29ubmVjdGlvbnMgYmV0d2VlbiB0d28gbm9kZXMsIG9uZSBwZXIgcm93LiBJZiB0aGUgbmV0d29yayBpcyBkaXJlY3RlZCwgZ2VuZXJhbGx5IHRoZSAnU291cmNlJyBub2RlIGlzIG9uIHRoZSBsZWZ0IHNpZGUsIGFuZCB0aGUgJ1RhcmdldCcgbm9kZSBvbiB0aGUgcmlnaHQuIEl0IG1ha2VzIHBhcnRpY3VsYXIgc2Vuc2Ugd2l0aCBjb3JyZXNwb25kZW5jZSBkYXRhLCB3aGljaCBpcyBvZnRlbiBzdG9yZWQgYXMgcmVjb3JkcyBvZiBsZXR0ZXJzIHdpdGggYSAnZnJvbScgYW5kIGEgJ3RvJy0tLW1vcmUgb3IgbGVzcyBhIHJlYWR5LW1hZGUgZWRnZSBsaXN0LiBJbiBhIGNvcnJlc3BvbmRlbmNlIGRhdGFzZXQgeW91IG1pZ2h0IGFsc28gaGF2ZSBtdWx0aXBsZSBzZXRzIG9mIGVhY2ggb2YgdGhlIGVkZ2VzIChtdWx0aXBsZSBsZXR0ZXJzIGJldHdlZW4gdGhlIHNhbWUgcGFpciBvZiBpbmRpdmlkdWFscykuIFRoaXMgd2lsbCBiZSBhZGRlZCB0byB0aGUgZWRnZXMgYXMgYSAnd2VpZ2h0Jy4KCldlIHdpbGwgdXNlIHRocmVlIFIgbmV0d29yayBsaWJyYXJpZXMgdG8gZG8gYWxtb3N0IGV2ZXJ5dGhpbmcgbmV0d29yay1yZWxhdGVkLCBmcm9tIGFuYWx5c2lzIHRvIHZpc3VhbGlzYXRpb246IGBpZ3JhcGhgLCBgdGlkeWdyYXBoYCBhbmQgYGdncmFwaGAuIFRoZSBnb2FsIGlzIHRvIHBvcnQgZXZlcnl0aGluZyB0byBhIGZvcm1hdCB3aGljaCBpcyBlYXN5IHRvIHdvcmsgd2l0aCB1c2luZyBleGlzdGluZyBhbiBlc3RhYmxpc2hlZCBkYXRhIGFuYWx5c2lzIHdvcmtmbG93LiBUaGF0IGZvcm1hdCBpcyBrbm93biBhcyAndGlkeSBkYXRhJywgYW5kIGl0IGlzIGEgd2F5IG9mIHdvcmtpbmcgd2l0aCBkYXRhIHdoaWNoIGlzIGVhc2lseSB0cmFuc2ZlcmFibGUgYWNyb3NzIGEgcmFuZ2Ugb2YgdXNlcy4gSXQgYWxzbyBtZWFucyB5b3UgbmVlZCB0byBsZWFybiB2ZXJ5IGxpdHRsZSBuZXcgcHJvZ3JhbW1pbmcgdG8gZG8gbmV0d29yayBhbmFseXNpcyBpZiB5b3Ugc3RheSB3aXRoaW4gdGhpcyAnZWNvc3lzdGVtJy4KCiMjIyBJbXBvcnQgTmV0d29yayBEYXRhCgpUaGUgd29ya2Zsb3cgdXNlcyBhIG51bWJlciBvZiBSIHBhY2thZ2VzLiBJbiB0aGUgQ1NDIE5vdGVib29rcyBlbnZpcm9ubWVudCwgdGhlc2UgaGF2ZSBhbHJlYWR5IGJlZW4gaW5zdGFsbGVkIGFuZCBjYW4gYmUgbG9hZGVkIHVzaW5nIHRoZSBjb21tYW5kcyBiZWxvdy4gSWYgeW91IGFyZSBkb2luZyB0aGlzIG9uIGEgbG9jYWwgbWFjaGluZSwgeW91IG1heSBoYXZlIHRvIGluc3RhbGwgdGhlbSBmaXJzdCB1c2luZyB0aGUgY29tbWFuZCBgaW5zdGFsbC5wYWNrYWdlcygpYCwgd2l0aCB0aGUgcGFja2FnZSBuYW1lIHNwZWNpZmllZCBhcyBhIHN0cmluZywgZm9yIGV4YW1wbGUgYGluc3RhbGwucGFja2FnZXMoJ2lncmFwaCcpYC4KCmBgYHtyIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CgpsaWJyYXJ5KHRpZHl2ZXJzZSkKbGlicmFyeShpZ3JhcGgpCmxpYnJhcnkodGlkeWdyYXBoKQoKYGBgCgpJbiB0aGlzIGNsYXNzLCB3ZSdsbCB1c2UgYSBkYXRhc2V0IGRlcml2ZWQgZnJvbSB0aGUgRW5nbGlzaCBTdGF0ZSBQYXBlcnMgZHVyaW5nIHRoZSBTdHVhcnQgZXJhICgxNjAzLTE3MTQpLiBJdCB0YWtlcyB0aGUgZm9ybSBvZiBhIC5jc3YgY29udGFpbmluZyB0aGUgaW5mb3JtYXRpb24gb24gdGhlIGF1dGhvciwgcmVjaXBpZW50LCBhbmQgZGF0ZSBvZiBzZW5kaW5nIGZvciBhIHNtYWxsIHNhbXBsZSBvZiBzdGF0ZSBsZXR0ZXJzIHJlY2VpdmVkIGJldHdlZW4gMTY3MCBhbmQgMTY3Mi4KClJlYWQgdGhlIGZpbGUgaW50byBSIHdpdGggdGhlIGByZWFkX2NzdigpYCBmdW5jdGlvbiBmcm9tIGEgcHJldmlvdXMgbGVzc29uOgoKYGBge3J9CmxldHRlcnMgPSByZWFkX2NzdigibGV0dGVyX2RhdGEuY3N2IiwgY29sX3R5cGVzID0gY29scyguZGVmYXVsdCA9ICJjIikpCgpsZXR0ZXJzCmBgYAoKVGhlIGxldHRlcnMgZGF0YXNldCBpcyBhIHNpbXBsZSBkYXRhZnJhbWUuIEVhY2ggcm93IHJlcHJlc2VudHMgYSBsZXR0ZXIgcmVjb3JkLCBhbmQgaGFzIGEgdW5pcXVlIElELiBFc3NlbnRpYWxseSwgZWFjaCByb3cgaXMgYSByZWNvcmQgb2Ygd2hvIHRoZSBhdXRob3IgYW5kIHJlY2lwaWVudCBvZiB0aGUgbGV0dGVyLiBFYWNoIG9mIHRoZXNlIHNlbmRlcnMgYW5kIHJlY2lwaWVudHMgYWxzbyBoYXZlIGJvdGggYSB1bmlxdWUgSUQsIGFuZCB0aGUgb3JpZ2luYWwgbmFtZSBvZiB0aGUgbGV0dGVyIHdyaXRlciBhbmQgc2VuZGVyLiBUaGUgdW5pcXVlIElEIGlzIHVzZWQgYmVjYXVzZSBpdCdzIHF1aXRlIGxpa2VseSB0aGF0IHRoZSBuYW1lcyBhcmUgbm90IHVuaXF1ZSwgYW5kIHRoZSBuZXR3b3JrIGNvdWxkIGNvbWJpbmUgdHdvIG5vZGVzIHdpdGggdGhlIHNhbWUgbmFtZSB0b2dldGhlciwgZm9yIGV4YW1wbGUuCgojIyMgTWFrZSBhbiBlZGdlIGxpc3QKClRoaXMgaXMgdXNlZCB0byBjb25zdHJ1Y3QgYW4gZWRnZSBsaXN0LiBJZiB5b3UgaGF2ZSBtdWx0aXBsZSBsZXR0ZXJzIGJldHdlZW4gaW5kaXZpZHVhbHMsIHlvdSBjYW4gY291bnQgdGhlbSBhbmQgdXNlIGFzIGEgd2VpZ2h0IGluIHRoZSBuZXR3b3JrLCBvciB5b3UgY2FuIGlnbm9yZSBpdC4gVGhpcyBpcyBkb25lIHdpdGggYHRpZHl2ZXJzZWAgY29tbWFuZHMgd2UgbGVhcm5lZCBwcmV2aW91c2x5OiBgZ3JvdXBfYnkoKWAgYW5kIGB0YWxseSgpYCwgY2hhbmdpbmcgdGhlIG5hbWUgb2YgdGhlIG5ldyBjb2x1bW4gdG8gJ3dlaWdodCcuCgpgYGB7ciBtZXNzYWdlPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQoKZWRnZV9saXN0ID0gbGV0dGVycyAlPiUgCiAgZ3JvdXBfYnkoZnJvbV9pZCwgdG9faWQpICU+JSAKICB0YWxseShuYW1lID0gJ3dlaWdodCcpCgplZGdlX2xpc3QKCmBgYAoKTm93IHlvdSBzZWUgZWFjaCB1bmlxdWUgY29tYmluYXRpb24gb2Ygc2VuZGVyIGFuZCByZWNpcGllbnQuIElmIHRoZXJlIGFyZSBtdWx0aXBsZSBsZXR0ZXJzLCB0aGlzIGlzIG5vdyBzaWduaWZpZWQgYnkgYSB3ZWlnaHQgb2YgbW9yZSB0aGFuIG9uZSBpbiB0aGUgd2VpZ2h0IGNvbHVtbi4gWW91J2xsIGFsc28gbm90aWNlIHRoYXQgdGhlIG90aGVyIGluZm9ybWF0aW9uIChsZXR0ZXIgSURzIGFuZCBhY3R1YWwgbmFtZXMpIGhhcyBkaXNhcHBlYXJlZC4gVGhpcyBpcyBub3QgbmVlZGVkIHRvIG1ha2UgdGhlIG5ldHdvcmssIGJ1dCB3ZSBjYW4gYnJpbmcgdGhlIG5hbWUgaW5mb3JtYXRpb24gYmFjayBsYXRlci4KCiMjIyBUdXJuIHRoZSBlZGdlIGxpc3QgaW50byBhIHRibF9ncmFwaAoKTmV4dCB0cmFuc2Zvcm0gdGhlIGVkZ2UgbGlzdCBpbnRvIGEgbmV0d29yayBvYmplY3QgY2FsbGVkIGEgdGJsX2dyYXBoLCB1c2luZyBbdGlkeWdyYXBoXShodHRwczovL3d3dy5kYXRhLWltYWdpbmlzdC5jb20vMjAxNy9pbnRyb2R1Y2luZy10aWR5Z3JhcGgvKS4gQSB0YmxfZ3JhcGggaXMgYSBncmFwaCBvYmplY3Qgd2hpY2ggY2FuIGJlIG1hbmlwdWxhdGVkIHVzaW5nIHRpZHl2ZXJzZSBncmFtbWFyLiBUaGlzIG1lYW5zIHlvdSBjYW4gY3JlYXRlIGEgbmV0d29yayBhbmQgdGhlbiB1c2UgYSByYW5nZSBvZiBzdGFuZGFyZCBkYXRhIGFuYWx5c2lzIGZ1bmN0aW9ucyBvbiBpdCBhcyBuZWVkZWQuCgpVc2UgYGFzX3RibF9ncmFwaCgpYCB0byB0dXJuIHRoZSBlZGdlIGxpc3QgaW50byBhIG5ldHdvcmsuIFRoZSBmaXJzdCB0d28gY29sdW1ucyB3aWxsIGJlIHRha2VuIGFzIHRoZSBmcm9tIGFuZCB0byBkYXRhLCBhbmQgYW55IGFkZGl0aW9uYWwgY29sdW1ucyBhZGRlZCBhcyBhdHRyaWJ1dGVzLiBBbiBpbXBvcnRhbnQgb3B0aW9uIGlzIHRoZSBgZGlyZWN0ZWQgPWAgYXJndW1lbnQuIFRoaXMgd2lsbCBzcGVjaWZ5IHdoZXRoZXIgdGhlIG5ldHdvcmsgaXMgZGlyZWN0ZWQgKHRoZSBwYXRoIGdvZXMgZnJvbSB0aGUgZmlyc3QgY29sdW1uIHRvIHRoZSBzZWNvbmQpIG9yIHVuZGlyZWN0ZWQuIEJlY2F1c2UgdGhpcyBuZXR3b3JrIGlzIGluaGVyZW50bHkgZGlyZWN0ZWQgKGEgbGV0dGVyIGlzIHNlbnQgZnJvbSBvbmUgcGVyc29uIHRvIGFub3RoZXIpLCB3ZSB1c2UgYGRpcmVjdGVkID0gVFJVRWAuIEluIG1hbnkgY2FzZXMsIHRoZSBuZXR3b3JrIHdpbGwgYmUgdW5kaXJlY3RlZCwgYW5kIHRoaXMgc2hvdWxkIGJlIHNwZWNpZmllZCB1c2luZyBgZGlyZWN0ZWQgPSBGQUxTRWAuCgpgYGB7ciBtZXNzYWdlPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQoKc2FtcGxlX3RibF9ncmFwaCA9IGVkZ2VfbGlzdCAlPiUgCiAgYXNfdGJsX2dyYXBoKGRpcmVjdGVkID0gVCkKCnNhbXBsZV90YmxfZ3JhcGgKYGBgCgpUaGUgYHRibF9ncmFwaGAgaXMgYW4gb2JqZWN0IGNvbnRhaW5pbmcgdHdvIGxpbmtlZCBkYXRhZnJhbWVzLCBvbmUgZm9yIHRoZSBlZGdlcyBhbmQgb25lIGZvciB0aGUgbm9kZXMuIFRoZSBub2RlIHRhYmxlIGlzIGN1cnJlbnRseSBhIHRhYmxlIGNvbnRhaW5pbmcgYSByb3cgZm9yIGVhY2ggdW5pcXVlIG5vZGUgaW4gdGhlIGRhdGFmcmFtZSwgd2l0aCBvbmUgY29sdW1uLCAqKm5hbWUqKiwgd2hpY2ggaXMgdGhhdCBub2RlJ3MgSUQuIFdoZW4gd2UgY2FsY3VsYXRlIGFkZGl0aW9uYWwgbm9kZS1sZXZlbCBtZXRyaWNzLCB0aGV5IHdpbGwgYmUgYWRkZWQgYXMgYWRkaXRpb25hbCBjb2x1bW5zIHRvIHRoaXMgbm9kZSB0YWJsZS4KClRoZSBlZGdlcyBkYXRhZnJhbWUgY3VycmVudGx5IGNvbnRhaW5zIHRocmVlIGNvbHVtbnM6ICoqZnJvbSoqLCAqKnRvKiosIGFuZCAqKndlaWdodCoqLiBUaGUgKipmcm9tKiogYW5kICoqdG8qKiBjb2x1bW5zIGNvbnRhaW4gdGhlIGVkZ2UgaW5mb3JtYXRpb246IHRoZSBmaXJzdCByb3cgdGVsbHMgdXMgdGhhdCB0aGVyZSBpcyBhbiBlZGdlIHJ1bm5pbmcgZnJvbSBub2RlIDEgdG8gbm9kZSA4OS4gVGhlc2Ugbm9kZSBudW1iZXJzIGFyZSBub3QgdGhlIG5vZGUgSURzIGJ1dCByYXRoZXIgY29ycmVzcG9uZCB0byB0aGUgb3JkZXIgb2YgdGhlIG5vZGUgdGFibGUgKG9yIHRoZSBudW1iZXJzIGp1c3QgdG8gdGhlIGxlZnQgb2YgdGhlIG5hbWUgY29sdW1uKS4gU28gdGhpcyB0ZWxscyB1cyB0aGF0IHRoZXJlIGlzIGFuIGVkZ2UgZ29pbmcgZnJvbSB0aGUgbm9kZSBpbiBwb3NpdGlvbiAxIChFMDAxNDUtUzAxMjY1MC1UMDAwMDAwKSB0byB0aGF0IGluIHBvc2l0aW9uIDg5LgoKWW91IGNhbiBhY2Nlc3MgZWFjaCBvZiB0aGUgdGFibGVzIHVzaW5nIHRoZSBmdW5jdGlvbiBgYWN0aXZhdGUobm9kZXMpYCBvciBgYWN0aXZhdGUoZWRnZXMpYC4gVGhlIGFjdGl2ZSB0YWJsZSBpcyBsaXN0ZWQgZmlyc3QgYW5kIGhhcyB0aGUgd29yZCAnYWN0aXZlJyBpbiB0aGUgZGVzY3JpcHRpb24uIEFueSBjb21tYW5kcyB5b3UgZG8gKGZpbHRlcmluZywgam9pbmluZyBhbmQgc28gZm9ydGgpIHdpbGwgaGFwcGVuIG9uIHRoZSAqYWN0aXZlKiB0YWJsZS4KCmBgYHtyfQoKc2FtcGxlX3RibF9ncmFwaCAlPiUgCiAgYWN0aXZhdGUoZWRnZXMpCgpgYGAKCllvdSBjYW4gdXNlIG1hbnkgb2YgdGhlIHRpZHl2ZXJzZSBjb21tYW5kcyB3ZSBsZWFybmVkIGluIHRoZSBlYXJsaWVyIGxlc3NvbiBvbiB0aGlzIG9iamVjdCwgZm9yIGV4YW1wbGUgZmlsdGVyaW5nIHRvIGluY2x1ZGUgb25seSBlZGdlcyB3aXRoIGEgd2VpZ2h0IG9mIG1vcmUgdGhhbiAxOgoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIGFjdGl2YXRlKGVkZ2VzKSAlPiUKICBmaWx0ZXIod2VpZ2h0PjEpCmBgYAoKIyMgQ2FsY3VsYXRpbmcgTmV0d29yayBNZXRyaWNzCgojIyMgR2xvYmFsIG1ldHJpY3MKClRoZSBmaXJzdCB0aGluZyB3ZSB3YW50IHRvIGRvIHdpdGggdGhpcyBuZXR3b3JrIGlzIHRvIGNhbGN1bGF0ZSBzb21lIGdsb2JhbCBuZXR3b3JrIHN0YXRpc3RpY3MuIEJlY2F1c2UgdGhlIG91dHB1dHMgdG8gdGhlc2UgYXJlIGdlbmVyYWxseSBhIHNpbmdsZSBudW1iZXIsIHdlIGRvbid0IG5lZWQgdG8gd29ycnkgYWJvdXQgc3RvcmluZyB0aGVtIGluIGEgdGFibGUsIGFzIHdlJ2xsIGRvIHdpdGggdGhlIG5vZGUtbGV2ZWwgbWV0cmljcyBsYXRlci4gVG8gY2FsY3VsYXRlIHRoZXNlIG1ldHJpY3MsIGdlbmVyYWxseSBqdXN0IHBhc3MgdGhlIG5ldHdvcmsgdG8gYSByZWxldmFudCBmdW5jdGlvbi4gVGhlc2UgbWV0cmljcyB3ZXJlIGNvdmVyZWQgaW4gbW9yZSBkZXRhaWwgaW4gdGhlIHByZXZpb3VzIGNsYXNzLgoKIyMjIyBEZW5zaXR5CgoodGhlIG51bWJlciBvZiBsaW5rcyBwcmVzZW50IG91dCBvZiBhbGwgcG9zc2libGUgbGlua3MpOgoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIGlncmFwaDo6Z3JhcGguZGVuc2l0eSgpCmBgYAoKIyMjIyBBdmVyYWdlIHBhdGggbGVuZ3RoCgoodGhlIGF2ZXJhZ2UgbnVtYmVyIG9mIGhvcHMgYmV0d2VlbiBldmVyeSBwYWlyIG9mIG5vZGVzIGluIHRoZSBuZXR3b3JrKToKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSBpZ3JhcGg6OmF2ZXJhZ2UucGF0aC5sZW5ndGgoKQpgYGAKCiMjIyMgQ2x1c3RlcmluZyBjb2VmZmljaWVudDoKCkJlY2F1c2UgdGhlcmUgYXJlIGEgbnVtYmVyIG9mIHdheXMgdG8gY2FsY3VsYXRlIGNsdXN0ZXJpbmcgaW4gYSBuZXR3b3JrLCBhIG1ldGhvZCBuZWVkcyB0byBiZSBzcGVjaWZpZWQuIFRoZSBjbHVzdGVyaW5nIGNvZWZmaWNpZW50IGlzIGFsc28ga25vd24gYXMgKnRyYW5zaXRpdml0eSosIGFuZCBpdCBpcyBkZWZpbmVkIGFzIHRoZSByYXRpbyBvZiBjb21wbGV0ZWQgdHJpYW5nbGVzIGFuZCBjb25uZWN0ZWQgdHJpcGxlcyBpbiB0aGUgZ3JhcGguIFRoaXMgbWVhc3VyZW1lbnQgY2FuIGJlICpnbG9iYWwqICh3aGljaCBjb3VudHMgdGhlIG92ZXJhbGwgcmF0aW8pIG9yICpsb2NhbCogKHdoaWNoIGNvdW50cyB0aGUgaW5kaXZpZHVhbCByYXRpbyBmb3IgZWFjaCBub2RlKS4gQmVjYXVzZSB3ZSB3YW50IHRoZSBnbG9iYWwgbWVhc3VyZW1lbnQsIHNwZWNpZmljIHRoaXMgd2l0aCB0aGUgYHR5cGUgPWAgYXJndW1lbnQuCgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjp0cmFuc2l0aXZpdHkodHlwZSA9ICdnbG9iYWwnKQpgYGAKCiMjIyBOb2RlLWxldmVsIG1ldHJpY3MuCgpUaGVyZSBhcmUgYSBudW1iZXIgb2Ygd2F5cyB0byBjYWxjdWxhdGUgbm9kZS1sZXZlbCBtZXRyaWNzICh0aGVzZSBhcmUgdGhpbmdzIGxpa2UgZGVncmVlLCBiZXR3ZWVubmVzcyBhcyBleHBsYWluZWQgaW4gdGhlIHByZXZpb3VzIGNsYXNzKS4gRm9yIGV4YW1wbGUsIHlvdSBjYW4gdXNlIGlncmFwaCBmdW5jdGlvbnMgdG8gY2FsY3VsYXRlIHRoZSBkZWdyZWUgb2Ygc2luZ2xlIG5vZGUgb3IgZ3JvdXAgb2Ygbm9kZXMuIFRoZSBmb2xsb3dpbmcgY29kZSByZXR1cm5zIHRoZSBkZWdyZWUgZm9yIHRoZSBub2RlIHdpdGggdGhlIElEIGBFMDA0NjU0LVMwMDY5NzktVDAwMDAwMGAgKEtpbmcgQ2hhcmxlcyBJSSBvZiBFbmdsYW5kKS4gWW91IGNhbiByZXR1cm4gdG8gdGhlIG9yaWdpbmFsIGRhdGFzZXQgdG8gZmluZCB0aGUgcmVsZXZhbnQgSURzIGZvciBhIG5vZGUgb2YgaW50ZXJlc3QuIFRoZSBhcmd1bWVudCBgbW9kZSA9YCBzcGVjaWZpZXMgdGhlIHR5cGUgb2YgZGVncmVlOiBgaW5gLCBgb3V0YCwgb3IgYGFsbGAsIGFzIHdlIGxlYXJuZWQgaW4gdGhlIHByZXZpb3VzIGxlc3Nvbi4KCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSBpZ3JhcGg6OmRlZ3JlZSh2ID0gJ0UwMDQ2NTQtUzAwNjk3OS1UMDAwMDAwJywgbW9kZSA9ICdhbGwnKSAKYGBgCgpZb3UgY2FuIGFsc28gbG9vayB1cCB0aGUgZGVncmVlIG9mIG11bHRpcGxlIElEcyBieSBwYXNzaW5nIHRoZW0gYXMgYSB2ZWN0b3IsIHVzaW5nIGBjKClgLiAKCmAKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIGlncmFwaDo6ZGVncmVlKHYgPSBjKCdFMDA0NjU0LVMwMDY5NzktVDAwMDAwMCcsJ0UwMDYwMTktUzAxMjczNC1UMDAwMDAwJyksIG1vZGUgPSAnYWxsJykgCmBgYAoKIyMjIyBBZGRpbmcgbm9kZS1sZXZlbCBtZXRyaWNzIGFzIGEgY29sdW1uIHdpdGggdGlkeWdyYXBoLgoKUmVtZW1iZXIgdGhhdCBvdXIgdGlkeWdyYXBoIG9iamVjdCBpcyBtYWRlIHVwIG9mIHR3byBkYXRhZnJhbWVzLCBvbmUgb2Ygbm9kZXMgYW5kIG9uZSBvZiBlZGdlcz8gV2UgY2FuIHVzZSB0aGUgZm9ybWF0IHRvIGFkZCBub2RlLWxldmVsIG1ldHJpY3MgdG8gdGhlIG5vZGUgZGF0YWZyYW1lIGFzIGFkZGl0aW9uYWwgY29sdW1ucywgbWFraW5nIHRoZW0gZWFzeSB0byBhbmFseXNlIHVzaW5nIFIgbGF0ZXIuIFRvIGRvIHRoaXMsIHdlIHVzZSBhIGZ1bmN0aW9uIGNhbGxlZCBgbXV0YXRlKClgLiBNdXRhdGUgY3JlYXRlcyBhIG5ldyBjb2x1bW4gY29udGFpbmluZyB0aGUgdmFsdWUgZnJvbSBzb21lIGNhbGN1bGF0aW9uLCB3aGljaCBpcyBwZXJmb3JtZWQgb24gZWFjaCByb3cgaW4gdGhlIGRhdGFzZXQuCgpBc3NpZ24gdGhlIG5hbWUgYGRlZ3JlZWAgdG8gdGhlIG5ldyBjb2x1bW4gd2l0aCBgZGVncmVlID1gLiBUaGUgY29sdW1uIHNob3VsZCBjb250YWluIHRoZSB0b3RhbCBkZWdyZWUgc2NvcmUgZm9yIGVhY2ggbm9kZS4gVGhpcyBpcyBkb25lIHVzaW5nIHRoZSBmdW5jdGlvbiBgY2VudHJhbGl0eV9kZWdyZWUoKWAuIFdpdGggdGhlIHR3byBhZGRpdGlvbmFsIGFyZ3VtZW50cyBpbiB0aGlzIGZ1bmN0aW9uLCBzcGVjaWZ5IHRoZSBtb2RlIChpbiwgb3V0LCBvciBhbGwpIGFuZCwgaWYgYSB3ZWlnaHRlZCBkZWdyZWUgc2NvcmUgaXMgZGVzaXJlZCwgdGhlIGNvbHVtbiB0byBiZSB1c2VkIGFzIHdlaWdodHMuCgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgCiAgYWN0aXZhdGUobm9kZXMpICU+JSAjIG1ha2Ugc3VyZSB0aGUgbm9kZXMgdGFibGUgaXMgYWN0aXZlCiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKG1vZGUgPSAnYWxsJywgd2VpZ2h0cyA9IHdlaWdodCkpCmBgYAoKVGhlIGRhdGEgZm9ybWF0IGFsbG93cyB5b3UgdG8gdXNlIGRwbHlyIHBpcGVzIGAlPiVgIHRvIHBlcmZvcm0gb25lIGNhbGN1bGF0aW9uIG9uIHRoZSBkYXRhLCB0aGVuIHBhc3MgdGhhdCBuZXcgZGF0YWZyYW1lIGFsb25nIHRvIHRoZSBuZXh0IGZ1bmN0aW9uLiBIZXJlIHdlIGNhbGN1bGF0ZSB0aGUgZGVncmVlIHNjb3JlcyBmaXJzdCwgdGhlbiBmaWx0ZXIgdG8gaW5jbHVkZSBvbmx5IG5vZGVzIHdpdGggYSBkZWdyZWUgc2NvcmUgb3ZlciB0d286CgpgYGB7cn0KCnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIGFjdGl2YXRlKG5vZGVzKSAlPiUgCiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKG1vZGUgPSAndG90YWwnKSkgJT4lIAogIGZpbHRlcihkZWdyZWUgPjIpCgpgYGAKCmBgYHtjc3N9Ci5pbmZvYm94IHsKICBwYWRkaW5nOiAxZW0gMWVtIDFlbSAxZW07CiAgbWFyZ2luLWJvdHRvbTogMnB4OwogIGJvcmRlcjogMnB4IHNvbGlkIG9yYW5nZTsKICBib3JkZXItcmFkaXVzOiAxMHB4OwogIGJhY2tncm91bmQ6ICNmNWY1ZjUgNXB4IGNlbnRlci8zZW0gbm8tcmVwZWF0Owp9CmBgYAoKOjo6IHsuaW5mb2JveH0KTm90ZSB0aGF0IHRoZSBjYWxjdWxhdGlvbnMgYXJlIGRvbmUgb25lIGF0IGEgdGltZS4gV2hhdCBkaWZmZXJlbmNlIHdvdWxkIGl0IG1ha2UgdG8geW91ciByZXN1bHRzIGlmIHlvdSBmaWx0ZXJlZCAoZm9yIGV4YW1wbGUgYmFzZWQgb24gYSBzZXQgb2YgZGF0ZXMpIGFuZCB0aGVuIGNhbGN1bGF0ZWQgZGVncmVlLCByYXRoZXIgdGhhbiB0aGUgb3RoZXIgd2F5IGFyb3VuZD8KOjo6CgoKIyMjIFN1bW1hcmlzaW5nIHRoZSBuZXR3b3JrIGRhdGEKClRvIHdvcmsgd2l0aCB5b3VyIG5ldyBuZXR3b3JrIG1ldHJpY3MsIHRoZSBkYXRhIGNhbiBiZSBvdXRwdXR0ZWQgdG8gYSBzdGFuZGFyZCBSIGRhdGFmcmFtZS4gQ3JlYXRlIGEgbmV3IGRhdGFmcmFtZSBieSBkb2luZyB0aGlzLCB1c2luZyB0aGUgdGlkeXZlcnNlIGZ1bmN0aW9uIGZvciBjcmVhdGluZyBkYXRhZnJhbWVzLCBgYXNfdGliYmxlKClgOgoKYGBge3J9Cm5ldHdvcmtfbWV0cmljc19kZiA9IHNhbXBsZV90YmxfZ3JhcGggJT4lIAogIGFjdGl2YXRlKG5vZGVzKSAlPiUgIyBtYWtlIHN1cmUgY29ycmVjdCB0YWJsZSBpcyBhY3RpdmUKICBtdXRhdGUoZGVncmVlID0gY2VudHJhbGl0eV9kZWdyZWUod2VpZ2h0cyA9IHdlaWdodCwgbW9kZSA9ICdhbGwnKSkgJT4lICMgY2FsY3VsYXRlIGRlZ3JlZQogIG11dGF0ZShiZXR3ZWVuID0gY2VudHJhbGl0eV9iZXR3ZWVubmVzcyh3ZWlnaHRzID0gd2VpZ2h0LGRpcmVjdGVkID0gRikpICU+JSAgIyBjYWxjdWxhdGUgYmV0d2Vlbm5lc3MgY2VudHJhbGl0eQogIGFzX3RpYmJsZSgpICMgdHVybiB0aGUgbm9kZXMgdGFibGUgaW50byBhIHBsYWluIGRhdGFmcmFtZQpgYGAKClRoaXMgbmV3IHRhYmxlIGNhbiBiZSBzb3J0ZWQsIHRvdGFscyBjb3VudGVkLCBhbmQgc28gZm9ydGg6CgpgYGB7cn0KbmV0d29ya19tZXRyaWNzX2RmICU+JSBhcnJhbmdlKGRlc2MoZGVncmVlKSkKYGBgCgojIyBKb2luaW5nIGFkZGl0aW9uYWwgZGF0YQoKVGhlIHZhbHVlIG9mIHdvcmtpbmcgd2l0aCBhIGRhdGEgbW9kZWwgYW5kIHRpZHlncmFwaCBpcyB0aGF0IHdlIGNhbiBtZXJnZSBhZGRpdGlvbmFsIHRhYmxlcyBvZiBkYXRhIGF0dHJpYnV0ZXMgdG8gb3VyIG5vZGVzIG9yIGVkZ2VzLiBFYXJsaWVyLCB3ZSBleHBsYWluZWQgaG93IGltcG9ydGFudCBpdCBpcyB0aGF0IGV2ZXJ5IG5vZGUgaW4geW91ciBkYXRhIGhhcyBhIHVuaXF1ZSBJRC4gVGhlIGRvd25zaWRlIG9mIHRoaXMsIHBhcnRpY3VsYXJseSBmb3IgaHVtYW5pdGllcyByZXNlYXJjaCwgaXMgdGhhdCBpdCdzIG5vdCBlYXN5IHRvIHNlZSB3aG8gb3Igd2hhdCBpcyBiZWhpbmQgYSBwYXJ0aWN1bGFyIG5vZGUuIFRoaXMgY2FuIGJlIHNvbHZlZCBieSB1c2luZyBhIGBqb2luYCBjb21tYW5kLgoKSW4gYSBzZXBhcmF0ZSB0YWJsZSwgd2UgaGF2ZSBhIGRhdGFzZXQgb2YgYXR0cmlidXRlcyBhYm91dCB0aGlzIHNldCBvZiBub2RlcywgaW5jbHVkaW5nIHBsYWNlIGFuZCBkYXRlcyBvZiBiaXJ0aCBhbmQgZGVhdGgsIGFuZCBnZW5kZXIuIFVzaW5nIHRoZSBgam9pbigpYCBjb21tYW5kcywgd2UgY2FuIG1lcmdlIHRoaXMgdGFibGUgdG8gdGhlIG5ldHdvcmsgZGF0YSwgYW5kIHVzZSBpdCB0byBzb3J0LCBmaWx0ZXIgKGFuZCBsYXRlciB2aXN1YWxpc2UpIHRoZSBkYXRhOgoKRmlyc3QsIGxvYWQgdGhlIHRhYmxlIG9mIGRhdGEgdXNpbmcgYHJlYWRfY3N2YDoKCmBgYHtyfQpub2RlX2F0dHJpYnV0ZXMgPSByZWFkX2Nzdignbm9kZV9hdHRyaWJ1dGVzLmNzdicpCgpub2RlX2F0dHJpYnV0ZXMKYGBgCgpUaGlzIHRhYmxlIGNvbnRhaW5zIGZ1cnRoZXIgaW5mb3JtYXRpb24gYWJvdXQgdGhlIG5vZGVzLCBlYWNoIG9mIHdoaWNoIGFyZSBpZGVudGlmaWVkIGJ5IHRoZWlyIHVuaXF1ZSBJRC4gVGhpcyBjYW4gYmUgam9pbmVkIHRvIHRoZSBuZXR3b3JrIG9iamVjdCB1c2luZyBgam9pbigpYCBjb21tYW5kczoKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBsZWZ0X2pvaW4obm9kZV9hdHRyaWJ1dGVzLCBieSA9ICduYW1lJykKYGBgCgpVc2luZyB0aGlzIGFwcHJvYWNoIHlvdSBjYW4gbm93IG1ha2Ugc3Vic2V0cyBvZiB0aGUgbmV0d29yaywgYW5kIGNhbGN1bGF0ZSBnbG9iYWwgb3Igbm9kZS1sZXZlbCBzdGF0aXN0aWNzIGZvciB0aGVzZS4gVGhpcyBleGFtcGxlIHdvdWxkIHJldHVybiBhIG5ldHdvcmsgY29udGFpbmluZyBvbmx5IGluZGl2aWR1YWxzIHdpdGggcG9saXRpY2lhbiBsaXN0ZWQgYXMgb25lIG9mIHRoZWlyIG9jY3VwYXRpb25zLCBmb3IgZXhhbXBsZToKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBsZWZ0X2pvaW4obm9kZV9hdHRyaWJ1dGVzLCBieSA9ICduYW1lJykgJT4lICMgZmlyc3Qgam9pbiB0aGUgYXR0cmlidXRlcyB0YWJsZSBhZ2FpbgogIGZpbHRlcihzdHJfZGV0ZWN0KG9jY3VwYXRpb25zLCAicG9saXRpY2lhbiIpKSAlPiUgIyByZXR1cm5zIGFueSByb3cgd2l0aCB0aGUgc3RyaW5nICdwb2xpdGljaWFuJyBpbiBpdAogIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSh3ZWlnaHRzID0gd2VpZ2h0LCBtb2RlID0gJ2FsbCcpKSAjIGNhbGN1bGF0ZSBuZXR3b3JrIG1ldHJpY3Mgb24gdGhpcyBuZXcgc3Vic2V0IG9mIHRoZSBkYXRhLgogIApgYGAKCjxkZXRhaWxzPgoKPGJyPgoKPHN1bW1hcnk+Tm9kZSBhdHRyaWJ1dGVzIGNvdWxkIGJlIGFkZGVkIGFuZCB1c2VkIHRvIGZpbHRlciBhdCBzZXZlcmFsIHN0ZXBzOiBiZWZvcmUgdGhlIG5ldHdvcmsgaXMgY3JlYXRlZCwgYW5kIGJlZm9yZSBvciBhZnRlciBuZXR3b3JrIG1ldHJpY3MgYXJlIGNhbGN1bGF0ZWQuIFdoYXQgZGlmZmVyZW5jZXMgbWlnaHQgdGhlc2UgbWFrZT88L3N1bW1hcnk+CgpNYWtlIHN1cmUgeW91IGtub3cgYXQgd2hpY2ggc3RhZ2UgeW91IGFyZSBjYWxjdWxhdGluZyBuZXR3b3JrIG1ldHJpY3MuIElmIHlvdSBjYWxjdWxhdGUgdGhlbSBhZnRlciBmaWx0ZXJpbmcsIHlvdSdsbCBnZXQgYSBzZXQgb2YgbWV0cmljcyBiYXNlZCBvbiBhIG5ldywgc3Vic2V0dGVkIG5ldHdvcmsuCgo8L2RldGFpbHM+Cgo8YnI+CgpUaGlzIG5ldyB0YWJsZSBjYW4gYmUgb3V0cHV0dGVkIGFzIGEgZGF0YWZyYW1lLCBhcyBhYm92ZS4gSGVyZSB3ZSB1c2UgdGhpcyB0byBjYWxjdWxhdGUgdGhlIGhpZ2hlc3QtZGVncmVlIG5vZGVzIGZyb20gdGhlICdwb2x0aWNpYW5zIG5ldHdvcmsnLCBrZWVwIHRoZWlyIHJlYWwgbmFtZXMsIGFuZCBzb3J0IGluIGRlc2NlbmRpbmcgb3JkZXIgb2YgZGVncmVlOgoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIGxlZnRfam9pbihub2RlX2F0dHJpYnV0ZXMsIGJ5ID0gJ25hbWUnKSAlPiUgIyBmaXJzdCBqb2luIHRoZSBhdHRyaWJ1dGVzIHRhYmxlIGFnYWluCiAgZmlsdGVyKHN0cl9kZXRlY3Qob2NjdXBhdGlvbnMsICJwb2xpdGljaWFuIikpICU+JSAjIHJldHVybnMgYW55IHJvdyBjb250YWluaW5nIHRoZSBzdHJpbmcgJ3BvbGl0aWNpYW4nCiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKHdlaWdodHMgPSB3ZWlnaHQsIG1vZGUgPSAnYWxsJykpICAlPiUgICAjIGNhbGN1bGF0ZSBuZXR3b3JrIG1ldHJpY3Mgb24gdGhpcyBuZXcgc3Vic2V0IG9mIHRoZSBkYXRhLgphc190aWJibGUoKSAlPiUgCiAgYXJyYW5nZShkZXNjKGRlZ3JlZSkpICU+JSBzZWxlY3QobmFtZSwgbWFpbl9uYW1lLCBkZWdyZWUpCmBgYAoKIyMgU29jaWFsIE5ldHdvcmsgQW5hbHlzaXMgd2l0aCBSCgpUaGlzIGxhc3QgcGFydCBnb2VzIHRocm91Z2ggc29tZSBvZiB0aGUgZnVuY3Rpb25zIHdoaWNoIGFyZSBtb3JlIHJlbGF0ZWQgdG8gdGhlICdzb2NpYWwgbmV0d29yayBhbmFseXNpcycuIE1hbnkgb2YgdGhlc2UgYXJlIGFjY2Vzc2VkIGRpcmVjdGx5IHRocm91Z2ggdGhlIHBhY2thZ2UgYGlncmFwaGAuCgojIyMgVHJhbnNpdGl2aXR5LCBUcmlhZHMsIHN0cnVjdHVyYWwgYmFsYW5jZQoKQXMgd2UgbGVhcm5lZCBpbiB0aGUgbGFzdCBsZXNzb24sIGNvdW50aW5nIHRoZSByYXRpbyBvZiBjb21wbGV0ZWQgdHJpYW5nbGVzIGluIGEgbmV0d29yayBpcyBhIGdvb2Qgd2F5IHRvIHVuZGVyc3RhbmQgaXRzIHN0cnVjdHVyZS4gVGhpcyByYXRpbyBpcyBrbm93biBhcyB0aGUgKipjbHVzdGVyaW5nIGNvZWZmaWNpZW50KiosIGFuZCB0aGVyZSBhcmUgdHdvIHR5cGVzOiAqKmdsb2JhbCoqLCB3aGljaCBtZWFzdXJlcyB0aGUgcmF0aW8gb2YgY29tcGxldGUgYW5kIG5vdCBjb21wbGV0ZSB0cmlhbmdsZXMgaW4gdGhlIGVudGlyZSBuZXR3b3JrLCBhbmQgKipsb2NhbCoqLCB3aGljaCBtZWFzdXJlcyB0aGUgY29tcGxldGUgdHJpYW5nbGVzIGZvciBlYWNoIGluZGl2aWR1YWwgbm9kZS4gVGhpcyBtZWFzdXJlbWVudCBpcyBhbHNvIGtub3duIGFzICoqdHJhbnNpdGl2aXR5KiouCgpVc2UgdGhlIGZvbGxvd2luZyBjb21tYW5kIHRvIGNhbGN1bGF0ZSB0aGUgZ2xvYmFsIGNsdXN0ZXJpbmcsIG9yIHRyYW5zaXRpdml0eSBvZiB0aGUgbmV0d29yay4gSXQgcmV0dXJucyBhIHNpbmdsZSBudW1iZXIsIHdoaWNoIGlzIGp1c3QgdGhlIHJhdGlvIG9mIGNvbXBsZXRlZCB0cmlhbmdsZXMgdG8gdGhlIHRvdGFsIHBvc3NpYmxlIG51bWJlciBvZiB0cmlhbmdsZXMgaW4gdGhlIGdyYXBoOgoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIHRyYW5zaXRpdml0eSh0eXBlID0gJ2dsb2JhbCcpCmBgYAoKVXNlIHRoZSBmb2xsb3dpbmcgdG8gbWVhc3VyZSB0aGUgbG9jYWwgY2x1c3RlcmluZyBjb2VmZmljaWVudCBmb3IgZWFjaCBub2RlIGluIHRoZSBncmFwaC4gSXQgcmV0dXJucyBhIHZlY3RvciBvZiBudW1iZXJzLCBvbmUgZm9yIGVhY2ggbm9kZToKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSB0cmFuc2l0aXZpdHkodHlwZSA9ICdsb2NhbCcpIAoKYGBgCgpBbm90ZXIgcmVsYXRlZCBtZWFzdXJlbWVudCBpcyB0aGUgYXZlcmFnZSBsb2NhbCBjbHVzdGVyaW5nLCBjYWxjdWxhdGVkIHVzaW5nIHRoZSBmb2xsb3dpbmc6CgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgdHJhbnNpdGl2aXR5KHR5cGUgPSAnYXZlcmFnZScpIAoKCmBgYAoKV2UgY2FuIGFsc28gY2FsY3VsYXRlIHRoZSB0b3RhbCByZWNpcHJvY2l0eSBvZiBhIGdyYXBoICh0aGUgcHJvcG9ydGlvbiBvZiBsaW5rcyB3aGljaCBhcmUgcmVjaXByb2NhdGVkKToKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSByZWNpcHJvY2l0eSgpCgoKYGBgCgpXZSBjYW4gYWxzbyBjYWxjdWxhdGUgdGhlICd0cmlhZCBjZW5zdXMnLCB0aGUgbnVtYmVyIG9mIGVhY2ggdHlwZSBvZiB0cmlhZCBpbiBhIGRpcmVjdGVkIG5ldHdvcmsuIEZpcnN0LCBydW4gdGhlIGB0cmlhZF9jZW5zdXMoKWAgZnVuY3Rpb24sIGFuZCB0dXJuIGl0IGludG8gYSBkYXRhZnJhbWUgd2l0aCBvbmUgY29sdW1uLiBOZXh0IGFkZCB0aGUgY29ycmVjdCB0cmlhZCBjb2RlcyBhcyBhIHNlY29uZCBjb2x1bW4uCgpgYGB7cn0KY2Vuc3VzID0gc2FtcGxlX3RibF9ncmFwaCAlPiUgdHJpYWRfY2Vuc3VzKCkgJT4lIGFzX3RpYmJsZSgpCgpjZW5zdXMkdHlwZSA8LSBjKCIwMDMiLCIwMTIiLCIxMDIiLCIwMjFEIiwiMDIxVSIsIjAyMUMiLCIxMTFEIiwiMTExVSIsCiAgICAgICAgICAgICAgICAgICAgICAgICAiMDMwVCIsIjAzMEMiLCIyMDEiLCIxMjBEIiwiMTIwVSIsIjEyMEMiLCIyMTAiLCIzMDAiKQoKY2Vuc3VzCmBgYAoKWW91IGNhbiBub3cgY29ubmVjdCB0aGVzZSBjb2RlcyB0byB0aGUgdHJpYWQgZGlhZ3JhbXMgZnJvbSB0aGUgbGFzdCBjaGFwdGVyLCBhbmQgdXNlIHRoZW0gdG8gaW5mZXIgdGhpbmdzIGFib3V0IHRoZSBzdHJ1Y3R1cmUgYW5kIGZvcm1hdGlvbiBvZiB0aGUgbmV0d29yay4KCjxkZXRhaWxzPgoKPHN1bW1hcnk+SW1hZ2luZSB0aGF0IHRoaXMgaXMgYSBjb21wbGV0ZSBuZXR3b3JrLiBXaHksIGZvciBleGFtcGxlLCBtaWdodCAwMjFVIChBIGFuZCBCIGJvdGggc2VuZCBhIGxldHRlciB0byBDLCBidXQgdGhlcmUncyBub3QgcmVjaXByb2NhdGlvbiwgYW5kIHRoZXkgYXJlIG5vdCBjb25uZWN0ZWQgdG8gZWFjaCBvdGhlcikgYmUgc3VjaCBhIGNvbW1vbiB0cmlhZD88L3N1bW1hcnk+CgpUaGUgYW5zd2VyIGxpZXMgaW4gdGhlIG9yaWdpbiBvZiB0aGlzIG5ldHdvcmssIGFzIGEgbGV0dGVyIGFyY2hpdmUuIEJlY2F1c2UgYSBsZXR0ZXIgYXJjaGl2ZSBjb250YWlucyBtb3N0bHkgaW5jb21pbmcgbGV0dGVycyB0byBhbiBlZ28gbm9kZSwgbWFueSBvZiB0aGUgdHJpYWRzIGFyZSBwYWlycyBvZiBub2RlcyB3aG8gYm90aCBoYXZlIGFuIGluY29taW5nIGNvbm5lY3Rpb24gdG8gb25lIG9mIHRoZXNlIGVnbyBub2RlcywgYnV0IGFyZSBub3QgdGhlbXNlbHZlcyBjb25uZWN0ZWQuCgo8L2RldGFpbHM+Cgo8YnI+CgpBbm90aGVyIHNldCBvZiBtZXRyaWNzIGFyZSB0byBkbyB3aXRoIGdyb3VwcyBmb3VuZCBpbiBhIG5ldHdvcmsuIEZpcnN0LCBjb21wb25lbnRzLiBBIGNvbXBvbmVudCBpcyBhIGdyb3VwIG9mIG5vZGVzIHdoaWNoIGFyZSBjb25uZWN0ZWQgdG9nZXRoZXIgdGhyb3VnaCBhIHBhdGggaW4gdGhlIG5ldHdvcmsuIFRoZSBgY29tcG9uZW50cygpYCBmdW5jdGlvbiByZXR1cm5zIGEgbGlzdCB3aGljaCBpbmNsdWRlcyBhIG5hbWVkIHZlY3RvciB3aXRoIGEgY29tcG9uZW50IG51bWJlciBmb3IgZWFjaCBub2RlLCBhbG9uZyB3aXRoIHRoZSBudW1iZXIgb2Ygbm9kZXMgaW4gZWFjaCBjb21wb25lbnQsIGFuZCB0aGUgdG90YWwgbnVtYmVyIG9mIGNvbXBvbmVudHMuIExvb2tpbmcgYXQgdGhpcyBsaXN0IHdpdGggYGdsaW1wc2VgIHRlbGxzIHVzIHRoYXQgdGhlcmUgYXJlIHNpeCBjb21wb25lbnRzLCB0aGUgbGFyZ2VzdCBiZWluZyAyMzcgbm9kZXMgYW5kIHRoZSBzbWFsbGVzdCBoYXMgMi4KCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSBpZ3JhcGg6OmNvbXBvbmVudHMoKSAlPiUgZ2xpbXBzZSgpCmBgYAoKQW5vdGhlciBnbG9iYWwgbWV0cmljIHdlIGNhbiBjYWxjdWxhdGUgaXMgdGhlIG51bWJlciBvZiAqKmNsaXF1ZXMqKiBpbiBhIG5ldHdvcmsuIEEgY2xpcXVlIGlzIGEgZnVsbHkgY29ubmVjdGVkIHNldCBvZiBub2Rlcy4gV2UgY2FuIGNhbGN1bGF0ZSB0aGUgdG90YWwgbnVtYmVyIG9mIGNsaXF1ZXMgd2l0aCBgY2xpcXVlX251bWA6CgpgYGB7ciBlY2hvPUZBTFNFLCBtZXNzYWdlPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQpzYW1wbGVfdGJsX2dyYXBoICU+JSBpZ3JhcGg6OmNsaXF1ZV9udW0oKQpgYGAKCiMjIExvdXZhaW4gY29tbXVuaXR5IGRldGVjdGlvbgoKQW5vdGhlciB3YXkgdG8gbG9vayBhdCBncm91cHMgaW4gbmV0d29ya3MgaXMgdG8gdXNlIGNvbW11bml0eSBkZXRlY3Rpb24uIEFzIGV4cGxhaW5lZCBpbiB0aGUgcHJldmlvdXMgY2hhcHRlciwgY29tbXVuaXR5IGRldGVjdGlvbiBhdHRlbXB0cyB0byBmaW5kIGdyb3VwcyBvZiBub2RlcyB3aGljaCBhcmUgbW9yZSBjb25uZWN0ZWQgdG8gZWFjaCBvdGhlciB0aGFuIHRoZXkgYXJlIHRvIG5vZGVzIG91dHNpZGUgdGhlIGdyb3VwLiBVbmxpa2UgY29tcG9uZW50cyBvciBjbGlxdWVzLCBjb21tdW5pdGllcyBjYW4gYmUgZm91bmQgdXNpbmcgYSBudW1iZXIgb2YgbWV0aG9kcy4gSGVyZSwgd2UnbGwgdXNlIHRoZSBMb3V2YWluIGFsZ29yaXRobSwgd2hpY2ggd2FzIGludHJvZHVjZWQgaW4gdGhlIHByZXZpb3VzIGxlc3Nvbi4gVG8gbWFrZSBpdCBlYXN5IHRvIHVzZSB0aGUgcmVzdWx0cywgd2UnbGwgY2FsY3VsYXRlIHRoZSBjb21tdW5pdHkgZm9yIGVhY2ggbm9kZSB1c2luZyB0aWR5Z3JhcGguIFRoaXMgcGFydGljdWxhciBpbXBsZW1lbnRhdGlvbiBvZiB0aGUgYWxnb3JpdGhtIG9ubHkgd29ya3MgZm9yIHVuZGlyZWN0ZWQgZ3JhcGhzLCBzbyB3ZSBoYXZlIHRvIGNyZWF0ZSBvdXIgbmV0d29yayBhZ2FpbiBmcm9tIHNjcmF0Y2gsIHRoaXMgdGltZSBzcGVjaWZ5aW5nIHRoYXQgaXQncyAqKnVuZGlyZWN0ZWQqKi4KCmBgYHtyfQoKc2FtcGxlX3RibF9ncmFwaF91ID0gZWRnZV9saXN0ICU+JSAKICBhc190YmxfZ3JhcGgoZGlyZWN0ZWQgPSBGQUxTRSkKCnNhbXBsZV90YmxfZ3JhcGhfdSAlPiUgCiAgbXV0YXRlKGdyb3VwID0gZ3JvdXBfbG91dmFpbigpKQpgYGAKCkJ5IHR1cm5pbmcgdGhpcyBpbmZvcm1hdGlvbiBpbnRvIGEgZGF0YWZyYW1lLCB3ZSBjYW4gZ2V0IHNvbWUgYmFzaWMgc3RhdGlzdGljcyBvbiB0aGUgZ3JvdXBzLiBCeSBhZGRpbmcgdGhpcyBpbmZvcm1hdGlvbiB0byB0aGUgbm9kZSBpbmZvcm1hdGlvbiB3ZSBjb2xsZWN0ZWQgZWFybGllciwgd2UgY2FuIGdldCBhIHN1bW1hcnkgb2YgdGhlIGF2ZXJhZ2UgZGVncmVlIGFuZCBiZXR3ZWVubmVzcyBzY29yZXMgZm9yIGVhY2ggb2YgdGhlIGRldGVjdGVkIGNvbW11bml0aWVzOgoKYGBge3IgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0Kc2FtcGxlX3RibF9ncmFwaF91ICU+JSAKICBtdXRhdGUoZ3JvdXAgPSBncm91cF9sb3V2YWluKCkpJT4lIAogIGFjdGl2YXRlKG5vZGVzKSAlPiUgIyBtYWtlIHN1cmUgY29ycmVjdCB0YWJsZSBpcyBhY3RpdmUKICBtdXRhdGUoZGVncmVlID0gY2VudHJhbGl0eV9kZWdyZWUod2VpZ2h0cyA9IHdlaWdodCwgbW9kZSA9ICdhbGwnKSkgJT4lICMgY2FsY3VsYXRlIGRlZ3JlZQogIG11dGF0ZShiZXR3ZWVuID0gY2VudHJhbGl0eV9iZXR3ZWVubmVzcyh3ZWlnaHRzID0gd2VpZ2h0LGRpcmVjdGVkID0gRikpICU+JSAgIyBjYWxjdWxhdGUgYmV0d2Vlbm5lc3MgY2VudHJhbGl0eQogIGFzX3RpYmJsZSgpICAlPiUgZ3JvdXBfYnkoZ3JvdXApICU+JQogIHN1bW1hcmlzZShtZWFuX2RlZ3JlZSA9IG1lYW4oZGVncmVlLG5hLnJtID0gVFJVRSksIG1lYW5fYmV0d2VlbiA9IG1lYW4oYmV0d2VlbiwgbmEucm0gPSBUUlVFKSwgbm9kZXMgPSBuKCkpICU+JSBwaXZvdF9sb25nZXIoMjo0KSAlPiUgCiAgZ2dwbG90KCkgKyBnZW9tX2NvbChhZXMoeCA9IGdyb3VwLCB5ID0gdmFsdWUpKSArIGZhY2V0X3dyYXAofm5hbWUsIHNjYWxlcyA9ICdmcmVlJykKCmBgYAoKIyMgUmVhZGluZyBmb3IgbmV4dCB3ZWVrCgoqKldlZWsgNDoqKiBBaG5lcnQgZXQuIGFsLsKgKDIwMjEpLiAqVGhlIE5ldHdvcmsgVHVybjogQ2hhbmdpbmcgUGVyc3BlY3RpdmVzIGluIHRoZSBIdW1hbml0aWVzKiAoRWxlbWVudHMgaW4gUHVibGlzaGluZyBhbmQgQm9vayBDdWx0dXJlKS4gKipDaGFwdGVyIDUsIFwnUXVhbnRpZnlpbmcgQ3VsdHVyZVwnICg8aHR0cHM6Ly93d3cuY2FtYnJpZGdlLm9yZy9jb3JlL2VsZW1lbnRzL25ldHdvcmstdHVybi9DQzM4RjJFQTlGNTFBNkQxQUZDQjdFMDA1MjE4QkJFNT4pKioKClF1ZXN0aW9uczoKCi0gICAK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiV2VlayA0LCBDbGFzcyAyOiBOZXR3b3JrIEFuYWx5c2lzIHdpdGggUiIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKCgojIyBJbnRyb2R1Y3Rpb24KCkluIHRoaXMgY2xhc3MsIHdlJ2xsIHRhbGsgdGhyb3VnaCBjcmVhdGluZyBhbmQgYW5hbHlzaW5nIGEgbmV0d29yayBvYmplY3QgaW4gUi4gVGhlIG5ldHdvcmsgd2UnbGwgd29yayB3aXRoIGlzIGEgc2FtcGxlIG9mIGNvcnJlc3BvbmRlbmNlIGRhdGEgdGFrZW4gZnJvbSB0aGUgQnJpdGlzaCBTdGF0ZSBQYXBlcnMgaW4gdGhlIHNldmVudGVlbnRoIGNlbnR1cnkuCgojIyBOZXR3b3JrIGRhdGEgc3RydWN0dXJlcwoKTmV0d29yayBkYXRhIGNvbWVzIGluIGEgbnVtYmVyIG9mIGZvcm1zLiBUd28gY29tbW9uIG9uZXMgYXJlIGFkamFjZW5jeSBtYXRyaWNlcyBhbmQgZWRnZSBsaXN0cy4gQW4gYWRqYWNlbmN5IG1hdHJpeCBpcyBhIG1hdHJpeCBvZiByb3dzIGFuZCBjb2x1bW5zLCBvbmUgZm9yIGVhY2ggbm9kZS4gSWYgdGhlcmUgaXMgYSBsaW5rIGJldHdlZW4gdHdvIG5vZGVzLCBhIDEgaXMgcHV0IGluIGF0IHRoYXQgcG9pbnQuIElmIGl0IGlzIGEgd2VpZ2h0ZWQgbmV0d29yaywgdGhlIHdlaWdodCBjYW4gYmUgZW50ZXJlZCBpbiB0aGUgY29ycmVjdCBzcGFjZS4gSW4gc29tZSBjYXNlcywgeW91ciBkYXRhIG1heSBiZSBpbiBhIGZvcm1hdCB3aGVyZSBpdCBpcyBlYXN5IHRvIHVzZSBpdCBhcyBhbiBhZGphY2VuY3kgbWF0cml4LgoKQWRqYWNlbmN5IG1hdHJpY2VzIGNhbiBiZSBlYXNpbHkgcmVhZCBpbnRvIFIgdXNpbmcgYGlncmFwaGAgYW5kIGBncmFwaF9mcm9tX2FkamFjZW5jeV9tYXRyaXgoKWAuCgpUaGUgb3RoZXIgY29tbW9uIHR5cGUgaXMgd2hhdCB3ZSB3aWxsIHdvcmsgd2l0aCBpbiB0aGlzIGxlc3NvbjogYW4gZWRnZSBsaXN0LiBBbiBlZGdlIGxpc3QgaXMgYWN0dWFsbHkgYWxzbyBhICdzcGFyc2UgbWF0cml4Jy4KCiMjIENyZWF0aW5nIGEgTmV0d29yayBPYmplY3QgaW4gUiBmcm9tIGFuIEVkZ2UgTGlzdAoKT25lIG9mIHRoZSBlYXNpZXN0IGRhdGEgZm9ybWF0cyB0byBjb25zdHJ1Y3QgYSBuZXR3b3JrIGlzIGFuIGVkZ2UgbGlzdDogYSBzaW1wbGUgZGF0YWZyYW1lIHdpdGggdHdvIGNvbHVtbnMsIHJlcHJlc2VudGluZyB0aGUgY29ubmVjdGlvbnMgYmV0d2VlbiB0d28gbm9kZXMsIG9uZSBwZXIgcm93LiBJZiB0aGUgbmV0d29yayBpcyBkaXJlY3RlZCwgZ2VuZXJhbGx5IHRoZSAnU291cmNlJyBub2RlIGlzIG9uIHRoZSBsZWZ0IHNpZGUsIGFuZCB0aGUgJ1RhcmdldCcgbm9kZSBvbiB0aGUgcmlnaHQuIEl0IG1ha2VzIHBhcnRpY3VsYXIgc2Vuc2Ugd2l0aCBjb3JyZXNwb25kZW5jZSBkYXRhLCB3aGljaCBpcyBvZnRlbiBzdG9yZWQgYXMgcmVjb3JkcyBvZiBsZXR0ZXJzIHdpdGggYSAnZnJvbScgYW5kIGEgJ3RvJy0tLW1vcmUgb3IgbGVzcyBhIHJlYWR5LW1hZGUgZWRnZSBsaXN0LiBJbiBhIGNvcnJlc3BvbmRlbmNlIGRhdGFzZXQgeW91IG1pZ2h0IGFsc28gaGF2ZSBtdWx0aXBsZSBzZXRzIG9mIGVhY2ggb2YgdGhlIGVkZ2VzIChtdWx0aXBsZSBsZXR0ZXJzIGJldHdlZW4gdGhlIHNhbWUgcGFpciBvZiBpbmRpdmlkdWFscykuIFRoaXMgd2lsbCBiZSBhZGRlZCB0byB0aGUgZWRnZXMgYXMgYSAnd2VpZ2h0Jy4KCldlIHdpbGwgdXNlIHRocmVlIFIgbmV0d29yayBsaWJyYXJpZXMgdG8gZG8gYWxtb3N0IGV2ZXJ5dGhpbmcgbmV0d29yay1yZWxhdGVkLCBmcm9tIGFuYWx5c2lzIHRvIHZpc3VhbGlzYXRpb246IGBpZ3JhcGhgLCBgdGlkeWdyYXBoYCBhbmQgYGdncmFwaGAuIFRoZSBnb2FsIGlzIHRvIHBvcnQgZXZlcnl0aGluZyB0byBhIGZvcm1hdCB3aGljaCBpcyBlYXN5IHRvIHdvcmsgd2l0aCB1c2luZyBleGlzdGluZyBhbiBlc3RhYmxpc2hlZCBkYXRhIGFuYWx5c2lzIHdvcmtmbG93LiBUaGF0IGZvcm1hdCBpcyBrbm93biBhcyAndGlkeSBkYXRhJywgYW5kIGl0IGlzIGEgd2F5IG9mIHdvcmtpbmcgd2l0aCBkYXRhIHdoaWNoIGlzIGVhc2lseSB0cmFuc2ZlcmFibGUgYWNyb3NzIGEgcmFuZ2Ugb2YgdXNlcy4gSXQgYWxzbyBtZWFucyB5b3UgbmVlZCB0byBsZWFybiB2ZXJ5IGxpdHRsZSBuZXcgcHJvZ3JhbW1pbmcgdG8gZG8gbmV0d29yayBhbmFseXNpcyBpZiB5b3Ugc3RheSB3aXRoaW4gdGhpcyAnZWNvc3lzdGVtJy4KCiMjIyBJbXBvcnQgTmV0d29yayBEYXRhCgpUaGUgd29ya2Zsb3cgdXNlcyBhIG51bWJlciBvZiBSIHBhY2thZ2VzLiBJbiB0aGUgQ1NDIE5vdGVib29rcyBlbnZpcm9ubWVudCwgdGhlc2UgaGF2ZSBhbHJlYWR5IGJlZW4gaW5zdGFsbGVkIGFuZCBjYW4gYmUgbG9hZGVkIHVzaW5nIHRoZSBjb21tYW5kcyBiZWxvdy4gSWYgeW91IGFyZSBkb2luZyB0aGlzIG9uIGEgbG9jYWwgbWFjaGluZSwgeW91IG1heSBoYXZlIHRvIGluc3RhbGwgdGhlbSBmaXJzdCB1c2luZyB0aGUgY29tbWFuZCBgaW5zdGFsbC5wYWNrYWdlcygpYCwgd2l0aCB0aGUgcGFja2FnZSBuYW1lIHNwZWNpZmllZCBhcyBhIHN0cmluZywgZm9yIGV4YW1wbGUgYGluc3RhbGwucGFja2FnZXMoJ2lncmFwaCcpYC4KCmBgYHtyIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CgpsaWJyYXJ5KHRpZHl2ZXJzZSkKbGlicmFyeShpZ3JhcGgpCmxpYnJhcnkodGlkeWdyYXBoKQoKYGBgCgpJbiB0aGlzIGNsYXNzLCB3ZSdsbCB1c2UgYSBkYXRhc2V0IGRlcml2ZWQgZnJvbSB0aGUgRW5nbGlzaCBTdGF0ZSBQYXBlcnMgZHVyaW5nIHRoZSBTdHVhcnQgZXJhICgxNjAzLTE3MTQpLiBJdCB0YWtlcyB0aGUgZm9ybSBvZiBhIC5jc3YgY29udGFpbmluZyB0aGUgaW5mb3JtYXRpb24gb24gdGhlIGF1dGhvciwgcmVjaXBpZW50LCBhbmQgZGF0ZSBvZiBzZW5kaW5nIGZvciBhIHNtYWxsIHNhbXBsZSBvZiBzdGF0ZSBsZXR0ZXJzIHJlY2VpdmVkIGJldHdlZW4gMTY3MCBhbmQgMTY3Mi4KClJlYWQgdGhlIGZpbGUgaW50byBSIHdpdGggdGhlIGByZWFkX2NzdigpYCBmdW5jdGlvbiBmcm9tIGEgcHJldmlvdXMgbGVzc29uOgoKYGBge3J9CmxldHRlcnMgPSByZWFkX2NzdigiLi4vYXBwbHlpbmctbmV0d29yay1hbmFseXNpcy10by1odW1hbml0aWVzL2RhdGEvbGV0dGVyX2RhdGExNjcwLmNzdiIsIGNvbF90eXBlcyA9IGNvbHMoLmRlZmF1bHQgPSAiYyIpKQoKbGV0dGVycwpgYGAKClRoZSBsZXR0ZXJzIGRhdGFzZXQgaXMgYSBzaW1wbGUgZGF0YWZyYW1lLiBFYWNoIHJvdyByZXByZXNlbnRzIGEgbGV0dGVyIHJlY29yZCwgYW5kIGhhcyBhIHVuaXF1ZSBJRC4gRXNzZW50aWFsbHksIGVhY2ggcm93IGlzIGEgcmVjb3JkIG9mIHdobyB0aGUgYXV0aG9yIGFuZCByZWNpcGllbnQgb2YgdGhlIGxldHRlci4gRWFjaCBvZiB0aGVzZSBzZW5kZXJzIGFuZCByZWNpcGllbnRzIGFsc28gaGF2ZSBib3RoIGEgdW5pcXVlIElELCBhbmQgdGhlIG9yaWdpbmFsIG5hbWUgb2YgdGhlIGxldHRlciB3cml0ZXIgYW5kIHNlbmRlci4gVGhlIHVuaXF1ZSBJRCBpcyB1c2VkIGJlY2F1c2UgaXQncyBxdWl0ZSBsaWtlbHkgdGhhdCB0aGUgbmFtZXMgYXJlIG5vdCB1bmlxdWUsIGFuZCB0aGUgbmV0d29yayBjb3VsZCBjb21iaW5lIHR3byBub2RlcyB3aXRoIHRoZSBzYW1lIG5hbWUgdG9nZXRoZXIsIGZvciBleGFtcGxlLgoKIyMjIE1ha2UgYW4gZWRnZSBsaXN0CgpUaGlzIGlzIHVzZWQgdG8gY29uc3RydWN0IGFuIGVkZ2UgbGlzdC4gSWYgeW91IGhhdmUgbXVsdGlwbGUgbGV0dGVycyBiZXR3ZWVuIGluZGl2aWR1YWxzLCB5b3UgY2FuIGNvdW50IHRoZW0gYW5kIHVzZSBhcyBhIHdlaWdodCBpbiB0aGUgbmV0d29yaywgb3IgeW91IGNhbiBpZ25vcmUgaXQuIFRoaXMgaXMgZG9uZSB3aXRoIGB0aWR5dmVyc2VgIGNvbW1hbmRzIHdlIGxlYXJuZWQgcHJldmlvdXNseTogYGdyb3VwX2J5KClgIGFuZCBgdGFsbHkoKWAsIGNoYW5naW5nIHRoZSBuYW1lIG9mIHRoZSBuZXcgY29sdW1uIHRvICd3ZWlnaHQnLgoKYGBge3IgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0KCmVkZ2VfbGlzdCA9IGxldHRlcnMgJT4lIAogIGdyb3VwX2J5KGZyb21faWQsIHRvX2lkKSAlPiUgCiAgdGFsbHkobmFtZSA9ICd3ZWlnaHQnKQoKZWRnZV9saXN0CgpgYGAKCk5vdyB5b3Ugc2VlIGVhY2ggdW5pcXVlIGNvbWJpbmF0aW9uIG9mIHNlbmRlciBhbmQgcmVjaXBpZW50LiBJZiB0aGVyZSBhcmUgbXVsdGlwbGUgbGV0dGVycywgdGhpcyBpcyBub3cgc2lnbmlmaWVkIGJ5IGEgd2VpZ2h0IG9mIG1vcmUgdGhhbiBvbmUgaW4gdGhlIHdlaWdodCBjb2x1bW4uIFlvdSdsbCBhbHNvIG5vdGljZSB0aGF0IHRoZSBvdGhlciBpbmZvcm1hdGlvbiAobGV0dGVyIElEcyBhbmQgYWN0dWFsIG5hbWVzKSBoYXMgZGlzYXBwZWFyZWQuIFRoaXMgaXMgbm90IG5lZWRlZCB0byBtYWtlIHRoZSBuZXR3b3JrLCBidXQgd2UgY2FuIGJyaW5nIHRoZSBuYW1lIGluZm9ybWF0aW9uIGJhY2sgbGF0ZXIuCgojIyMgVHVybiB0aGUgZWRnZSBsaXN0IGludG8gYSB0YmxfZ3JhcGgKCk5leHQgdHJhbnNmb3JtIHRoZSBlZGdlIGxpc3QgaW50byBhIG5ldHdvcmsgb2JqZWN0IGNhbGxlZCBhIHRibF9ncmFwaCwgdXNpbmcgW3RpZHlncmFwaF0oaHR0cHM6Ly93d3cuZGF0YS1pbWFnaW5pc3QuY29tLzIwMTcvaW50cm9kdWNpbmctdGlkeWdyYXBoLykuIEEgdGJsX2dyYXBoIGlzIGEgZ3JhcGggb2JqZWN0IHdoaWNoIGNhbiBiZSBtYW5pcHVsYXRlZCB1c2luZyB0aWR5dmVyc2UgZ3JhbW1hci4gVGhpcyBtZWFucyB5b3UgY2FuIGNyZWF0ZSBhIG5ldHdvcmsgYW5kIHRoZW4gdXNlIGEgcmFuZ2Ugb2Ygc3RhbmRhcmQgZGF0YSBhbmFseXNpcyBmdW5jdGlvbnMgb24gaXQgYXMgbmVlZGVkLgoKVXNlIGBhc190YmxfZ3JhcGgoKWAgdG8gdHVybiB0aGUgZWRnZSBsaXN0IGludG8gYSBuZXR3b3JrLiBUaGUgZmlyc3QgdHdvIGNvbHVtbnMgd2lsbCBiZSB0YWtlbiBhcyB0aGUgZnJvbSBhbmQgdG8gZGF0YSwgYW5kIGFueSBhZGRpdGlvbmFsIGNvbHVtbnMgYWRkZWQgYXMgYXR0cmlidXRlcy4gQW4gaW1wb3J0YW50IG9wdGlvbiBpcyB0aGUgYGRpcmVjdGVkID1gIGFyZ3VtZW50LiBUaGlzIHdpbGwgc3BlY2lmeSB3aGV0aGVyIHRoZSBuZXR3b3JrIGlzIGRpcmVjdGVkICh0aGUgcGF0aCBnb2VzIGZyb20gdGhlIGZpcnN0IGNvbHVtbiB0byB0aGUgc2Vjb25kKSBvciB1bmRpcmVjdGVkLiBCZWNhdXNlIHRoaXMgbmV0d29yayBpcyBpbmhlcmVudGx5IGRpcmVjdGVkIChhIGxldHRlciBpcyBzZW50IGZyb20gb25lIHBlcnNvbiB0byBhbm90aGVyKSwgd2UgdXNlIGBkaXJlY3RlZCA9IFRSVUVgLiBJbiBtYW55IGNhc2VzLCB0aGUgbmV0d29yayB3aWxsIGJlIHVuZGlyZWN0ZWQsIGFuZCB0aGlzIHNob3VsZCBiZSBzcGVjaWZpZWQgdXNpbmcgYGRpcmVjdGVkID0gRkFMU0VgLgoKYGBge3IgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0KCnNhbXBsZV90YmxfZ3JhcGggPSBlZGdlX2xpc3QgJT4lIAogIGFzX3RibF9ncmFwaChkaXJlY3RlZCA9IFQpCgpzYW1wbGVfdGJsX2dyYXBoCmBgYAoKVGhlIGB0YmxfZ3JhcGhgIGlzIGFuIG9iamVjdCBjb250YWluaW5nIHR3byBsaW5rZWQgZGF0YWZyYW1lcywgb25lIGZvciB0aGUgZWRnZXMgYW5kIG9uZSBmb3IgdGhlIG5vZGVzLiBUaGUgbm9kZSB0YWJsZSBpcyBjdXJyZW50bHkgYSB0YWJsZSBjb250YWluaW5nIGEgcm93IGZvciBlYWNoIHVuaXF1ZSBub2RlIGluIHRoZSBkYXRhZnJhbWUsIHdpdGggb25lIGNvbHVtbiwgKipuYW1lKiosIHdoaWNoIGlzIHRoYXQgbm9kZSdzIElELiBXaGVuIHdlIGNhbGN1bGF0ZSBhZGRpdGlvbmFsIG5vZGUtbGV2ZWwgbWV0cmljcywgdGhleSB3aWxsIGJlIGFkZGVkIGFzIGFkZGl0aW9uYWwgY29sdW1ucyB0byB0aGlzIG5vZGUgdGFibGUuCgpUaGUgZWRnZXMgZGF0YWZyYW1lIGN1cnJlbnRseSBjb250YWlucyB0aHJlZSBjb2x1bW5zOiAqKmZyb20qKiwgKip0byoqLCBhbmQgKip3ZWlnaHQqKi4gVGhlICoqZnJvbSoqIGFuZCAqKnRvKiogY29sdW1ucyBjb250YWluIHRoZSBlZGdlIGluZm9ybWF0aW9uOiB0aGUgZmlyc3Qgcm93IHRlbGxzIHVzIHRoYXQgdGhlcmUgaXMgYW4gZWRnZSBydW5uaW5nIGZyb20gbm9kZSAxIHRvIG5vZGUgODkuIFRoZXNlIG5vZGUgbnVtYmVycyBhcmUgbm90IHRoZSBub2RlIElEcyBidXQgcmF0aGVyIGNvcnJlc3BvbmQgdG8gdGhlIG9yZGVyIG9mIHRoZSBub2RlIHRhYmxlIChvciB0aGUgbnVtYmVycyBqdXN0IHRvIHRoZSBsZWZ0IG9mIHRoZSBuYW1lIGNvbHVtbikuIFNvIHRoaXMgdGVsbHMgdXMgdGhhdCB0aGVyZSBpcyBhbiBlZGdlIGdvaW5nIGZyb20gdGhlIG5vZGUgaW4gcG9zaXRpb24gMSAoRTAwMTQ1LVMwMTI2NTAtVDAwMDAwMCkgdG8gdGhhdCBpbiBwb3NpdGlvbiA4OS4KCllvdSBjYW4gYWNjZXNzIGVhY2ggb2YgdGhlIHRhYmxlcyB1c2luZyB0aGUgZnVuY3Rpb24gYGFjdGl2YXRlKG5vZGVzKWAgb3IgYGFjdGl2YXRlKGVkZ2VzKWAuIFRoZSBhY3RpdmUgdGFibGUgaXMgbGlzdGVkIGZpcnN0IGFuZCBoYXMgdGhlIHdvcmQgJ2FjdGl2ZScgaW4gdGhlIGRlc2NyaXB0aW9uLiBBbnkgY29tbWFuZHMgeW91IGRvIChmaWx0ZXJpbmcsIGpvaW5pbmcgYW5kIHNvIGZvcnRoKSB3aWxsIGhhcHBlbiBvbiB0aGUgKmFjdGl2ZSogdGFibGUuCgpgYGB7cn0KCnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIGFjdGl2YXRlKGVkZ2VzKQoKYGBgCgpZb3UgY2FuIHVzZSBtYW55IG9mIHRoZSB0aWR5dmVyc2UgY29tbWFuZHMgd2UgbGVhcm5lZCBpbiB0aGUgZWFybGllciBsZXNzb24gb24gdGhpcyBvYmplY3QsIGZvciBleGFtcGxlIGZpbHRlcmluZyB0byBpbmNsdWRlIG9ubHkgZWRnZXMgd2l0aCBhIHdlaWdodCBvZiBtb3JlIHRoYW4gMToKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBhY3RpdmF0ZShlZGdlcykgJT4lCiAgZmlsdGVyKHdlaWdodD4xKQpgYGAKCiMjIENhbGN1bGF0aW5nIE5ldHdvcmsgTWV0cmljcwoKIyMjIEdsb2JhbCBtZXRyaWNzCgpUaGUgZmlyc3QgdGhpbmcgd2Ugd2FudCB0byBkbyB3aXRoIHRoaXMgbmV0d29yayBpcyB0byBjYWxjdWxhdGUgc29tZSBnbG9iYWwgbmV0d29yayBzdGF0aXN0aWNzLiBCZWNhdXNlIHRoZSBvdXRwdXRzIHRvIHRoZXNlIGFyZSBnZW5lcmFsbHkgYSBzaW5nbGUgbnVtYmVyLCB3ZSBkb24ndCBuZWVkIHRvIHdvcnJ5IGFib3V0IHN0b3JpbmcgdGhlbSBpbiBhIHRhYmxlLCBhcyB3ZSdsbCBkbyB3aXRoIHRoZSBub2RlLWxldmVsIG1ldHJpY3MgbGF0ZXIuIFRvIGNhbGN1bGF0ZSB0aGVzZSBtZXRyaWNzLCBnZW5lcmFsbHkganVzdCBwYXNzIHRoZSBuZXR3b3JrIHRvIGEgcmVsZXZhbnQgZnVuY3Rpb24uIFRoZXNlIG1ldHJpY3Mgd2VyZSBjb3ZlcmVkIGluIG1vcmUgZGV0YWlsIGluIHRoZSBwcmV2aW91cyBjbGFzcy4KCiMjIyMgRGVuc2l0eQoKKHRoZSBudW1iZXIgb2YgbGlua3MgcHJlc2VudCBvdXQgb2YgYWxsIHBvc3NpYmxlIGxpbmtzKToKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSBpZ3JhcGg6OmdyYXBoLmRlbnNpdHkoKQpgYGAKCiMjIyMgQXZlcmFnZSBwYXRoIGxlbmd0aAoKKHRoZSBhdmVyYWdlIG51bWJlciBvZiBob3BzIGJldHdlZW4gZXZlcnkgcGFpciBvZiBub2RlcyBpbiB0aGUgbmV0d29yayk6CgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjphdmVyYWdlLnBhdGgubGVuZ3RoKCkKYGBgCgojIyMjIENsdXN0ZXJpbmcgY29lZmZpY2llbnQ6CgpCZWNhdXNlIHRoZXJlIGFyZSBhIG51bWJlciBvZiB3YXlzIHRvIGNhbGN1bGF0ZSBjbHVzdGVyaW5nIGluIGEgbmV0d29yaywgYSBtZXRob2QgbmVlZHMgdG8gYmUgc3BlY2lmaWVkLiBUaGUgY2x1c3RlcmluZyBjb2VmZmljaWVudCBpcyBhbHNvIGtub3duIGFzICp0cmFuc2l0aXZpdHkqLCBhbmQgaXQgaXMgZGVmaW5lZCBhcyB0aGUgcmF0aW8gb2YgY29tcGxldGVkIHRyaWFuZ2xlcyBhbmQgY29ubmVjdGVkIHRyaXBsZXMgaW4gdGhlIGdyYXBoLiBUaGlzIG1lYXN1cmVtZW50IGNhbiBiZSAqZ2xvYmFsKiAod2hpY2ggY291bnRzIHRoZSBvdmVyYWxsIHJhdGlvKSBvciAqbG9jYWwqICh3aGljaCBjb3VudHMgdGhlIGluZGl2aWR1YWwgcmF0aW8gZm9yIGVhY2ggbm9kZSkuIEJlY2F1c2Ugd2Ugd2FudCB0aGUgZ2xvYmFsIG1lYXN1cmVtZW50LCBzcGVjaWZpYyB0aGlzIHdpdGggdGhlIGB0eXBlID1gIGFyZ3VtZW50LgoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIGlncmFwaDo6dHJhbnNpdGl2aXR5KHR5cGUgPSAnZ2xvYmFsJykKYGBgCgojIyMgTm9kZS1sZXZlbCBtZXRyaWNzLgoKVGhlcmUgYXJlIGEgbnVtYmVyIG9mIHdheXMgdG8gY2FsY3VsYXRlIG5vZGUtbGV2ZWwgbWV0cmljcyAodGhlc2UgYXJlIHRoaW5ncyBsaWtlIGRlZ3JlZSwgYmV0d2Vlbm5lc3MgYXMgZXhwbGFpbmVkIGluIHRoZSBwcmV2aW91cyBjbGFzcykuIEZvciBleGFtcGxlLCB5b3UgY2FuIHVzZSBpZ3JhcGggZnVuY3Rpb25zIHRvIGNhbGN1bGF0ZSB0aGUgZGVncmVlIG9mIHNpbmdsZSBub2RlIG9yIGdyb3VwIG9mIG5vZGVzLiBUaGUgZm9sbG93aW5nIGNvZGUgcmV0dXJucyB0aGUgZGVncmVlIGZvciB0aGUgbm9kZSB3aXRoIHRoZSBJRCBgRTAwNDY1NC1TMDA2OTc5LVQwMDAwMDBgIChLaW5nIENoYXJsZXMgSUkgb2YgRW5nbGFuZCkuIFlvdSBjYW4gcmV0dXJuIHRvIHRoZSBvcmlnaW5hbCBkYXRhc2V0IHRvIGZpbmQgdGhlIHJlbGV2YW50IElEcyBmb3IgYSBub2RlIG9mIGludGVyZXN0LiBUaGUgYXJndW1lbnQgYG1vZGUgPWAgc3BlY2lmaWVzIHRoZSB0eXBlIG9mIGRlZ3JlZTogYGluYCwgYG91dGAsIG9yIGBhbGxgLCBhcyB3ZSBsZWFybmVkIGluIHRoZSBwcmV2aW91cyBsZXNzb24uCgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjpkZWdyZWUodiA9ICdFMDA0NjU0LVMwMDY5NzktVDAwMDAwMCcsIG1vZGUgPSAnYWxsJykgCmBgYAoKWW91IGNhbiBhbHNvIGxvb2sgdXAgdGhlIGRlZ3JlZSBvZiBtdWx0aXBsZSBJRHMgYnkgcGFzc2luZyB0aGVtIGFzIGEgdmVjdG9yLCB1c2luZyBgYygpYC4gCgpgCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSBpZ3JhcGg6OmRlZ3JlZSh2ID0gYygnRTAwNDY1NC1TMDA2OTc5LVQwMDAwMDAnLCdFMDA2MDE5LVMwMTI3MzQtVDAwMDAwMCcpLCBtb2RlID0gJ2FsbCcpIApgYGAKCiMjIyMgQWRkaW5nIG5vZGUtbGV2ZWwgbWV0cmljcyBhcyBhIGNvbHVtbiB3aXRoIHRpZHlncmFwaC4KClJlbWVtYmVyIHRoYXQgb3VyIHRpZHlncmFwaCBvYmplY3QgaXMgbWFkZSB1cCBvZiB0d28gZGF0YWZyYW1lcywgb25lIG9mIG5vZGVzIGFuZCBvbmUgb2YgZWRnZXM/IFdlIGNhbiB1c2UgdGhlIGZvcm1hdCB0byBhZGQgbm9kZS1sZXZlbCBtZXRyaWNzIHRvIHRoZSBub2RlIGRhdGFmcmFtZSBhcyBhZGRpdGlvbmFsIGNvbHVtbnMsIG1ha2luZyB0aGVtIGVhc3kgdG8gYW5hbHlzZSB1c2luZyBSIGxhdGVyLiBUbyBkbyB0aGlzLCB3ZSB1c2UgYSBmdW5jdGlvbiBjYWxsZWQgYG11dGF0ZSgpYC4gTXV0YXRlIGNyZWF0ZXMgYSBuZXcgY29sdW1uIGNvbnRhaW5pbmcgdGhlIHZhbHVlIGZyb20gc29tZSBjYWxjdWxhdGlvbiwgd2hpY2ggaXMgcGVyZm9ybWVkIG9uIGVhY2ggcm93IGluIHRoZSBkYXRhc2V0LgoKQXNzaWduIHRoZSBuYW1lIGBkZWdyZWVgIHRvIHRoZSBuZXcgY29sdW1uIHdpdGggYGRlZ3JlZSA9YC4gVGhlIGNvbHVtbiBzaG91bGQgY29udGFpbiB0aGUgdG90YWwgZGVncmVlIHNjb3JlIGZvciBlYWNoIG5vZGUuIFRoaXMgaXMgZG9uZSB1c2luZyB0aGUgZnVuY3Rpb24gYGNlbnRyYWxpdHlfZGVncmVlKClgLiBXaXRoIHRoZSB0d28gYWRkaXRpb25hbCBhcmd1bWVudHMgaW4gdGhpcyBmdW5jdGlvbiwgc3BlY2lmeSB0aGUgbW9kZSAoaW4sIG91dCwgb3IgYWxsKSBhbmQsIGlmIGEgd2VpZ2h0ZWQgZGVncmVlIHNjb3JlIGlzIGRlc2lyZWQsIHRoZSBjb2x1bW4gdG8gYmUgdXNlZCBhcyB3ZWlnaHRzLgoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIGFjdGl2YXRlKG5vZGVzKSAlPiUgIyBtYWtlIHN1cmUgdGhlIG5vZGVzIHRhYmxlIGlzIGFjdGl2ZQogIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZShtb2RlID0gJ2FsbCcsIHdlaWdodHMgPSB3ZWlnaHQpKQpgYGAKClRoZSBkYXRhIGZvcm1hdCBhbGxvd3MgeW91IHRvIHVzZSBkcGx5ciBwaXBlcyBgJT4lYCB0byBwZXJmb3JtIG9uZSBjYWxjdWxhdGlvbiBvbiB0aGUgZGF0YSwgdGhlbiBwYXNzIHRoYXQgbmV3IGRhdGFmcmFtZSBhbG9uZyB0byB0aGUgbmV4dCBmdW5jdGlvbi4gSGVyZSB3ZSBjYWxjdWxhdGUgdGhlIGRlZ3JlZSBzY29yZXMgZmlyc3QsIHRoZW4gZmlsdGVyIHRvIGluY2x1ZGUgb25seSBub2RlcyB3aXRoIGEgZGVncmVlIHNjb3JlIG92ZXIgdHdvOgoKYGBge3J9CgpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBhY3RpdmF0ZShub2RlcykgJT4lIAogIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZShtb2RlID0gJ3RvdGFsJykpICU+JSAKICBmaWx0ZXIoZGVncmVlID4yKQoKYGBgCgpgYGB7Y3NzfQouaW5mb2JveCB7CiAgcGFkZGluZzogMWVtIDFlbSAxZW0gMWVtOwogIG1hcmdpbi1ib3R0b206IDJweDsKICBib3JkZXI6IDJweCBzb2xpZCBvcmFuZ2U7CiAgYm9yZGVyLXJhZGl1czogMTBweDsKICBiYWNrZ3JvdW5kOiAjZjVmNWY1IDVweCBjZW50ZXIvM2VtIG5vLXJlcGVhdDsKfQpgYGAKCjo6OiB7LmluZm9ib3h9Ck5vdGUgdGhhdCB0aGUgY2FsY3VsYXRpb25zIGFyZSBkb25lIG9uZSBhdCBhIHRpbWUuIFdoYXQgZGlmZmVyZW5jZSB3b3VsZCBpdCBtYWtlIHRvIHlvdXIgcmVzdWx0cyBpZiB5b3UgZmlsdGVyZWQgKGZvciBleGFtcGxlIGJhc2VkIG9uIGEgc2V0IG9mIGRhdGVzKSBhbmQgdGhlbiBjYWxjdWxhdGVkIGRlZ3JlZSwgcmF0aGVyIHRoYW4gdGhlIG90aGVyIHdheSBhcm91bmQ/Cjo6OgoKCiMjIyBTdW1tYXJpc2luZyB0aGUgbmV0d29yayBkYXRhCgpUbyB3b3JrIHdpdGggeW91ciBuZXcgbmV0d29yayBtZXRyaWNzLCB0aGUgZGF0YSBjYW4gYmUgb3V0cHV0dGVkIHRvIGEgc3RhbmRhcmQgUiBkYXRhZnJhbWUuIENyZWF0ZSBhIG5ldyBkYXRhZnJhbWUgYnkgZG9pbmcgdGhpcywgdXNpbmcgdGhlIHRpZHl2ZXJzZSBmdW5jdGlvbiBmb3IgY3JlYXRpbmcgZGF0YWZyYW1lcywgYGFzX3RpYmJsZSgpYDoKCmBgYHtyfQpuZXR3b3JrX21ldHJpY3NfZGYgPSBzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBhY3RpdmF0ZShub2RlcykgJT4lICMgbWFrZSBzdXJlIGNvcnJlY3QgdGFibGUgaXMgYWN0aXZlCiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKHdlaWdodHMgPSB3ZWlnaHQsIG1vZGUgPSAnYWxsJykpICU+JSAjIGNhbGN1bGF0ZSBkZWdyZWUKICBtdXRhdGUoYmV0d2VlbiA9IGNlbnRyYWxpdHlfYmV0d2Vlbm5lc3Mod2VpZ2h0cyA9IHdlaWdodCxkaXJlY3RlZCA9IEYpKSAlPiUgICMgY2FsY3VsYXRlIGJldHdlZW5uZXNzIGNlbnRyYWxpdHkKICBhc190aWJibGUoKSAjIHR1cm4gdGhlIG5vZGVzIHRhYmxlIGludG8gYSBwbGFpbiBkYXRhZnJhbWUKYGBgCgpUaGlzIG5ldyB0YWJsZSBjYW4gYmUgc29ydGVkLCB0b3RhbHMgY291bnRlZCwgYW5kIHNvIGZvcnRoOgoKYGBge3J9Cm5ldHdvcmtfbWV0cmljc19kZiAlPiUgYXJyYW5nZShkZXNjKGRlZ3JlZSkpCmBgYAoKIyMgSm9pbmluZyBhZGRpdGlvbmFsIGRhdGEKClRoZSB2YWx1ZSBvZiB3b3JraW5nIHdpdGggYSBkYXRhIG1vZGVsIGFuZCB0aWR5Z3JhcGggaXMgdGhhdCB3ZSBjYW4gbWVyZ2UgYWRkaXRpb25hbCB0YWJsZXMgb2YgZGF0YSBhdHRyaWJ1dGVzIHRvIG91ciBub2RlcyBvciBlZGdlcy4gRWFybGllciwgd2UgZXhwbGFpbmVkIGhvdyBpbXBvcnRhbnQgaXQgaXMgdGhhdCBldmVyeSBub2RlIGluIHlvdXIgZGF0YSBoYXMgYSB1bmlxdWUgSUQuIFRoZSBkb3duc2lkZSBvZiB0aGlzLCBwYXJ0aWN1bGFybHkgZm9yIGh1bWFuaXRpZXMgcmVzZWFyY2gsIGlzIHRoYXQgaXQncyBub3QgZWFzeSB0byBzZWUgd2hvIG9yIHdoYXQgaXMgYmVoaW5kIGEgcGFydGljdWxhciBub2RlLiBUaGlzIGNhbiBiZSBzb2x2ZWQgYnkgdXNpbmcgYSBgam9pbmAgY29tbWFuZC4KCkluIGEgc2VwYXJhdGUgdGFibGUsIHdlIGhhdmUgYSBkYXRhc2V0IG9mIGF0dHJpYnV0ZXMgYWJvdXQgdGhpcyBzZXQgb2Ygbm9kZXMsIGluY2x1ZGluZyBwbGFjZSBhbmQgZGF0ZXMgb2YgYmlydGggYW5kIGRlYXRoLCBhbmQgZ2VuZGVyLiBVc2luZyB0aGUgYGpvaW4oKWAgY29tbWFuZHMsIHdlIGNhbiBtZXJnZSB0aGlzIHRhYmxlIHRvIHRoZSBuZXR3b3JrIGRhdGEsIGFuZCB1c2UgaXQgdG8gc29ydCwgZmlsdGVyIChhbmQgbGF0ZXIgdmlzdWFsaXNlKSB0aGUgZGF0YToKCkZpcnN0LCBsb2FkIHRoZSB0YWJsZSBvZiBkYXRhIHVzaW5nIGByZWFkX2NzdmA6CgpgYGB7cn0Kbm9kZV9hdHRyaWJ1dGVzID0gcmVhZF9jc3YoJ25vZGVfYXR0cmlidXRlcy5jc3YnKQoKbm9kZV9hdHRyaWJ1dGVzCmBgYAoKVGhpcyB0YWJsZSBjb250YWlucyBmdXJ0aGVyIGluZm9ybWF0aW9uIGFib3V0IHRoZSBub2RlcywgZWFjaCBvZiB3aGljaCBhcmUgaWRlbnRpZmllZCBieSB0aGVpciB1bmlxdWUgSUQuIFRoaXMgY2FuIGJlIGpvaW5lZCB0byB0aGUgbmV0d29yayBvYmplY3QgdXNpbmcgYGpvaW4oKWAgY29tbWFuZHM6CgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgCiAgbGVmdF9qb2luKG5vZGVfYXR0cmlidXRlcywgYnkgPSAnbmFtZScpCmBgYAoKVXNpbmcgdGhpcyBhcHByb2FjaCB5b3UgY2FuIG5vdyBtYWtlIHN1YnNldHMgb2YgdGhlIG5ldHdvcmssIGFuZCBjYWxjdWxhdGUgZ2xvYmFsIG9yIG5vZGUtbGV2ZWwgc3RhdGlzdGljcyBmb3IgdGhlc2UuIFRoaXMgZXhhbXBsZSB3b3VsZCByZXR1cm4gYSBuZXR3b3JrIGNvbnRhaW5pbmcgb25seSBpbmRpdmlkdWFscyB3aXRoIHBvbGl0aWNpYW4gbGlzdGVkIGFzIG9uZSBvZiB0aGVpciBvY2N1cGF0aW9ucywgZm9yIGV4YW1wbGU6CgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgCiAgbGVmdF9qb2luKG5vZGVfYXR0cmlidXRlcywgYnkgPSAnbmFtZScpICU+JSAjIGZpcnN0IGpvaW4gdGhlIGF0dHJpYnV0ZXMgdGFibGUgYWdhaW4KICBmaWx0ZXIoc3RyX2RldGVjdChvY2N1cGF0aW9ucywgInBvbGl0aWNpYW4iKSkgJT4lICMgcmV0dXJucyBhbnkgcm93IHdpdGggdGhlIHN0cmluZyAncG9saXRpY2lhbicgaW4gaXQKICBtdXRhdGUoZGVncmVlID0gY2VudHJhbGl0eV9kZWdyZWUod2VpZ2h0cyA9IHdlaWdodCwgbW9kZSA9ICdhbGwnKSkgIyBjYWxjdWxhdGUgbmV0d29yayBtZXRyaWNzIG9uIHRoaXMgbmV3IHN1YnNldCBvZiB0aGUgZGF0YS4KICAKYGBgCgo8ZGV0YWlscz4KCjxicj4KCjxzdW1tYXJ5Pk5vZGUgYXR0cmlidXRlcyBjb3VsZCBiZSBhZGRlZCBhbmQgdXNlZCB0byBmaWx0ZXIgYXQgc2V2ZXJhbCBzdGVwczogYmVmb3JlIHRoZSBuZXR3b3JrIGlzIGNyZWF0ZWQsIGFuZCBiZWZvcmUgb3IgYWZ0ZXIgbmV0d29yayBtZXRyaWNzIGFyZSBjYWxjdWxhdGVkLiBXaGF0IGRpZmZlcmVuY2VzIG1pZ2h0IHRoZXNlIG1ha2U/PC9zdW1tYXJ5PgoKTWFrZSBzdXJlIHlvdSBrbm93IGF0IHdoaWNoIHN0YWdlIHlvdSBhcmUgY2FsY3VsYXRpbmcgbmV0d29yayBtZXRyaWNzLiBJZiB5b3UgY2FsY3VsYXRlIHRoZW0gYWZ0ZXIgZmlsdGVyaW5nLCB5b3UnbGwgZ2V0IGEgc2V0IG9mIG1ldHJpY3MgYmFzZWQgb24gYSBuZXcsIHN1YnNldHRlZCBuZXR3b3JrLgoKPC9kZXRhaWxzPgoKPGJyPgoKVGhpcyBuZXcgdGFibGUgY2FuIGJlIG91dHB1dHRlZCBhcyBhIGRhdGFmcmFtZSwgYXMgYWJvdmUuIEhlcmUgd2UgdXNlIHRoaXMgdG8gY2FsY3VsYXRlIHRoZSBoaWdoZXN0LWRlZ3JlZSBub2RlcyBmcm9tIHRoZSAncG9sdGljaWFucyBuZXR3b3JrJywga2VlcCB0aGVpciByZWFsIG5hbWVzLCBhbmQgc29ydCBpbiBkZXNjZW5kaW5nIG9yZGVyIG9mIGRlZ3JlZToKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBsZWZ0X2pvaW4obm9kZV9hdHRyaWJ1dGVzLCBieSA9ICduYW1lJykgJT4lICMgZmlyc3Qgam9pbiB0aGUgYXR0cmlidXRlcyB0YWJsZSBhZ2FpbgogIGZpbHRlcihzdHJfZGV0ZWN0KG9jY3VwYXRpb25zLCAicG9saXRpY2lhbiIpKSAlPiUgIyByZXR1cm5zIGFueSByb3cgY29udGFpbmluZyB0aGUgc3RyaW5nICdwb2xpdGljaWFuJwogIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSh3ZWlnaHRzID0gd2VpZ2h0LCBtb2RlID0gJ2FsbCcpKSAgJT4lICAgIyBjYWxjdWxhdGUgbmV0d29yayBtZXRyaWNzIG9uIHRoaXMgbmV3IHN1YnNldCBvZiB0aGUgZGF0YS4KYXNfdGliYmxlKCkgJT4lIAogIGFycmFuZ2UoZGVzYyhkZWdyZWUpKSAlPiUgc2VsZWN0KG5hbWUsIG1haW5fbmFtZSwgZGVncmVlKQpgYGAKCiMjIFNvY2lhbCBOZXR3b3JrIEFuYWx5c2lzIHdpdGggUgoKVGhpcyBsYXN0IHBhcnQgZ29lcyB0aHJvdWdoIHNvbWUgb2YgdGhlIGZ1bmN0aW9ucyB3aGljaCBhcmUgbW9yZSByZWxhdGVkIHRvIHRoZSAnc29jaWFsIG5ldHdvcmsgYW5hbHlzaXMnLiBNYW55IG9mIHRoZXNlIGFyZSBhY2Nlc3NlZCBkaXJlY3RseSB0aHJvdWdoIHRoZSBwYWNrYWdlIGBpZ3JhcGhgLgoKIyMjIFRyYW5zaXRpdml0eSwgVHJpYWRzLCBzdHJ1Y3R1cmFsIGJhbGFuY2UKCkFzIHdlIGxlYXJuZWQgaW4gdGhlIGxhc3QgbGVzc29uLCBjb3VudGluZyB0aGUgcmF0aW8gb2YgY29tcGxldGVkIHRyaWFuZ2xlcyBpbiBhIG5ldHdvcmsgaXMgYSBnb29kIHdheSB0byB1bmRlcnN0YW5kIGl0cyBzdHJ1Y3R1cmUuIFRoaXMgcmF0aW8gaXMga25vd24gYXMgdGhlICoqY2x1c3RlcmluZyBjb2VmZmljaWVudCoqLCBhbmQgdGhlcmUgYXJlIHR3byB0eXBlczogKipnbG9iYWwqKiwgd2hpY2ggbWVhc3VyZXMgdGhlIHJhdGlvIG9mIGNvbXBsZXRlIGFuZCBub3QgY29tcGxldGUgdHJpYW5nbGVzIGluIHRoZSBlbnRpcmUgbmV0d29yaywgYW5kICoqbG9jYWwqKiwgd2hpY2ggbWVhc3VyZXMgdGhlIGNvbXBsZXRlIHRyaWFuZ2xlcyBmb3IgZWFjaCBpbmRpdmlkdWFsIG5vZGUuIFRoaXMgbWVhc3VyZW1lbnQgaXMgYWxzbyBrbm93biBhcyAqKnRyYW5zaXRpdml0eSoqLgoKVXNlIHRoZSBmb2xsb3dpbmcgY29tbWFuZCB0byBjYWxjdWxhdGUgdGhlIGdsb2JhbCBjbHVzdGVyaW5nLCBvciB0cmFuc2l0aXZpdHkgb2YgdGhlIG5ldHdvcmsuIEl0IHJldHVybnMgYSBzaW5nbGUgbnVtYmVyLCB3aGljaCBpcyBqdXN0IHRoZSByYXRpbyBvZiBjb21wbGV0ZWQgdHJpYW5nbGVzIHRvIHRoZSB0b3RhbCBwb3NzaWJsZSBudW1iZXIgb2YgdHJpYW5nbGVzIGluIHRoZSBncmFwaDoKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSB0cmFuc2l0aXZpdHkodHlwZSA9ICdnbG9iYWwnKQpgYGAKClVzZSB0aGUgZm9sbG93aW5nIHRvIG1lYXN1cmUgdGhlIGxvY2FsIGNsdXN0ZXJpbmcgY29lZmZpY2llbnQgZm9yIGVhY2ggbm9kZSBpbiB0aGUgZ3JhcGguIEl0IHJldHVybnMgYSB2ZWN0b3Igb2YgbnVtYmVycywgb25lIGZvciBlYWNoIG5vZGU6CgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgdHJhbnNpdGl2aXR5KHR5cGUgPSAnbG9jYWwnKSAKCmBgYAoKQW5vdGVyIHJlbGF0ZWQgbWVhc3VyZW1lbnQgaXMgdGhlIGF2ZXJhZ2UgbG9jYWwgY2x1c3RlcmluZywgY2FsY3VsYXRlZCB1c2luZyB0aGUgZm9sbG93aW5nOgoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIHRyYW5zaXRpdml0eSh0eXBlID0gJ2F2ZXJhZ2UnKSAKCgpgYGAKCldlIGNhbiBhbHNvIGNhbGN1bGF0ZSB0aGUgdG90YWwgcmVjaXByb2NpdHkgb2YgYSBncmFwaCAodGhlIHByb3BvcnRpb24gb2YgbGlua3Mgd2hpY2ggYXJlIHJlY2lwcm9jYXRlZCk6CgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgcmVjaXByb2NpdHkoKQoKCmBgYAoKV2UgY2FuIGFsc28gY2FsY3VsYXRlIHRoZSAndHJpYWQgY2Vuc3VzJywgdGhlIG51bWJlciBvZiBlYWNoIHR5cGUgb2YgdHJpYWQgaW4gYSBkaXJlY3RlZCBuZXR3b3JrLiBGaXJzdCwgcnVuIHRoZSBgdHJpYWRfY2Vuc3VzKClgIGZ1bmN0aW9uLCBhbmQgdHVybiBpdCBpbnRvIGEgZGF0YWZyYW1lIHdpdGggb25lIGNvbHVtbi4gTmV4dCBhZGQgdGhlIGNvcnJlY3QgdHJpYWQgY29kZXMgYXMgYSBzZWNvbmQgY29sdW1uLgoKYGBge3J9CmNlbnN1cyA9IHNhbXBsZV90YmxfZ3JhcGggJT4lIHRyaWFkX2NlbnN1cygpICU+JSBhc190aWJibGUoKQoKY2Vuc3VzJHR5cGUgPC0gYygiMDAzIiwiMDEyIiwiMTAyIiwiMDIxRCIsIjAyMVUiLCIwMjFDIiwiMTExRCIsIjExMVUiLAogICAgICAgICAgICAgICAgICAgICAgICAgIjAzMFQiLCIwMzBDIiwiMjAxIiwiMTIwRCIsIjEyMFUiLCIxMjBDIiwiMjEwIiwiMzAwIikKCmNlbnN1cwpgYGAKCllvdSBjYW4gbm93IGNvbm5lY3QgdGhlc2UgY29kZXMgdG8gdGhlIHRyaWFkIGRpYWdyYW1zIGZyb20gdGhlIGxhc3QgY2hhcHRlciwgYW5kIHVzZSB0aGVtIHRvIGluZmVyIHRoaW5ncyBhYm91dCB0aGUgc3RydWN0dXJlIGFuZCBmb3JtYXRpb24gb2YgdGhlIG5ldHdvcmsuCgo8ZGV0YWlscz4KCjxzdW1tYXJ5PkltYWdpbmUgdGhhdCB0aGlzIGlzIGEgY29tcGxldGUgbmV0d29yay4gV2h5LCBmb3IgZXhhbXBsZSwgbWlnaHQgMDIxVSAoQSBhbmQgQiBib3RoIHNlbmQgYSBsZXR0ZXIgdG8gQywgYnV0IHRoZXJlJ3Mgbm90IHJlY2lwcm9jYXRpb24sIGFuZCB0aGV5IGFyZSBub3QgY29ubmVjdGVkIHRvIGVhY2ggb3RoZXIpIGJlIHN1Y2ggYSBjb21tb24gdHJpYWQ/PC9zdW1tYXJ5PgoKVGhlIGFuc3dlciBsaWVzIGluIHRoZSBvcmlnaW4gb2YgdGhpcyBuZXR3b3JrLCBhcyBhIGxldHRlciBhcmNoaXZlLiBCZWNhdXNlIGEgbGV0dGVyIGFyY2hpdmUgY29udGFpbnMgbW9zdGx5IGluY29taW5nIGxldHRlcnMgdG8gYW4gZWdvIG5vZGUsIG1hbnkgb2YgdGhlIHRyaWFkcyBhcmUgcGFpcnMgb2Ygbm9kZXMgd2hvIGJvdGggaGF2ZSBhbiBpbmNvbWluZyBjb25uZWN0aW9uIHRvIG9uZSBvZiB0aGVzZSBlZ28gbm9kZXMsIGJ1dCBhcmUgbm90IHRoZW1zZWx2ZXMgY29ubmVjdGVkLgoKPC9kZXRhaWxzPgoKPGJyPgoKQW5vdGhlciBzZXQgb2YgbWV0cmljcyBhcmUgdG8gZG8gd2l0aCBncm91cHMgZm91bmQgaW4gYSBuZXR3b3JrLiBGaXJzdCwgY29tcG9uZW50cy4gQSBjb21wb25lbnQgaXMgYSBncm91cCBvZiBub2RlcyB3aGljaCBhcmUgY29ubmVjdGVkIHRvZ2V0aGVyIHRocm91Z2ggYSBwYXRoIGluIHRoZSBuZXR3b3JrLiBUaGUgYGNvbXBvbmVudHMoKWAgZnVuY3Rpb24gcmV0dXJucyBhIGxpc3Qgd2hpY2ggaW5jbHVkZXMgYSBuYW1lZCB2ZWN0b3Igd2l0aCBhIGNvbXBvbmVudCBudW1iZXIgZm9yIGVhY2ggbm9kZSwgYWxvbmcgd2l0aCB0aGUgbnVtYmVyIG9mIG5vZGVzIGluIGVhY2ggY29tcG9uZW50LCBhbmQgdGhlIHRvdGFsIG51bWJlciBvZiBjb21wb25lbnRzLiBMb29raW5nIGF0IHRoaXMgbGlzdCB3aXRoIGBnbGltcHNlYCB0ZWxscyB1cyB0aGF0IHRoZXJlIGFyZSBzaXggY29tcG9uZW50cywgdGhlIGxhcmdlc3QgYmVpbmcgMjM3IG5vZGVzIGFuZCB0aGUgc21hbGxlc3QgaGFzIDIuCgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjpjb21wb25lbnRzKCkgJT4lIGdsaW1wc2UoKQpgYGAKCkFub3RoZXIgZ2xvYmFsIG1ldHJpYyB3ZSBjYW4gY2FsY3VsYXRlIGlzIHRoZSBudW1iZXIgb2YgKipjbGlxdWVzKiogaW4gYSBuZXR3b3JrLiBBIGNsaXF1ZSBpcyBhIGZ1bGx5IGNvbm5lY3RlZCBzZXQgb2Ygbm9kZXMuIFdlIGNhbiBjYWxjdWxhdGUgdGhlIHRvdGFsIG51bWJlciBvZiBjbGlxdWVzIHdpdGggYGNsaXF1ZV9udW1gOgoKYGBge3IgZWNobz1GQUxTRSwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgaWdyYXBoOjpjbGlxdWVfbnVtKCkKYGBgCgojIyBMb3V2YWluIGNvbW11bml0eSBkZXRlY3Rpb24KCkFub3RoZXIgd2F5IHRvIGxvb2sgYXQgZ3JvdXBzIGluIG5ldHdvcmtzIGlzIHRvIHVzZSBjb21tdW5pdHkgZGV0ZWN0aW9uLiBBcyBleHBsYWluZWQgaW4gdGhlIHByZXZpb3VzIGNoYXB0ZXIsIGNvbW11bml0eSBkZXRlY3Rpb24gYXR0ZW1wdHMgdG8gZmluZCBncm91cHMgb2Ygbm9kZXMgd2hpY2ggYXJlIG1vcmUgY29ubmVjdGVkIHRvIGVhY2ggb3RoZXIgdGhhbiB0aGV5IGFyZSB0byBub2RlcyBvdXRzaWRlIHRoZSBncm91cC4gVW5saWtlIGNvbXBvbmVudHMgb3IgY2xpcXVlcywgY29tbXVuaXRpZXMgY2FuIGJlIGZvdW5kIHVzaW5nIGEgbnVtYmVyIG9mIG1ldGhvZHMuIEhlcmUsIHdlJ2xsIHVzZSB0aGUgTG91dmFpbiBhbGdvcml0aG0sIHdoaWNoIHdhcyBpbnRyb2R1Y2VkIGluIHRoZSBwcmV2aW91cyBsZXNzb24uIFRvIG1ha2UgaXQgZWFzeSB0byB1c2UgdGhlIHJlc3VsdHMsIHdlJ2xsIGNhbGN1bGF0ZSB0aGUgY29tbXVuaXR5IGZvciBlYWNoIG5vZGUgdXNpbmcgdGlkeWdyYXBoLiBUaGlzIHBhcnRpY3VsYXIgaW1wbGVtZW50YXRpb24gb2YgdGhlIGFsZ29yaXRobSBvbmx5IHdvcmtzIGZvciB1bmRpcmVjdGVkIGdyYXBocywgc28gd2UgaGF2ZSB0byBjcmVhdGUgb3VyIG5ldHdvcmsgYWdhaW4gZnJvbSBzY3JhdGNoLCB0aGlzIHRpbWUgc3BlY2lmeWluZyB0aGF0IGl0J3MgKip1bmRpcmVjdGVkKiouCgpgYGB7cn0KCnNhbXBsZV90YmxfZ3JhcGhfdSA9IGVkZ2VfbGlzdCAlPiUgCiAgYXNfdGJsX2dyYXBoKGRpcmVjdGVkID0gRkFMU0UpCgpzYW1wbGVfdGJsX2dyYXBoX3UgJT4lIAogIG11dGF0ZShncm91cCA9IGdyb3VwX2xvdXZhaW4oKSkKYGBgCgpCeSB0dXJuaW5nIHRoaXMgaW5mb3JtYXRpb24gaW50byBhIGRhdGFmcmFtZSwgd2UgY2FuIGdldCBzb21lIGJhc2ljIHN0YXRpc3RpY3Mgb24gdGhlIGdyb3Vwcy4gQnkgYWRkaW5nIHRoaXMgaW5mb3JtYXRpb24gdG8gdGhlIG5vZGUgaW5mb3JtYXRpb24gd2UgY29sbGVjdGVkIGVhcmxpZXIsIHdlIGNhbiBnZXQgYSBzdW1tYXJ5IG9mIHRoZSBhdmVyYWdlIGRlZ3JlZSBhbmQgYmV0d2Vlbm5lc3Mgc2NvcmVzIGZvciBlYWNoIG9mIHRoZSBkZXRlY3RlZCBjb21tdW5pdGllczoKCmBgYHtyIG1lc3NhZ2U9RkFMU0UsIHdhcm5pbmc9RkFMU0V9CnNhbXBsZV90YmxfZ3JhcGhfdSAlPiUgCiAgbXV0YXRlKGdyb3VwID0gZ3JvdXBfbG91dmFpbigpKSU+JSAKICBhY3RpdmF0ZShub2RlcykgJT4lICMgbWFrZSBzdXJlIGNvcnJlY3QgdGFibGUgaXMgYWN0aXZlCiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKHdlaWdodHMgPSB3ZWlnaHQsIG1vZGUgPSAnYWxsJykpICU+JSAjIGNhbGN1bGF0ZSBkZWdyZWUKICBtdXRhdGUoYmV0d2VlbiA9IGNlbnRyYWxpdHlfYmV0d2Vlbm5lc3Mod2VpZ2h0cyA9IHdlaWdodCxkaXJlY3RlZCA9IEYpKSAlPiUgICMgY2FsY3VsYXRlIGJldHdlZW5uZXNzIGNlbnRyYWxpdHkKICBhc190aWJibGUoKSAgJT4lIGdyb3VwX2J5KGdyb3VwKSAlPiUKICBzdW1tYXJpc2UobWVhbl9kZWdyZWUgPSBtZWFuKGRlZ3JlZSxuYS5ybSA9IFRSVUUpLCBtZWFuX2JldHdlZW4gPSBtZWFuKGJldHdlZW4sIG5hLnJtID0gVFJVRSksIG5vZGVzID0gbigpKSAlPiUgcGl2b3RfbG9uZ2VyKDI6NCkgJT4lIAogIGdncGxvdCgpICsgZ2VvbV9jb2woYWVzKHggPSBncm91cCwgeSA9IHZhbHVlKSkgKyBmYWNldF93cmFwKH5uYW1lLCBzY2FsZXMgPSAnZnJlZScpCgpgYGAKCiMjIFJlYWRpbmcgZm9yIG5leHQgd2VlawoKKipXZWVrIDQ6KiogQWhuZXJ0IGV0LiBhbC7CoCgyMDIxKS4gKlRoZSBOZXR3b3JrIFR1cm46IENoYW5naW5nIFBlcnNwZWN0aXZlcyBpbiB0aGUgSHVtYW5pdGllcyogKEVsZW1lbnRzIGluIFB1Ymxpc2hpbmcgYW5kIEJvb2sgQ3VsdHVyZSkuICoqQ2hhcHRlciA1LCBcJ1F1YW50aWZ5aW5nIEN1bHR1cmVcJyAoPGh0dHBzOi8vd3d3LmNhbWJyaWRnZS5vcmcvY29yZS9lbGVtZW50cy9uZXR3b3JrLXR1cm4vQ0MzOEYyRUE5RjUxQTZEMUFGQ0I3RTAwNTIxOEJCRTU+KSoqCgpRdWVzdGlvbnM6CgotICAgCg==</div>
 
 
 

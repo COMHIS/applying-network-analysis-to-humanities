@@ -40,7 +40,7 @@ In this class, we'll use a dataset derived from the English State Papers during 
 Read the file into R with the `read_csv()` function from a previous lesson:
 
 ```{r}
-letters = read_csv("letter_data.csv", col_types = cols(.default = "c"))
+letters = read_csv("../applying-network-analysis-to-humanities/data/letter_data1670.csv", col_types = cols(.default = "c"))
 
 letters
 ```
