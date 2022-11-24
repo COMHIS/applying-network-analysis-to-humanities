@@ -7,7 +7,7 @@
 <link href="4-2-networks-with-r_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="4-2-networks-with-r_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="4-2-networks-with-r_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.0.36">
+  <meta name="generator" content="quarto-1.1.189">
 
   <title>Analysing Networks with Tidygraph</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,10 +18,15 @@
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
   </style>
   <link rel="stylesheet" href="4-2-networks-with-r_files/libs/revealjs/dist/theme/quarto.css" id="theme">
   <link href="4-2-networks-with-r_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -321,524 +326,55 @@
   <h1 class="title">Analysing Networks with Tidygraph</h1>
 </section>
 
-<section id="introduction" class="slide level2">
-<h2>Introduction</h2>
-<p>In this class, we’ll talk through creating and analysing a network object in R. The network we’ll work with is a sample of correspondence data taken from the British State Papers in the seventeenth century.</p>
+<section id="todays-lesson" class="slide level2">
+<h2>Today’s lesson:</h2>
+<ul>
+<li>Import an edge list and turn it into a tidygraph object.</li>
+<li>Calculate global and node-level metrics on it.</li>
+<li>Join to a separate table of node attributes.</li>
+<li>Use this to filter and interpret the network.</li>
+</ul>
 </section>
-<section id="network-data-structures" class="slide level2">
-<h2>Network data structures</h2>
-<p>Network data comes in a number of forms. Two common ones are adjacency matrices and edge lists. An adjacency matrix is a matrix of rows and columns, one for each node. If there is a link between two nodes, a 1 is put in at that point. If it is a weighted network, the weight can be entered in the correct space. In some cases, your data may be in a format where it is easy to use it as an adjacency matrix.</p>
-<p>Adjacency matrices can be easily read into R using <code>igraph</code> and <code>graph_from_adjacency_matrix()</code>.</p>
-<p>The other common type is what we will work with in this lesson: an edge list. An edge list is actually also a ‘sparse matrix’.</p>
+<section id="why-use-a-coding-language-for-networks" class="slide level2">
+<h2>Why use a coding language for networks?</h2>
+<ul>
+<li>Allows us to work with larger datasets</li>
+<li>Makes our code reproducible (others can re-run it and get the same results)</li>
+<li>Can use the same steps for multiple datasets.</li>
+</ul>
 </section>
-<section id="creating-a-network-object-in-r-from-an-edge-list" class="slide level2">
-<h2>Creating a Network Object in R from an Edge List</h2>
-<p>One of the easiest data formats to construct a network is an edge list: a simple dataframe with two columns, representing the connections between two nodes, one per row. If the network is directed, generally the ‘Source’ node is on the left side, and the ‘Target’ node on the right. It makes particular sense with correspondence data, which is often stored as records of letters with a ‘from’ and a ‘to’—more or less a ready-made edge list. In a correspondence dataset you might also have multiple sets of each of the edges (multiple letters between the same pair of individuals). This will be added to the edges as a ‘weight’.</p>
-<p>We will use three R network libraries to do almost everything network-related, from analysis to visualisation: <code>igraph</code>, <code>tidygraph</code> and <code>ggraph</code>. The goal is to port everything to a format which is easy to work with using existing an established data analysis workflow. That format is known as ‘tidy data’, and it is a way of working with data which is easily transferable across a range of uses. It also means you need to learn very little new programming to do network analysis if you stay within this ‘ecosystem’.</p>
+<section id="well-use-three-r-packages" class="slide level2">
+<h2>We’ll use three R packages:</h2>
+<ul>
+<li><strong>Igraph</strong> (creating the network, and analysing it)</li>
+<li><strong>Ggraph</strong> (making network visualisations)</li>
+<li><strong>Tidygraph</strong> (transforming the data in your network, filtering, etc.)</li>
+</ul>
 </section>
-<section id="import-network-data" class="slide level2">
-<h2>Import Network Data</h2>
-<p>The workflow uses a number of R packages. In the CSC Notebooks environment, these have already been installed and can be loaded using the commands below. If you are doing this on a local machine, you may have to install them first using the command <code>install.packages()</code>, with the package name specified as a string, for example <code>install.packages('igraph')</code>.</p>
-<div class="cell">
+<section id="tidygraph-package" class="slide level2">
+<h2>Tidygraph package</h2>
+<ul>
+<li>Special object in R containing an edge list and a linked node list.</li>
+<li>Allows us to work on the data using the functions we’ve learned such as <code>filter()</code>, <code>arrange()</code>, <code>mutate()</code>, <code>left_join()</code> and so forth.</li>
+<li>As well as calculating network metrics and creating visualisations and so forth.</li>
+</ul>
+</section>
+<section id="the-tidygraph-structure" class="slide level2">
+<h2>The tidygraph structure</h2>
 
-</div>
-<p>In this class, we’ll use a dataset derived from the English State Papers. It takes the form of a .csv containing the information on the author, recipient, and date of sending for a small sample of state letters sent between 1670 and 1672.</p>
-<p>Read the file into R with the <code>read_csv()</code> function from a previous lesson:</p>
-<div class="cell">
-
-</div>
-<p>The letters dataset is a simple dataframe. Each row represents a letter record, and has a unique ID. Essentially, each row is a record of who the author and recipient of the letter. Each of these senders and recipients also have both a unique ID, and the original name of the letter writer and sender. The unique ID is used because it’s quite likely that the names are not unique, and the network could combine two nodes with the same name together, for example.</p>
-<p>This is used to construct an edge list. If you have multiple letters between individuals, you can count them and use as a weight in the network, or you can ignore it. This is done with <code>tidyverse</code> commands we learned previously: <code>group_by()</code> and <code>tally()</code>, changing the name of the new column to ‘weight’.</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 364 × 3
-# Groups:   from_id [198]
-   from_id                 to_id                   weight
-   &lt;chr&gt;                   &lt;chr&gt;                    &lt;int&gt;
- 1 E000145-S012650-T000000 E022443-S042999-T000000      1
- 2 E000189-S014115-T000000 E004830-S019312-T000000      4
- 3 E000189-S014115-T000000 E006871-S022202-T000000      1
- 4 E000189-S014115-T000000 E022443-S042999-T000000      1
- 5 E000312-S012741-T000000 E022443-S042999-T000000      2
- 6 E000393-S036175-T000000 E001993-S018912-T000000      1
- 7 E000520-S001769-T000000 E003476-S051213-T000000      1
- 8 E000520-S001769-T000000 E022443-S042999-T000000      1
- 9 E000799-S042396-T000000 E022443-S042999-T000000      1
-10 E001346-S047404-T000000 E022443-S042999-T000000      1
-# … with 354 more rows</code></pre>
-</div>
-</div>
-<p>Now you see each unique combination of sender and recipient. If there are multiple letters, this is now signified by a weight of more than one in the weight column. You’ll also notice that the other information (letter IDs and actual names) has disappeared. This is not needed to make the network, but we can bring the name information back later.</p>
-</section>
-<section id="turn-the-edge-list-into-a-tbl_graph" class="slide level2">
-<h2>Turn the edge list into a tbl_graph</h2>
-<p>Next transform the edge list into a network object called a tbl_graph, using <a href="https://www.data-imaginist.com/2017/introducing-tidygraph/">tidygraph</a>. A tbl_graph is a graph object which can be manipulated using tidyverse grammar. This means you can create a network and then use a range of standard data analysis functions on it as needed.</p>
-<p>Use <code>as_tbl_graph()</code> to turn the edge list into a network. The first two columns will be taken as the from and to data, and any additional columns added as attributes. An important option is the <code>directed =</code> argument. This will specify whether the network is directed (the path goes from the first column to the second) or undirected. Because this network is inherently directed (a letter is sent from one person to another), we use <code>directed = TRUE</code>. In many cases, the network will be undirected, and this should be specified using <code>directed = FALSE</code>.</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tbl_graph: 248 nodes and 364 edges
-#
-# A directed simple graph with 6 components
-#
-# Node Data: 248 × 1 (active)
-  name                   
-  &lt;chr&gt;                  
-1 E000145-S012650-T000000
-2 E000189-S014115-T000000
-3 E000312-S012741-T000000
-4 E000393-S036175-T000000
-5 E000520-S001769-T000000
-6 E000799-S042396-T000000
-# … with 242 more rows
-#
-# Edge Data: 364 × 3
-   from    to weight
-  &lt;int&gt; &lt;int&gt;  &lt;int&gt;
-1     1    89      1
-2     2    22      4
-3     2   199      1
-# … with 361 more rows</code></pre>
-</div>
-</div>
-<p>The tbl_graph is an object containing two linked tables, one for the edges and one for the nodes. You can access each of the tables using the function <code>activate(nodes)</code> or <code>activate(edges)</code>. The active table is listed first and has the word ‘active’ in the description.</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tbl_graph: 248 nodes and 364 edges
-#
-# A directed simple graph with 6 components
-#
-# Edge Data: 364 × 3 (active)
-   from    to weight
-  &lt;int&gt; &lt;int&gt;  &lt;int&gt;
-1     1    89      1
-2     2    22      4
-3     2   199      1
-4     2    89      1
-5     3    89      2
-6     4    10      1
-# … with 358 more rows
-#
-# Node Data: 248 × 1
-  name                   
-  &lt;chr&gt;                  
-1 E000145-S012650-T000000
-2 E000189-S014115-T000000
-3 E000312-S012741-T000000
-# … with 245 more rows</code></pre>
-</div>
-</div>
-<p>You can use many of the tidyverse commands we learned in the earlier lesson on this object, for example filtering to include only edges with a weight of more than 1:</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tbl_graph: 248 nodes and 165 edges
-#
-# A directed simple graph with 121 components
-#
-# Edge Data: 165 × 3 (active)
-   from    to weight
-  &lt;int&gt; &lt;int&gt;  &lt;int&gt;
-1     2    22      4
-2     3    89      2
-3     9    74      2
-4    10    89      6
-5    12   154      2
-6    13   202      2
-# … with 159 more rows
-#
-# Node Data: 248 × 1
-  name                   
-  &lt;chr&gt;                  
-1 E000145-S012650-T000000
-2 E000189-S014115-T000000
-3 E000312-S012741-T000000
-# … with 245 more rows</code></pre>
-</div>
-</div>
-</section>
-<section id="calculating-network-metrics" class="slide level2">
-<h2>Calculating Network Metrics</h2>
-</section>
-<section id="global-metrics" class="slide level2">
-<h2>Global metrics</h2>
-<p>The first thing we want to do with this network is to calculate some global network statistics. Because the outputs to these are generally a single number, we don’t need to worry about storing them in a table, as we’ll do with the node-level metrics later. To calculate these metrics, generally just pass the network to a relevant function. These metrics were covered in more detail in the previous class.</p>
-</section>
-<section id="density" class="slide level2">
-<h2>Density</h2>
-<p>(the number of links present out of all possible links):</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.005942275</code></pre>
-</div>
-</div>
-</section>
-<section id="average-path-length" class="slide level2">
-<h2>Average path length</h2>
-<p>(the average number of hops between every pair of nodes in the network):</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 11.04997</code></pre>
-</div>
-</div>
-</section>
-<section id="clustering-coefficient" class="slide level2">
-<h2>Clustering coefficient:</h2>
-<p>Because there are a number of ways to calculate clustering in a network, a method needs to be specified. The clustering coefficient is also known as <em>transitivity</em>, and it is defined as the ratio of completed triangles and connected triples in the graph. This measurement can be <em>global</em> (which counts the overall ratio) or <em>local</em> (which counts the individual ratio for each node). Because we want the global measurement, specific this with the <code>type =</code> argument.</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.02453653</code></pre>
-</div>
-</div>
-</section>
-<section id="node-level-metrics." class="slide level2">
-<h2>Node-level metrics.</h2>
-<p>There are a number of ways to calculate node-level metrics (these are things like degree, betweenness as explained in the previous class). For example, you can use igraph functions to calculate the degree of single node or group of nodes. The following code returns the degree for the node with the ID <code>E004654-S006979-T000000</code> (King Charles II of England). The argument <code>mode =</code> specifies the type of degree: in, out, or all, as we learned in the previous lesson.</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>E004654-S006979-T000000 
-                     52 </code></pre>
-</div>
-</div>
-<p>For most purposes, a table containing each of the nodes and the relevant metrics would be more useful (and something that can be analysed using R later). To do this, we use a function called <code>mutate()</code>. Mutate creates a new column containing the value from some calculation, which is performed on each row in the dataset.</p>
-<p>Assign the name <code>degree</code> to the new column with <code>degree =</code>. The column should contain the total degree score for each node. This is done using the function <code>centrality_degree()</code>. With the two additional arguments in this function, specify the mode (in, out, or all) and, if a weighted degree score is desired, the column to be used as weights.</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tbl_graph: 248 nodes and 364 edges
-#
-# A directed simple graph with 6 components
-#
-# Node Data: 248 × 2 (active)
-  name                    degree
-  &lt;chr&gt;                    &lt;dbl&gt;
-1 E000145-S012650-T000000      1
-2 E000189-S014115-T000000     21
-3 E000312-S012741-T000000      6
-4 E000393-S036175-T000000      3
-5 E000520-S001769-T000000      2
-6 E000799-S042396-T000000      1
-# … with 242 more rows
-#
-# Edge Data: 364 × 3
-   from    to weight
-  &lt;int&gt; &lt;int&gt;  &lt;int&gt;
-1     1    89      1
-2     2    22      4
-3     2   199      1
-# … with 361 more rows</code></pre>
-</div>
-</div>
-<p>The data format allows you to use dplyr pipes <code>%&gt;%</code> to perform one calculation on the data, then pass that new dataframe along to the next function. Here we calculate the degree scores first, then filter to include only nodes with a degree score over two:</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tbl_graph: 51 nodes and 124 edges
-#
-# A directed simple graph with 2 components
-#
-# Node Data: 51 × 2 (active)
-  name                    degree
-  &lt;chr&gt;                    &lt;dbl&gt;
-1 E000189-S014115-T000000      8
-2 E001993-S018912-T000000     37
-3 E002622-S014197-T000000     10
-4 E003476-S051213-T000000      6
-5 E003494                      3
-6 E004454-S051301-T000000      3
-# … with 45 more rows
-#
-# Edge Data: 124 × 3
-   from    to weight
-  &lt;int&gt; &lt;int&gt;  &lt;int&gt;
-1     1     8      4
-2     1    29      1
-3     2     7      1
-# … with 121 more rows</code></pre>
-</div>
-</div>
-</section>
-<section id="summarising-the-network-data" class="slide level2">
-<h2>Summarising the network data</h2>
-<p>To work with your new network metrics, the data can be outputted to a standard R dataframe. Create a new dataframe by doing this, using the tidyverse function for creating dataframes, <code>as_tibble()</code>:</p>
-<div class="cell">
-
-</div>
-<p>This new table can be sorted, totals counted, and so forth:</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 248 × 3
-   name                    degree between
-   &lt;chr&gt;                    &lt;dbl&gt;   &lt;dbl&gt;
- 1 E004830-S019312-T000000    604   8048.
- 2 E022443-S042999-T000000    270  13404.
- 3 E600059-S012260-T000000    161   3223.
- 4 E013473                    150    235 
- 5 E004654-S006979-T000000     91  11774.
- 6 E001993-S018912-T000000     72   6663.
- 7 E903376-S024822-T000000     57   1623 
- 8 E008063                     51      0 
- 9 E002620-S051125-T000000     47      0 
-10 E906453-S026312-T000000     47      0 
-# … with 238 more rows</code></pre>
-</div>
-</div>
-</section>
-<section id="joining-additional-data" class="slide level2">
-<h2>Joining additional data</h2>
-<p>The value of working with a data model and tidygraph is that we can merge additional tables of data attributes to our nodes or edges. In a separate table, we have a dataset of attributes about this set of nodes, including place and dates of birth and death, and gender. Using the <code>join()</code> commands, we can merge this table to the network data, and use it to sort, filter (and later visualise) the data:</p>
-<p>First, load the table of data using <code>read_csv</code>:</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 248 × 13
-   name     main_…¹ all_n…² links birth…³ death…⁴ gender roles…⁵ wikid…⁶ occup…⁷
-   &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  
- 1 E006019… Dr. Ra… Dr. Ra… http…    1617    1688 male   theolo… http:/… theolo…
- 2 E011771… Hyde, … Edward… http…    1609    1674 male   judge;… http:/… judge;…
- 3 E015103… Sir Ph… Sir Ph… http…    1607    1678 male   politi… http:/… politi…
- 4 E020134… Taylor… Silas … http…    1624    1678 male   compos… http:/… compos…
- 5 E014743… Sir Ed… Sir Ed… http…    1608    1654 male   econom… http:/… econom…
- 6 E020485… Sir Th… Sir Th… http…    1612    1685 male   naval … http:/… naval …
- 7 E004654… Charle… Charle… http…    1630    1685 male   sovere… http:/… sovere…
- 8 E007992… Heneag… Heneag… http…    1628    1689 male   diplom… http:/… diplom…
- 9 E007902… John F… John F… http…    1625    1686 male   priest  http:/… priest 
-10 S035587  Philad… Philad… http…    1612    1665 female politi… http:/… politi…
-# … with 238 more rows, 3 more variables: place_of_birth &lt;chr&gt;,
-#   place_of_death &lt;chr&gt;, politician &lt;chr&gt;, and abbreviated variable names
-#   ¹​main_name, ²​all_names, ³​birth_year, ⁴​death_year, ⁵​roles_titles,
-#   ⁶​wikidata_item, ⁷​occupations</code></pre>
-</div>
-</div>
-<p>This table contains further information about the nodes, each of which are identified by their unique ID. This can be joined to the network object using <code>join()</code> commands:</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tbl_graph: 248 nodes and 364 edges
-#
-# A directed simple graph with 6 components
-#
-# Node Data: 248 × 13 (active)
-  name  main_n… all_na… links birth_… death_… gender roles_… wikida… occupa…
-  &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  
-1 E000… Dr. La… Dr. La… http…    1632    1703 male   chapla… http:/… chapla…
-2 E000… Edward… Edward… http…    1638    1697 male   astron… http:/… astron…
-3 E000… Dr. Ri… Dr. Ri… http…    1619    1681 male   priest  http:/… priest 
-4 E000… Solms-… Prince… http…    1602    1675 female art co… http:/… art co…
-5 E000… Arthur… Arthur… http…    1614    1686 male   politi… http:/… politi…
-6 E000… Sir Jo… Sir Jo… http…    1603    1671 male   politi… http:/… politi…
-# … with 242 more rows, and 3 more variables: place_of_birth &lt;chr&gt;,
-#   place_of_death &lt;chr&gt;, politician &lt;chr&gt;
-#
-# Edge Data: 364 × 3
-   from    to weight
-  &lt;int&gt; &lt;int&gt;  &lt;int&gt;
-1     1    89      1
-2     2    22      4
-3     2   199      1
-# … with 361 more rows</code></pre>
-</div>
-</div>
-<p>Using this approach you can now make subsets of the network, and calculate global or node-level statistics for these. This example would return a network containing only individuals with politician listed as one of their occupations, for example:</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tbl_graph: 94 nodes and 106 edges
-#
-# A directed simple graph with 18 components
-#
-# Node Data: 94 × 14 (active)
-  name  main_n… all_na… links birth_… death_… gender roles_… wikida… occupa…
-  &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  
-1 E000… Arthur… Arthur… http…    1614    1686 male   politi… http:/… politi…
-2 E000… Sir Jo… Sir Jo… http…    1603    1671 male   politi… http:/… politi…
-3 E001… Henry … Henry … http…    1618    1685 male   politi… http:/… politi…
-4 E002… Willia… Willia… http…    1649    1717 male   politi… http:/… politi…
-5 E002… Edward… Edward… http…    1623    1683 male   politi… http:/… politi…
-6 E002… Roger … Roger … http…    1621    1679 male   writer… http:/… writer…
-# … with 88 more rows, and 4 more variables: place_of_birth &lt;chr&gt;,
-#   place_of_death &lt;chr&gt;, politician &lt;chr&gt;, degree &lt;dbl&gt;
-#
-# Edge Data: 106 × 3
-   from    to weight
-  &lt;int&gt; &lt;int&gt;  &lt;int&gt;
-1     1    33      1
-2     2    33      1
-3     3    10      1
-# … with 103 more rows</code></pre>
-</div>
-</div>
-<details>
-<br>
-<summary>
-Node attributes could be added and used to filter at several steps: before the network is created, and before or after network metrics are calculated. What differences might these make?
-</summary>
-<p>Make sure you know at which stage you are calculating network metrics. If you calculate them after filtering, you’ll get a set of metrics based on a new, subsetted network.</p>
-</details>
-<p><br></p>
-<p>This new table can be outputted as a dataframe, as above. Here we use this to calculate the highest-degree nodes from the ‘polticians network’, keep their real names, and sort in descending order of degree:</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 94 × 3
-   name                    main_name                                      degree
-   &lt;chr&gt;                   &lt;chr&gt;                                           &lt;dbl&gt;
- 1 E022443-S042999-T000000 Williamson, Joseph (Sir)                          174
- 2 E001993-S018912-T000000 Henry Bennet, Earl of Arlington                    54
- 3 E004654-S006979-T000000 Charles II, King of England, Scotland, and Ir…     53
- 4 E002620-S051125-T000000 William Blathwaite                                 47
- 5 E002622-S014197-T000000 Edward Conway, Earl of Conway                      30
- 6 S016294                 Francis, Lord Aungier                              28
- 7 E903376-S024822-T000000 Witt, Johan de                                     28
- 8 S047442                 Thomas Belasyse, Earl of Fauconberg                26
- 9 E921955-S041743-T000000 Sir George Rawdon                                  25
-10 E021031-S049939-T000000 Van Beuningen                                      21
-# … with 84 more rows</code></pre>
-</div>
-</div>
-</section>
-<section id="social-network-analysis-with-r" class="slide level2">
-<h2>Social Network Analysis with R</h2>
-<p>This last part goes through some of the functions which are more related to the ‘social network analysis’. Many of these are accessed directly through the package <code>igraph</code>.</p>
-</section>
-<section id="transitivity-triads-structural-balance" class="slide level2">
-<h2>Transitivity, Triads, structural balance</h2>
-<p>As we learned in the last lesson, counting the ratio of completed triangles in a network is a good way to understand its structure. This ratio is known as the <strong>clustering coefficient</strong>, and there are two types: <strong>global</strong>, which measures the ratio of complete and not complete triangles in the entire network, and <strong>local</strong>, which measures the complete triangles for each individual node. This measurement is also known as <strong>transitivity</strong>.</p>
-<p>Use the following command to calculate the global clustering, or transitivity of the network. It returns a single number, which is just the ratio of completed triangles to the total possible number of triangles in the graph:</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.02453653</code></pre>
-</div>
-</div>
-<p>Use the following to measure the local clustering coefficient for each node in the graph. It returns a vector of numbers, one for each node:</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>  [1]         NaN 0.095238095 1.000000000 1.000000000 0.000000000         NaN
-  [7]         NaN         NaN         NaN 0.030252101         NaN 0.000000000
- [13]         NaN         NaN         NaN 0.100000000 0.000000000 0.000000000
- [19]         NaN 1.000000000 0.020390071 0.010796221         NaN 0.333333333
- [25] 1.000000000 0.000000000 1.000000000         NaN         NaN         NaN
- [31]         NaN 0.166666667         NaN         NaN 0.000000000         NaN
- [37]         NaN 0.333333333 1.000000000         NaN         NaN         NaN
- [43] 0.000000000         NaN 0.025000000         NaN         NaN 0.000000000
- [49] 0.200000000         NaN 0.000000000 1.000000000         NaN 0.000000000
- [55] 0.333333333         NaN         NaN         NaN 0.333333333         NaN
- [61] 0.000000000         NaN 0.000000000         NaN         NaN         NaN
- [67]         NaN         NaN         NaN         NaN         NaN 0.500000000
- [73] 1.000000000 0.142857143 1.000000000         NaN 0.000000000         NaN
- [79]         NaN         NaN         NaN         NaN         NaN         NaN
- [85] 0.000000000 1.000000000 0.000000000 0.000000000 0.009937888         NaN
- [91] 0.000000000         NaN 0.000000000 0.333333333 1.000000000         NaN
- [97]         NaN         NaN         NaN         NaN         NaN 0.000000000
-[103]         NaN 1.000000000 0.000000000 0.090909091 0.333333333 1.000000000
-[109] 0.333333333 0.000000000         NaN 0.000000000         NaN         NaN
-[115]         NaN         NaN         NaN         NaN 0.000000000         NaN
-[121]         NaN         NaN         NaN         NaN         NaN         NaN
-[127]         NaN         NaN 0.000000000         NaN         NaN         NaN
-[133] 1.000000000         NaN         NaN         NaN 1.000000000         NaN
-[139]         NaN         NaN         NaN         NaN         NaN 1.000000000
-[145]         NaN         NaN         NaN         NaN         NaN         NaN
-[151] 0.000000000 0.000000000         NaN 0.000000000         NaN         NaN
-[157]         NaN         NaN 0.000000000         NaN 1.000000000         NaN
-[163]         NaN         NaN         NaN         NaN         NaN 1.000000000
-[169] 1.000000000         NaN         NaN         NaN         NaN         NaN
-[175]         NaN 1.000000000 0.333333333         NaN         NaN         NaN
-[181]         NaN         NaN 0.000000000         NaN         NaN 0.500000000
-[187] 1.000000000         NaN         NaN         NaN         NaN         NaN
-[193] 1.000000000 1.000000000 1.000000000         NaN         NaN         NaN
-[199]         NaN         NaN 0.035714286         NaN         NaN         NaN
-[205] 0.000000000         NaN         NaN         NaN         NaN 0.000000000
-[211]         NaN         NaN         NaN         NaN         NaN         NaN
-[217]         NaN         NaN         NaN         NaN         NaN         NaN
-[223] 0.000000000         NaN         NaN         NaN         NaN         NaN
-[229]         NaN         NaN         NaN         NaN         NaN         NaN
-[235]         NaN 0.333333333 0.000000000         NaN         NaN         NaN
-[241]         NaN         NaN         NaN         NaN         NaN         NaN
-[247]         NaN         NaN</code></pre>
-</div>
-</div>
-<p>Anoter related measurement is the average local clustering, calculated using the following:</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.361597</code></pre>
-</div>
-</div>
-<p>We can also calculate the total reciprocity of a graph (the proportion of links which are reciprocated):</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.2912088</code></pre>
-</div>
-</div>
-<p>We can also calculate the ‘triad census’, the number of each type of triad in a directed network. First, run the <code>triad_census()</code> function, and turn it into a dataframe with one column. Next add the correct triad codes as a second column.</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 16 × 2
-     value type 
-     &lt;dbl&gt; &lt;chr&gt;
- 1 2440447 003  
- 2   54274 012  
- 3   11363 102  
- 4     550 021D 
- 5    2892 021U 
- 6     653 021C 
- 7     636 111D 
- 8     255 111U 
- 9      30 030T 
-10       3 030C 
-11     381 201  
-12       0 120D 
-13       4 120U 
-14       2 120C 
-15       2 210  
-16       4 300  </code></pre>
-</div>
-</div>
-<p>You can now connect these codes to the triad diagrams from the last chapter, and use them to infer things about the structure and formation of the network.</p>
-<details>
-<summary>
-Imagine that this is a complete network. Why, for example, might 021U (A and B both send a letter to C, but there’s not reciprocation, and they are not connected to each other) be such a common triad?
-</summary>
-<p>The answer lies in the origin of this network, as a letter archive. Because a letter archive contains mostly incoming letters to an ego node, many of the triads are pairs of nodes who both have an incoming connection to one of these ego nodes, but are not themselves connected.</p>
-</details>
-<p><br></p>
-<p>Another set of metrics are to do with groups found in a network. First, components. A component is a group of nodes which are connected together through a path in the network. The <code>components()</code> function returns a list which includes a named vector with a component number for each node, along with the number of nodes in each component, and the total number of components. Looking at this list with <code>glimpse</code> tells us that there are six components, the largest being 237 nodes and the smallest has 2.</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>List of 3
- $ membership: Named num [1:248] 1 1 1 1 1 1 1 1 1 1 ...
-  ..- attr(*, "names")= chr [1:248] "E000145-S012650-T000000" "E000189-S014115-T000000" "E000312-S012741-T000000" "E000393-S036175-T000000" ...
- $ csize     : num [1:6] 237 2 3 2 2 2
- $ no        : int 6</code></pre>
-</div>
-</div>
-<p>Another global metric we can calculate is the number of <strong>cliques</strong> in a network. A clique is a fully connected set of nodes. We can calculate the total number of cliques with <code>clique_num</code>:</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 4</code></pre>
-</div>
-</div>
-<p>Another way to look at groups in networks is to use community detection. As explained in the previous chapter, community detection attempts to find groups of nodes which are more connected to each other than they are to nodes outside the group. Unlike components or cliques, communities can be found using a number of methods. Here, we’ll use the louvain algorithm. To make it easy to use the results, we’ll calculate the community for each node using tidygraph. This particularly implementation of the algorithm only works for undirected graphs, so we have to create our network again from scratch, this time specifying that it’s undirected.</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code># A tbl_graph: 248 nodes and 364 edges
-#
-# An undirected multigraph with 6 components
-#
-# Node Data: 248 × 2 (active)
-  name                    group
-  &lt;chr&gt;                   &lt;int&gt;
-1 E000145-S012650-T000000     1
-2 E000189-S014115-T000000     2
-3 E000312-S012741-T000000     3
-4 E000393-S036175-T000000     5
-5 E000520-S001769-T000000     7
-6 E000799-S042396-T000000     1
-# … with 242 more rows
-#
-# Edge Data: 364 × 3
-   from    to weight
-  &lt;int&gt; &lt;int&gt;  &lt;int&gt;
-1     1    89      1
-2     2    22      4
-3     2   199      1
-# … with 361 more rows</code></pre>
-</div>
-</div>
-<p>By turning this information into a dataframe, we can get some basic statistics on the groups. By adding this information to the node information we collected earlier, we can get a summary of the average degree and betweenness scores for each of the detected communities:</p>
-
-<img data-src="4-2-networks-with-r_files/figure-revealjs/unnamed-chunk-27-1.png" width="960" class="r-stretch"><div class="footer footer-default">
+<img data-src="images/paste-3F24BCC3.png" class="r-stretch"></section>
+<section id="steps" class="slide level2">
+<h2>Steps:</h2>
+<ul>
+<li>Open the file notebooks/course_book/course_code_4-2.Rmd</li>
+<li>Use file-&gt; save as to save it in your ‘my work’ folder.
+<ul>
+<li><strong>NB: The notebook paths assume you have moved it into your ‘my work’ folder</strong></li>
+</ul></li>
+<li>Use this to follow along the live coding demo (you don’t need to change anything)</li>
+<li>Assignment is in the usual place (notebooks/4-2-networks-with-r_nb.Rmd)</li>
+</ul>
+<div class="footer footer-default">
 
 </div>
 </section>
@@ -1053,48 +589,6 @@ Imagine that this is a complete network. Why, for example, might 021U (A and B b
         ]
       });
     </script>
-    
-    <script>
-      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
-      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
-      // slide changes (different for each slide format).
-      (function () {
-        function fireSlideChanged(previousSlide, currentSlide) {
-
-          // dispatch for htmlwidgets
-          const event = window.document.createEvent("Event");
-          event.initEvent("slideenter", true, true);
-          window.document.dispatchEvent(event);
-
-          // dispatch for shiny
-          if (window.jQuery) {
-            if (previousSlide) {
-              window.jQuery(previousSlide).trigger("hidden");
-            }
-            if (currentSlide) {
-              window.jQuery(currentSlide).trigger("shown");
-            }
-          }
-        }
-
-        // hookup for reveal
-        if (window.Reveal) {
-          window.Reveal.addEventListener("slidechanged", function(event) {
-            fireSlideChanged(event.previousSlide, event.currentSlide);
-          });
-        }
-
-        // hookup for slidy
-        if (window.w3c_slidy) {
-          window.w3c_slidy.add_observer(function (slide_num) {
-            // slide_num starts at position 1
-            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
-          });
-        }
-
-      })();
-    </script>
-
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {
@@ -1163,7 +657,8 @@ Imagine that this is a complete network. Why, for example, might 021U (A and B b
       for (var i=0; i<noterefs.length; i++) {
         const ref = noterefs[i];
         tippyHover(ref, function() {
-          let href = ref.getAttribute('href');
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
           try { href = new URL(href).hash; } catch {}
           const id = href.replace(/^#\/?/, "");
           const note = window.document.getElementById(id);

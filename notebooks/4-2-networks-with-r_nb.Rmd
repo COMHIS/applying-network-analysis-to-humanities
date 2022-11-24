@@ -28,7 +28,7 @@ Next, load in the file `letter_data.csv` and save it as an object `df`.
 The code chunk below contains the code to do this - you just need to add the correct path. 
 
 ```{r}
-df = read_csv("applying-network-analysis-to-humanities/data/letter_data1670.csv")
+df = read_csv("../applying-network-analysis-to-humanities/data/letter_data1670.csv")
 ```
 
 Summarise the data so that you it contains one instance of each edge, plus the weight, and save this as a new object called `edge_list`. 
@@ -42,11 +42,11 @@ edge_list = df %>%
 
 ```
 
-In the code chunk below, we turn the network object in to an undirected `tbl_graph`, named `g1`. 
+In the code chunk below, we turn the network object in to a directed `tbl_graph`, named `g1`. 
 
 ```{r}
 
-g1 = edge_list %>% as_tbl_graph(directed = F)
+g1 = edge_list %>% as_tbl_graph(directed = TRUE)
 
 ```
 
@@ -64,7 +64,7 @@ In the chunk below, follow the same steps as above, but this time load in the fi
 
 ```{r}
 
-df2 = read_csv("../data/sample_publisher_network.csv")
+df2 = read_csv("")
 
 # add further steps below here:
 
@@ -86,7 +86,7 @@ stats_df = tibble(names = c('density', 'global clustering', 'average path length
 
 ```
 
-Based on the information from the lecture, how would you describe these two networks, and their differences and similarities?
+Open the `stats_df` dataframe in your environment. Based on the information from the lecture, how would you describe these two networks, and their differences and similarities?
 
 
 ## Node-level statistics 
@@ -160,7 +160,7 @@ g1 = g1 %>%
 ```
 
 
-Using the commands from week 1, `arrange` the table in descending order of degree score. Which nodes are at the top? Below the chunk, speculate why they might be the most 'central', and whether this is surprising. 
+Using the commands from week 1, `arrange` the table in descending order of degree score, and turn it into an ordinary dataframe using `as_tibble()`. Which nodes are at the top? Below the chunk, speculate why they might be the most 'central', and whether this is surprising. 
 
 ```{r}
 g1 %>% mutate(degree = centrality_degree(mode = 'all')) %>% 
@@ -209,7 +209,13 @@ filtered_network_nodes = g1 %>%
 
 ```
 
-As above, rank by the highest degree. Are there any major changes in rank in comparison to the network above, and what are they?
+Here, rank by the highest degree using `arrange()`, as done above. Are there any major changes in rank in comparison to the network above, and what are they?
+
+```{r}
+filtered_network_nodes %>% 
+```
+
+
 
 ## Community detection  
 
@@ -222,7 +228,7 @@ g1 %>%
   mutate(group = group_louvain()) 
 ```
 
-In a final exercise, use ggplot to draw a bar chart of the distribution of nodes in each community. The function to generate the group labels is given, but you'll have to figure out the rest, adding commands using the `%>%` operator. The course book chapter for class 1, lesson 2, which introduces ggplot, should be helpful here. 
+In a final exercise, use ggplot to draw a bar chart of the count of nodes in each community. The function to generate the group labels is given, but you'll have to figure out the rest, adding commands using the `%>%` operator. The course book chapter for class 1, lesson 2, which introduces ggplot, should be helpful here. 
 
 ```{r}
 g1 %>%

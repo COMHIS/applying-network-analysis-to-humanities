@@ -32,7 +32,6 @@ The workflow uses a number of R packages. In the CSC Notebooks environment, thes
 library(tidyverse)
 library(igraph)
 library(tidygraph)
-
 ```
 
 In this class, we'll use a dataset derived from the English State Papers during the Stuart era (1603-1714). It takes the form of a .csv containing the information on the author, recipient, and date of sending for a small sample of state letters received between 1670 and 1672.
@@ -54,10 +53,10 @@ This is used to construct an edge list. If you have multiple letters between ind
 ```{r message=FALSE, warning=FALSE}
 
 edge_list = letters %>% 
-  group_by(from_id, to_id) %>% 
-  tally(name = 'weight')
+  group_by(from_id, to_id) %>% # make groups in your data
+  tally(name = 'weight') # count these groups and name the resulting count column 'weight'
 
-edge_list
+edge_list # view the edge list
 
 ```
 
@@ -72,7 +71,7 @@ Use `as_tbl_graph()` to turn the edge list into a network. The first two columns
 ```{r message=FALSE, warning=FALSE}
 
 sample_tbl_graph = edge_list %>% 
-  as_tbl_graph(directed = T)
+  as_tbl_graph(directed = T) # tidygraph command to create a tbl_graph from an edge list.
 
 sample_tbl_graph
 ```
@@ -86,7 +85,7 @@ You can access each of the tables using the function `activate(nodes)` or `activ
 ```{r}
 
 sample_tbl_graph %>% 
-  activate(edges)
+  activate(edges) # the activate() command switches the active table from nodes to edges
 
 ```
 
@@ -94,8 +93,8 @@ You can use many of the tidyverse commands we learned in the earlier lesson on t
 
 ```{r}
 sample_tbl_graph %>% 
-  activate(edges) %>%
-  filter(weight>1)
+  activate(edges) %>% # first activate the edges table
+  filter(weight>1) # now the filter command will filter the edges with a weight of greater than 1
 ```
 
 ## Calculating Network Metrics
@@ -109,7 +108,7 @@ The first thing we want to do with this network is to calculate some global netw
 (the number of links present out of all possible links):
 
 ```{r}
-sample_tbl_graph %>% igraph::graph.density()
+sample_tbl_graph %>% igraph::graph.density() 
 ```
 
 #### Average path length
@@ -152,7 +151,7 @@ Assign the name `degree` to the new column with `degree =`. The column should co
 ```{r}
 sample_tbl_graph %>% 
   activate(nodes) %>% # make sure the nodes table is active
-  mutate(degree = centrality_degree(mode = 'all', weights = weight))
+  mutate(degree = centrality_degree(mode = 'all', weights = weight)) # create a new column, and calculate degree using the function centrality_degree()
 ```
 
 The data format allows you to use dplyr pipes `%>%` to perform one calculation on the data, then pass that new dataframe along to the next function. Here we calculate the degree scores first, then filter to include only nodes with a degree score over two:
@@ -160,14 +159,14 @@ The data format allows you to use dplyr pipes `%>%` to perform one calculation o
 ```{r}
 
 sample_tbl_graph %>% 
-  activate(nodes) %>% 
-  mutate(degree = centrality_degree(mode = 'total')) %>% 
-  filter(degree >2)
+  activate(nodes) %>% # make sure nodes are active
+  mutate(degree = centrality_degree(mode = 'total')) %>% # calculate degree and keep it as a new column
+  filter(degree >2) # filter to only include nodes with a degree of greater than 2
 
 ```
 
 ```{css}
-.infobox {
+.infobox { 
   padding: 1em 1em 1em 1em;
   margin-bottom: 2px;
   border: 2px solid orange;
@@ -208,7 +207,7 @@ In a separate table, we have a dataset of attributes about this set of nodes, in
 First, load the table of data using `read_csv`:
 
 ```{r}
-node_attributes = read_csv('node_attributes.csv')
+node_attributes = read_csv('../applying-network-analysis-to-humanities/data/node_attributes.csv')
 
 node_attributes
 ```
@@ -274,7 +273,7 @@ sample_tbl_graph %>% transitivity(type = 'local')
 
 ```
 
-Anoter related measurement is the average local clustering, calculated using the following:
+Another related measurement is the average local clustering, calculated using the following:
 
 ```{r}
 sample_tbl_graph %>% transitivity(type = 'average') 
