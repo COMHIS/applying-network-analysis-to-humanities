@@ -3,7 +3,6 @@ title: "Analysing Networks with Tidygraph"
 format: revealjs
 editor: visual
 ---
-
 ## Today's lesson:
 
 -   Import an edge list and turn it into a tidygraph object.
@@ -40,3 +39,22 @@ editor: visual
     -   **NB: The notebook paths assume you have moved it into your 'my work' folder**
 -   Use this to follow along the live coding demo (you don't need to change anything)
 -   Assignment is in the usual place (notebooks/4-2-networks-with-r_nb.Rmd)
+
+## Questions for the readings
+
+Q: What are the parts of a triple?
+Q: What does ontology mean (in this context)?
+Q: What can URI (unique resource identifier) describe?
+Q: What can Linked Open Data do that a Relational database can’t?
+
+
+## Reading for next week{.smaller}
+
+**Week 4:** Ahnert et. al. (2021). *The Network Turn: Changing Perspectives in the Humanities* (Elements in Publishing and Book Culture). **Chapter 5, \'Quantifying Culture\' (<https://www.cambridge.org/core/elements/network-turn/CC38F2EA9F51A6D1AFCB7E005218BBE5>)**
+
+Questions:
+
+-    What do the authors mean by the 'abstraction' of humanities data? What are the advantages and disadvantages of doing so?
+-   What are the assumptions made by the authors in the 'toy example' on page 76? What other ways could they have treated this data?
+-   What is the 'trade-off' mentioned on page 78?
+-   What do the authors suggest might be the best way to 'solve' the skills gap between those with quantitative and those with traditional humanities skills?

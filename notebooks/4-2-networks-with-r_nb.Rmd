@@ -23,12 +23,12 @@ library(igraph)
 ```
 
 
-Next, load in the file `letter_data.csv` and save it as an object `df`. 
+Next, load in the file `letter_data1670.csv`, found in the 'data folder, and save it as an object `df`. 
 
 The code chunk below contains the code to do this - you just need to add the correct path. 
 
 ```{r}
-df = read_csv("../applying-network-analysis-to-humanities/data/letter_data1670.csv")
+df = read_csv("")
 ```
 
 Summarise the data so that you it contains one instance of each edge, plus the weight, and save this as a new object called `edge_list`. 

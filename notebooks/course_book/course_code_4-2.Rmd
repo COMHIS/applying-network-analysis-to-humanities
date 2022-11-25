@@ -341,13 +341,17 @@ By turning this information into a dataframe, we can get some basic statistics o
 
 ```{r message=FALSE, warning=FALSE}
 sample_tbl_graph_u %>% 
-  mutate(group = group_louvain())%>% 
+  mutate(group = group_louvain())%>%  # run community detection
   activate(nodes) %>% # make sure correct table is active
-  mutate(degree = centrality_degree(weights = weight, mode = 'all')) %>% # calculate degree
-  mutate(between = centrality_betweenness(weights = weight,directed = F)) %>%  # calculate betweenness centrality
-  as_tibble()  %>% group_by(group) %>%
-  summarise(mean_degree = mean(degree,na.rm = TRUE), mean_between = mean(between, na.rm = TRUE), nodes = n()) %>% pivot_longer(2:4) %>% 
-  ggplot() + geom_col(aes(x = group, y = value)) + facet_wrap(~name, scales = 'free')
+  mutate(degree = centrality_degree(weights = n, mode = 'all')) %>% # calculate degree
+  mutate(between = centrality_betweenness(weights = n,directed = F)) %>%  # calculate betweenness centrality
+  as_tibble()  %>% 
+  group_by(group) %>% # group by the 'group' label you calculated above
+  summarise(mean_degree = mean(degree,na.rm = TRUE), mean_between = mean(between, na.rm = TRUE), nodes = n()) %>% # get some summary statistics for each group %>% 
+pivot_longer(2:4) %>% 
+  ggplot() + # pass the code to ggplot
+  geom_col(aes(x = group, y = value)) + # add a column geom
+  facet_wrap(~name, scales = 'free') # facet the plot by each group
 
 ```
 
