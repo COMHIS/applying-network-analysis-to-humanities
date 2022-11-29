@@ -54,7 +54,7 @@ Q: What can Linked Open Data do that a Relational database can’t?
 
 Questions:
 
--    What do the authors mean by the 'abstraction' of humanities data? What are the advantages and disadvantages of doing so?
+-   What do the authors mean by the 'abstraction' of humanities data? What are the advantages and disadvantages of doing so?
 -   What are the assumptions made by the authors in the 'toy example' on page 76? What other ways could they have treated this data?
 -   What is the 'trade-off' mentioned on page 78?
 -   What do the authors suggest might be the best way to 'solve' the skills gap between those with quantitative and those with traditional humanities skills?

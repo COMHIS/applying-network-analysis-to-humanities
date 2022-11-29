@@ -7,7 +7,7 @@
 <link href="5-1-visualising-with-ggraph_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="5-1-visualising-with-ggraph_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="5-1-visualising-with-ggraph_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.0.36">
+  <meta name="generator" content="quarto-1.1.189">
 
   <title>Visualising Networks with R and Ggraph</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,10 +18,15 @@
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
   </style>
   <link rel="stylesheet" href="5-1-visualising-with-ggraph_files/libs/revealjs/dist/theme/quarto.css" id="theme">
   <link href="5-1-visualising-with-ggraph_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -321,28 +326,119 @@
   <h1 class="title">Visualising Networks with R and Ggraph</h1>
 </section>
 
-<section id="visual-analysis-of-a-network" class="slide level2">
-<h2>Visual analysis of a network</h2>
-<p>Go through a network, explain its</p>
-<p>Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <a href="https://quarto.org/docs/presentations/" class="uri">https://quarto.org/docs/presentations/</a>.</p>
-</section>
-<section id="bullets" class="slide level2">
-<h2>Bullets</h2>
-<p>When you click the <strong>Render</strong> button a document will be generated that includes:</p>
+<section id="why-visualise-a-network" class="slide level2">
+<h2>Why Visualise a Network?</h2>
 <ul>
-<li>Content authored with markdown</li>
-<li>Output from executable code</li>
+<li><p><em>Descriptive data analysis</em>, as a way of describing the overall structure of graph</p></li>
+<li><p><em>Exploratory data analysis,</em> where it’s used as a sort of map to understand its various components, and to help spot patterns or interesting features by eye.</p></li>
 </ul>
 </section>
-<section id="code" class="slide level2">
-<h2>Code</h2>
-<p>When you click the <strong>Render</strong> button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
-</div>
-</div>
-<div class="footer footer-default">
+<section id="visualising-involves-making-decisions" class="slide level2">
+<h2>Visualising involves making decisions</h2>
+<ul>
+<li><p>Nothing inherently spatial about a graph: it is simply a record of connections between nodes.</p></li>
+<li><p>When we choose to represent it visually, we have to make decisions as to its form and how precisely its nodes and edges are placed in 2D (or even 3D) space.</p></li>
+</ul>
+</section>
+<section id="force-directed-network-visualisations" class="slide level2">
+<h2>Force-directed network visualisations</h2>
+<ul>
+<li><p>Use a simulation of physical forces in order to create sensible placements of nodes.</p></li>
+<li><p>Fruchterman-Reingold layout:</p>
+<ul>
+<li><p>Treats edges like a spring.</p></li>
+<li><p>Nodes which share an edge are attracted to each other using a spring-like force; every pair of nodes in the system also has a repulsive force.</p></li>
+<li><p>The algorithm simulates this physical system and stops when the distances between the nodes means that the system is in equilibrium.</p></li>
+</ul></li>
+</ul>
+</section>
+<section id="what-are-the-advantages-of-a-force-directed-graph" class="slide level2">
+<h2>What are the advantages of a force-directed graph?</h2>
+<ul>
+<li><p>A good force-directed graph can actually convey a great deal of information about a network.</p></li>
+<li><p>The paper for this week’s reading argues that the ambiguity of a force-directed graph can actually make them very useful for exploratory data analysis, when they are interpreted correctly.</p></li>
+</ul>
+</section>
+<section id="how-might-we-read-a-network-graph" class="slide level2">
+<h2>How might we ‘read’ a network graph?</h2>
+<p><img data-src="images/paste-2FF86B18.png"> {.smaller}</p>
+<aside class="notes">
+<p>How might we describe it?</p>
+<p>We could describe it as the following:</p>
+<ul>
+<li><p>Spatially (ignoring the colours), there are three main sections: a large central section, and two smaller sections, one to the bottom-right and another, even smaller, to the top-left of the main section.</p></li>
+<li><p>This main section is shaped a bit like a hairbrush: it has an elongated ‘handle’, and an attached ‘brush’ at the top.</p></li>
+<li><p>The colours are distinct, meaning that the force-directed graph did a good job in replicating the clusters found by the community detection algorithm.</p></li>
+<li><p>To understand why it might have this shape, we looked into the nodes in each of its clusters.</p></li>
+<li><p>The first thing we noted was that the almost separate ‘islands’ were groups of Dublin (larger and closer island) and US publishers.</p></li>
+<li><p>The main section is made up of clusters of different time periods.</p></li>
+<li><p>The ‘handle’ is mostly London-based publishers, and the ‘brush’ is a group of Scottish publishers.</p></li>
+<li><p>These Scottish publishers are mostly connected to the later London clusters (red/pink).</p></li>
+<li><p>Scottish publishers are much closer to the London core than either Dublin or US.</p></li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="some-inferences-we-might-make-from-this-diagram." class="slide level2 smaller">
+<h2>Some inferences we might make from this diagram.</h2>
+<ul>
+<li><p>US and Dublin publishers were very separate from a London/Edinburgh publishing axis.</p></li>
+<li><p>For London publishers, the strongest pull is temporal rather than any other aspect.</p></li>
+<li><p>Over time, the closeness of the Edinburgh and London publisher networks grew.</p></li>
+</ul>
+<p><strong>When used correctly and with more knowledge about a network, force-directed diagrams like this can help to spot distinct clusters, structural ‘holes’, and other features of a network.</strong></p>
+</section>
+<section id="other-network-visualisations" class="slide level2">
+<h2>Other Network Visualisations</h2>
+<p>There are many other ways besides a ‘force-directed’ graph to visualise a network.</p>
+</section>
+<section id="bipartite-graph" class="slide level2">
+<h2>Bipartite graph</h2>
+
+<img data-src="5-1-visualising-with-ggraph_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch"></section>
+<section id="adjacency-matrix" class="slide level2">
+<h2>Adjacency Matrix</h2>
+<p>X and y axes contain each name in the network. A filled square is drawn for each edge, where they intersect.</p>
+<p>This method can be particularly useful for small, dense networks.</p>
+
+<img data-src="5-1-visualising-with-ggraph_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"></section>
+<section id="network-visualisations-with-r-and-ggraph." class="slide level2">
+<h2>Network Visualisations with R and ggraph.</h2>
+<ul>
+<li><p><code>Ggraph</code> uses a ‘grammar of graphics’, a syntax which maps data to particular visual elements.</p></li>
+<li><p>Nodes and edges are added as ‘layers’ on top of each other</p></li>
+<li><p>Allows for huge amount of customisation</p></li>
+</ul>
+</section>
+<section id="examples" class="slide level2">
+<h2>Examples</h2>
+
+<img data-src="5-1-visualising-with-ggraph_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"></section>
+<section id="examples-1" class="slide level2">
+<h2>Examples</h2>
+
+<img data-src="5-1-visualising-with-ggraph_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"></section>
+<section id="examples-2" class="slide level2">
+<h2>Examples</h2>
+
+<img data-src="5-1-visualising-with-ggraph_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section>
+<section id="examples-3" class="slide level2">
+<h2>Examples</h2>
+
+<img data-src="5-1-visualising-with-ggraph_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"></section>
+<section id="ggraph-layers" class="slide level2">
+<h2>Ggraph layers</h2>
+
+<img data-src="images/paste-C994C737.png" class="r-stretch"><div class="footer footer-default">
 
 </div>
 </section>
@@ -667,7 +763,8 @@
       for (var i=0; i<noterefs.length; i++) {
         const ref = noterefs[i];
         tippyHover(ref, function() {
-          let href = ref.getAttribute('href');
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
           try { href = new URL(href).hash; } catch {}
           const id = href.replace(/^#\/?/, "");
           const note = window.document.getElementById(id);

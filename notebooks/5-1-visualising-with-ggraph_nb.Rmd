@@ -26,11 +26,6 @@ Calculate the degree of the nodes, and add this as a size aesthetic to your netw
 
 ```
 
-Add arrows and a dashed line to the edges:
-
-```{r}
-
-```
 
 Add a `width` aesthetic to the edges, representing the weight:
 
@@ -38,6 +33,6 @@ Add a `width` aesthetic to the edges, representing the weight:
 
 ```
 
-Create a new network, using this larger network dataset. Make it as 'readable' as possible. Use color and size to communicate the relevant information about its structure. Add node labels, but make sensible use of filtering to make it as readable as possible. 
+
 
 
