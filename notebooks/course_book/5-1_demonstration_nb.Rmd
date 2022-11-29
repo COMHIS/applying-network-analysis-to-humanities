@@ -1,0 +1,215 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+## Network Visualisations with R and ggraph.
+
+Visualisations like the examples above can be created with another R package, called `ggraph`. This uses the same basic syntax as the plotting library `ggplot2`, we used in an earlier lesson, but adds some special functions to visualise networks.
+
+We'll spend today and the next class on learning how to visualise graphs with R and `ggraph`. First, we'll learn how to make a basic network diagram of nodes and edges, how to change the layout algorithm, and how to set the node and edge sizes. In the next class, we'll customise it with colour, arrows, text labels, and so forth. 
+
+Using this ggraph workflow, a network diagram consists of a number of elements:
+
+-   The network itself, in the form of a network object, either a `tbl_graph` or an `igraph` network.
+-   The `ggraph` function, which tells R to start making a network plot. 
+-   The relevant `geom_` layers, which tell ggraph to map the network to nodes and edges
+-   Aesthetics, which tell ggraph to map particular visual attributes (size, colour and so forth) to specified values.
+
+To begin with, create a `tbl_graph` network object from an edge list, using the same data and code as last week:  
+
+```{r message=FALSE, warning=FALSE}
+
+library(tidygraph)
+library(tidyverse)
+library(ggraph)
+letters = read_csv("../applying-network-analysis-to-humanities/data/letter_data1670.csv", col_types = cols(.default = "c"))
+
+edge_list = letters %>% 
+  group_by(from_id, to_id) %>% 
+  tally(name = 'weight')
+
+sample_tbl_graph = edge_list %>% 
+  as_tbl_graph()
+
+
+```
+
+### The ggraph function  
+
+To begin making the network diagram, we start with the `ggraph()` function. This tells R to begin drawing a graph. It has optional arguments: for example, you can set the layout to something other than the default using the argument `layout =`. There are a large number of layouts available to use, some of which will be shown below. 
+
+```{r}
+sample_tbl_graph %>% 
+  ggraph()
+```
+
+For now, you'll notice that it doesn't draw anything other than a blank grey background. 
+
+To draw the nodes and edges of the graph, we'll use what are known as 'geoms'. These are a family of functions which map the data to relevant elements. They all begin with `geom_`. These are added as layers to the ggraph object using `+` followed by the relevant geom. 
+
+-   First, adding `+ geom_node_point()` as a layer will draw the nodes of your network as points. The nodes are positioned according to the chosen (or default) layout algorithm:
+
+```{r}
+sample_tbl_graph %>% 
+  ggraph() + 
+  geom_node_point()
+```
+
+-   Next, `geom_edge_link()` will drawn the edges as connecting lines:
+
+```{r}
+sample_tbl_graph %>% 
+  ggraph() + 
+  geom_node_point() + 
+  geom_edge_link()
+```
+### Adjusting visual attributes. 
+
+
+There are many additional ways you can manipulate the visual appearance of your nodes and edges, by adding color, size, shape, arrows, and so forth.
+
+In ggraph (and ggplot), visual elements can be manipulated in two ways:
+
+-   You can specify an absolute value for an aesthetic, for example setting the size of all nodes to value 3
+-   You can specify that a value is mapped to a variable in your data. This could be some metric of your network calculated in a previous step, for example setting the size to be proportional to the degree score of a node, or it could be some external data, wuch as setting the colour to indicate the node's occupation.  
+
+This is all done within the relevant geom. We can check to see which aesthetics are recognised by a particular geom by typing  `?` followed by the function in the console and pressing return, i.e `?geom_node_point()`. This tells us that it recognises `alpha, colour, fill, shape, size, stroke, and filter`. 
+
+To set a one of these visual attributes (or aesthetic) to an absolute value, simply set it within the parentheses of `geom_node_point()`:  
+
+```{r}
+sample_tbl_graph %>% 
+  ggraph() + 
+  geom_node_point(size = 3) + # we specified that size should be set at the value 3
+  geom_edge_link()
+
+```
+We can also map aesthetics to a particular *variable* in the data. To do this, the value should exist as a column in the nodes table of the `tbl_graph` object. For example, we can calculate the degree score for each node:
+
+```{r}
+sample_tbl_graph %>% 
+  mutate(degree = centrality_degree()) 
+```
+
+And it is added as an additional column in the first table. 
+
+To map this column to be proportional to the node size, we do so within the function `aes()`, within the relevant geom: 
+
+```{r}
+sample_tbl_graph %>% 
+  mutate(degree = centrality_degree()) %>% # calculate a value for degree
+  ggraph() + 
+  geom_edge_link() + # switch around the order of the nodes and edges as it's easier to see the node color
+  geom_node_point(aes(size = degree)) # map size to degree score
+```
+You'll notice that ggraph has added a **legend**: a guide to help us read exactly how the various sizes of the nodes map to the degree score. 
+
+You can experiment in the notebook with the other aesthetics, including `alpha` and `shape`. You'll notice that some of them cannot be mapped to a numerical (or continuous variable). We'll look into this in the next class.  
+
+## Adjusting edge aesthetics
+
+The visual appearance of the edges can also be adjusted, using the same syntax. 
+
+We can set the thickness of the edges using the `width` aesthetic:  
+
+```{r}
+sample_tbl_graph %>% 
+  mutate(degree = centrality_degree()) %>% 
+  ggraph('fr') + 
+  geom_edge_link(width = 3) + 
+  geom_node_point()
+```
+
+As with nodes, these aesthetics can be mapped to particular values. In this case, the variable to be mapped should exist as a column in the edges table in the `tbl_graph` object. If we look at the object, we can see that there is already a 'weight' column which we created when making the graph:
+
+```{r}
+sample_tbl_graph
+```
+
+Again, this can be mapped using the same syntax as with nodes. Set the `width` aesthetic to the `weight` variable within the `aes()` command:
+
+```{r}
+sample_tbl_graph %>% 
+  mutate(degree = centrality_degree()) %>% 
+  ggraph('fr') + 
+  geom_edge_link(aes(width = weight)) + 
+  geom_node_point()
+```
+
+## Layout algorithms
+
+Igraph has a large number of graph layouts. Depending on your network size and structure, different ones may be appropriate. Where possible, it is a good idea to add some other information, for example group membership or simply node names to your visualisation, at least temporarily. That way you can check to see if the visual structures, such as clusters, centre-periphery, and orientation, make any sense. Here are the most common graph layouts:
+
+#### Fruchterman-Reingold
+
+A popular 'force-directed' layout, which treats the connections between nodes as springs. 
+
+Add to ggraph using `layout = 'fr'`.
+
+```{r}
+sample_tbl_graph %>% 
+  ggraph(layout = 'fr') + 
+  geom_edge_link() + 
+  geom_node_point()
+```
+
+
+#### DRL
+
+Another force-directed layout, often used with larger graphs. 
+
+Add to ggraph using `layout = 'drl'`.
+
+```{r}
+sample_tbl_graph %>% 
+  ggraph(layout = 'drl') + 
+  geom_edge_link() + 
+  geom_node_point()
+```
+
+####  Kamada-Kawai
+
+Another force-directed layout. This doesn't work well with 'disconnected graphs: below I have added a function to only include the main connected component of the network. 
+
+Add using `layout = 'kk'`
+
+```{r}
+sample_tbl_graph %>% 
+  mutate(component = group_components()) %>% 
+  filter(component == 1) %>% 
+  ggraph('kk') + 
+  geom_edge_link() + 
+  geom_node_point()
+```
+
+#### Circle
+
+Places nodes in a circle, in order:  
+
+```{r}
+sample_tbl_graph %>% 
+  ggraph('circle') + 
+  geom_edge_link() + 
+  geom_node_point()
+```
+
+#### Tree
+
+For hierarchical graphs. Places nodes in a tree diagram, according to their hierarchy. 
+
+```{r}
+sample_tbl_graph %>% 
+  mutate(degree = centrality_degree()) %>% 
+  ggraph('tree') + 
+  geom_edge_bend(linetype = 5,
+                 arrow = arrow(length = unit(4, 'mm')), 
+                   end_cap = circle(3, 'mm')) + 
+  geom_node_point(size = 3, aes(color = degree))
+```
+
+#### Bipartite  
+
+It is worth checking some of these out, particularly if you have a specific network structure, for example a hierarchy, or if you have a bipartite network. 
+
+Also note there are lots of other ways to visualise a network, for example by making a heatmap from an adjacency matrix. It's worth experimenting a bit with these (and explaining choices in your final project). 
