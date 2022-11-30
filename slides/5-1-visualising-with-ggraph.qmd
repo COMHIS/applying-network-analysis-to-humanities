@@ -36,7 +36,7 @@ editor: visual
 
 ## How might we 'read' a network graph?
 
-![](images/paste-2FF86B18.png) {.smaller}
+![](images/paste-2FF86B18.jpg)
 
 ::: notes
 How might we describe it?
@@ -97,48 +97,7 @@ g %>% ggraph('bipartite')+
 
 X and y axes contain each name in the network. A filled square is drawn for each edge, where they intersect.
 
-This method can be particularly useful for small, dense networks.
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-letters = read_csv("../data/letter_data1670.csv", col_types = cols(.default = "c"))
-edge_list = letters %>% 
-  filter(date <'1670-12-31')%>% 
-  group_by(from_id, to_id) %>% 
-  tally(name = 'weight') 
-
-g = edge_list %>% 
-  as_tbl_graph(directed = F) %>% 
-  mutate(group = group_louvain()) 
-e = g %>% activate(edges) %>% as_tibble()
-n   = g %>% as_tibble() %>% mutate(id = 1:nrow(.))
-
-ge = e %>% left_join(n, by = c('from'= 'id'))%>% 
-  left_join(n, by = c('to'= 'id')) %>% 
-  mutate(group = ifelse(group.x == group.y, group.x, NA))
-
-all_nodes = n$name
-name_order <- (n %>% arrange(group))$name
-
-p_data = ge  %>% mutate(
-        to = factor(name.x, levels = name_order),
-        from = factor(name.y, levels = name_order))
-
-ggplot(p_data, aes(x = from, y = to, fill = as.character(group))) +
-      geom_raster() +
-      theme_bw() +
-      # Because we need the x and y axis to display every node,
-      # not just the nodes that have connections to each other,
-      # make sure that ggplot does not drop unused factor levels
-      scale_x_discrete(drop = FALSE) +
-      scale_y_discrete(drop = FALSE) +
-      theme(
-        # Rotate the x-axis lables so they are legible
-        axis.text = element_blank(),
-        # Force the plot into a square aspect ratio
-        aspect.ratio = 1,
-        # Hide the legend (optional)
-        legend.position = "none")
-```
+![From https://matthewlincoln.net/2014/12/20/adjacency-matrix-plots-with-r-and-ggplot2.html](images/paste-873426CE.png)
 
 ## Network Visualisations with R and ggraph.
 
@@ -151,6 +110,15 @@ ggplot(p_data, aes(x = from, y = to, fill = as.character(group))) +
 ## Examples
 
 ```{r}
+letters = read_csv("../data/letter_data1670.csv", col_types = cols(.default = "c"))
+edge_list = letters %>% 
+  filter(date <'1670-12-31')%>% 
+  group_by(from_id, to_id) %>% 
+  tally(name = 'weight') 
+
+g = edge_list %>% 
+  as_tbl_graph(directed = F) %>% 
+  mutate(group = group_louvain()) 
 
 g %>% as_tbl_graph() %>%  
   mutate(component = group_components()) %>% 

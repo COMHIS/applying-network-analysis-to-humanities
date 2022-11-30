@@ -85,11 +85,12 @@ sample_tbl_graph %>%
   geom_edge_link()
 
 ```
+
 We can also map aesthetics to a particular *variable* in the data. To do this, the value should exist as a column in the nodes table of the `tbl_graph` object. For example, we can calculate the degree score for each node:
 
 ```{r}
 sample_tbl_graph %>% 
-  mutate(degree = centrality_degree()) 
+  mutate(degree = centrality_degree(mode = 'all', weights = weight)) 
 ```
 
 And it is added as an additional column in the first table. 
@@ -103,9 +104,12 @@ sample_tbl_graph %>%
   geom_edge_link() + # switch around the order of the nodes and edges as it's easier to see the node color
   geom_node_point(aes(size = degree)) # map size to degree score
 ```
+
 You'll notice that ggraph has added a **legend**: a guide to help us read exactly how the various sizes of the nodes map to the degree score. 
 
-You can experiment in the notebook with the other aesthetics, including `alpha` and `shape`. You'll notice that some of them cannot be mapped to a numerical (or continuous variable). We'll look into this in the next class.  
+You can experiment in the notebook with the other aesthetics, including `alpha` and `shape`, and other network metrics which we covered last week, such as `betweenness centrality` and `eigenvector centrality`.
+
+You might notice that some of these aesthetics cannot be mapped to a numerical (or continuous) variable. We'll look into this in the next class.  
 
 ## Adjusting edge aesthetics
 
@@ -200,12 +204,9 @@ For hierarchical graphs. Places nodes in a tree diagram, according to their hier
 
 ```{r}
 sample_tbl_graph %>% 
-  mutate(degree = centrality_degree()) %>% 
   ggraph('tree') + 
-  geom_edge_bend(linetype = 5,
-                 arrow = arrow(length = unit(4, 'mm')), 
-                   end_cap = circle(3, 'mm')) + 
-  geom_node_point(size = 3, aes(color = degree))
+  geom_edge_bend() + 
+  geom_node_point()
 ```
 
 #### Bipartite  

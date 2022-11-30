@@ -7,32 +7,109 @@ output:
 
 ## Exercises - Visualising your data with ggraph.
 
-Using the `letter_data` dataset, create a network object. Count the number of letters between each pair as a weight:
+### Make the network object.
+
+Using the `letter_data1670.csv` dataset, create a network object. You can do each step in turn in the cells below. 
+Load the libraries `igraph`, `tidygraph`, `tidyverse` and `ggraph`:
+
+```{r}
+library()
+```
+
+Load in the file using `read_csv()` and save it as an object called `letter_data`:
+
+```{r}
+
+letter_data = 
+
+```
+
+
+Count the number of letters between each pair of `from_id, to_id`, as a weight, and it as an object called `edge_list`
+
+
+```{r}
+edge_list = letter_data %>% 
+  group_by()
+```
+
+Turn the edge list into a network object, called `g`, with `as_tbl_graph()`
+
+```{r}
+g = edge_list %>% 
+```
+
+
+In the following cells, when we make a set of commands to create a visualisation, we won't save it as a new object. Instead, we need to repeat the same set of commands each time. 
+
+So for example to draw a basic points and lines graph we use the following code: 
+
+```{r}
+g %>% ggraph() + geom_edge_link() + geom_node_point()
+```
+
+And then to change the layout method to the 'circle' we repeat the full code but make a change where appropriate:  
+
+```{r}
+g %>% ggraph(layout = 'circle') + geom_edge_link() + geom_node_point()
+```
+
+For the following commands you should do the same - copy and paste your existing code into the new cell, and make the changes. 
+
+Draw the graph with the 'Fruchterman-Reingold' layout:
 
 ```{r}
 
 ```
 
+Change the size of the nodes to the value 5:
 
-Draw a basic points and lines diagram of your network:
+```{r}
+g %>% 
+```
+
+-   Calculate the betweenness centrality of the nodes in the network, and save it as a column using `mutate(). 
+
+-   Filter to only include nodes with a betweenness centrality score of over 5. 
+
+-   Map the betweenness score to the size aesthetic, for the nodes in your network diagram:
 
 ```{r}
 
 ```
 
-Calculate the degree of the nodes, and add this as a size aesthetic to your network diagram:
+Filter to only include edges with a weight of greater than 1, and again draw the network. You'll need to use the `activate()` command at the correct point to do commands on the edges table in the `tbl_graph` object. 
 
 ```{r}
 
 ```
 
+## Extra exercises (for 'fun')
 
-Add a `width` aesthetic to the edges, representing the weight:
+Please only do if you are confident, or go through these earlier ones quickly!
+
+1. 
+
+One advantage of doing network analysis in R is that you can do complicated data wrangling steps and send the results straight to a network. 
+
+Join the `node_attributes.csv` file we used in last week's lesson to the `tbl_graph` object. Filter the data to only include rows where the `main_name` contains the word 'Sir', and draw this as a network:
 
 ```{r}
 
 ```
 
+2. Last one (warning: you'll have to use external resources to figure it out!)
 
+We can also use functions to show certain aesthetics using conditional statements - such as 'if' something is true, then draw the aesthetic, but otherwise leave it empty. 
+
+With the network, join the node attributes again, and calculate the degree score. Add a geom which draws a label for each node. This label should contain the `main_name` for each node. 
+
+Within this geom, add a conditional statement which says: if the degree score for this node is greater than 10, create the label `main_name`, otherwise, leave it as `NA`. 
+
+The R command `ifelse()` is a starting point.. but you'll have to figure out where in the process to put it. 
+
+```{r}
+
+```
 
 
