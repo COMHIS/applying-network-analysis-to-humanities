@@ -11,7 +11,7 @@
 
 
 
-<title>R Notebook</title>
+<title>Visualising Networks with ggraph, II</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1752,45 +1752,117 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">R Notebook</h1>
+<h1 class="title toc-ignore">Visualising Networks with ggraph, II</h1>
 
 </div>
 
 
 <!-- rnb-text-begin -->
-<div id="network-visualisations-with-r-and-ggraph." class="section level2">
-<h2>Network Visualisations with R and ggraph.</h2>
-<p>Visualisations like the examples above can be created with another R
-package, called <code>ggraph</code>. This uses the same basic syntax as
-the plotting library <code>ggplot2</code>, we used in an earlier lesson,
-but adds some special functions to visualise networks.</p>
-<p>We’ll spend today and the next class on learning how to visualise
-graphs with R and <code>ggraph</code>. First, we’ll learn how to make a
-basic network diagram of nodes and edges, how to change the layout
-algorithm, and how to set the node and edge sizes. In the next class,
-we’ll customise it with colour, arrows, text labels, and so forth.</p>
-<p>Using this ggraph workflow, a network diagram consists of a number of
-elements:</p>
+<div id="discreet-versus-continuous-variables" class="section level2">
+<h2>Discreet versus continuous variables</h2>
+<p>A very important concept to bear in mind when making visualisations
+is the differences in the way <strong>discrete</strong> and
+<strong>continuous</strong> value are treated. For the purposes of
+visualisation we can think of the differences like this:</p>
 <ul>
-<li>The network itself, in the form of a network object, either a
-<code>tbl_graph</code> or an <code>igraph</code> network.</li>
-<li>The <code>ggraph</code> function, which tells R to start making a
-network plot.</li>
-<li>The relevant <code>geom_</code> layers, which tell ggraph to map the
-network to nodes and edges</li>
-<li>Aesthetics, which tell ggraph to map particular visual attributes
-(size, colour and so forth) to specified values.</li>
+<li><p>A <strong>continuous</strong> value is something you can measure,
+for example height. There are infinite values that a height can
+be.</p></li>
+<li><p>A <strong>discrete</strong> value is one where the values are one
+of a limited set of set values. For example, occupation, or colour.
+Another name for this is <strong>categorical</strong> value.</p></li>
 </ul>
-<p>To begin with, create a <code>tbl_graph</code> network object from an
-edge list, using the same data and code as last week:</p>
+<p>It is easier to understand with an example of how this affects how
+visual elements (aesthetics) are mapped to values. First, we’ll create
+an example dataset of fruit with three variables: total, weight, and
+delivery (day):</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5saWJyYXJ5KHRpZHlncmFwaClcbmxpYnJhcnkodGlkeXZlcnNlKVxubGlicmFyeShnZ3JhcGgpXG5sZXR0ZXJzID0gcmVhZF9jc3YoXCIuLi9hcHBseWluZy1uZXR3b3JrLWFuYWx5c2lzLXRvLWh1bWFuaXRpZXMvZGF0YS9sZXR0ZXJfZGF0YTE2NzAuY3N2XCIsIGNvbF90eXBlcyA9IGNvbHMoLmRlZmF1bHQgPSBcImNcIikpXG5cbmVkZ2VfbGlzdCA9IGxldHRlcnMgJT4lIFxuICBncm91cF9ieShmcm9tX2lkLCB0b19pZCkgJT4lIFxuICB0YWxseShuYW1lID0gJ3dlaWdodCcpXG5cbnNhbXBsZV90YmxfZ3JhcGggPSBlZGdlX2xpc3QgJT4lIFxuICBhc190YmxfZ3JhcGgoKVxuXG5cbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5kZiA9IHRpYmJsZShmcnVpdCA9IGMoXCJiYW5hbmFcIiwgXCJhcHBsZVwiLCBcIm9yYW5nZVwiKSwgXG4gICAgICAgICAgICB0b3RhbCA9IGMoMTAwLCAyMDAsIDMwMCkgLFxuICAgICAgIHdlaWdodCA9IGMoNTAuMiwgNzUuMTEsIDIwLjU0NyksIFxuICAgICAgIGRlbGl2ZXJ5ID0gYyhcIk1vbmRheVwiLCBcIldlZG5lc2RheVwiLCBcIlNhdHVyZGF5XCIpKVxuXG5kZlxuYGBgIn0= -->
+<pre class="r"><code>
+df = tibble(fruit = c(&quot;banana&quot;, &quot;apple&quot;, &quot;orange&quot;), 
+            total = c(100, 200, 300) ,
+       weight = c(50.2, 75.11, 20.547), 
+       delivery = c(&quot;Monday&quot;, &quot;Wednesday&quot;, &quot;Saturday&quot;))
+
+df</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<ul>
+<li>In this data, R treats <em>fruit</em> as a <strong>discrete</strong>
+value, <em>total</em> and <em>weight</em> as <strong>continuous</strong>
+values, and <em>delivery</em> as a <strong>discrete</strong> value.</li>
+</ul>
+<p>The type of data has an important role in how the data will be
+visualised and is worth understanding. To demonstrate, we’ll assign the
+<strong>fill</strong> aesthetic first of all to a continuous value
+(weight) and then to a discrete value (delivery):</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGYgJT4lIGdncGxvdCgpICsgZ2VvbV9jb2woYWVzKHggPSBmcnVpdCwgeSA9IHRvdGFsLCBmaWxsID0gd2VpZ2h0KSlcbmBgYCJ9 -->
+<pre class="r"><code>df %&gt;% ggplot() + geom_col(aes(x = fruit, y = total, fill = weight))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Ggplot (and ggraph will work in the same way) assigns each bar a
+colour from a spectrum running from dark to light blue, according to its
+value. In this case, <strong>the larger the weight value, the lighter
+the colour will be.</strong> This works well for continuous values
+because it allows our brain to quickly understand which values are
+heavier and which are lighter - something which would be particularly
+useful if the data visualisation was much larger and had many more bars
+(in this case, we would also probably like to reverse the scale so that
+lighter weights were a lighter colour, but that is an easy change to
+make).</p>
+<p>Now if we plot with a <strong>discrete</strong> value,
+<strong>delivery:</strong></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGYgJT4lIGdncGxvdCgpICsgZ2VvbV9jb2woYWVzKHggPSBmcnVpdCwgeSA9IHRvdGFsLCBmaWxsID0gZGVsaXZlcnkpKVxuYGBgIn0= -->
+<pre class="r"><code>df %&gt;% ggplot() + geom_col(aes(x = fruit, y = total, fill = delivery))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>In this case, ggplot recognises that the values are discrete, and
+changes the colour scheme accordingly. Rather than try and map the
+values across a colour scale, it picks three
+<strong>constrasting</strong> colours to highlight that each value is a
+separate category, and they are not from across a continuous range, as
+with weight.</p>
+<p>You will notice similar changes when you map additional aesthetics to
+your network using ggraph. Depending on whether the value you try to map
+is continuous or discrete, you will see different results.</p>
+<p><strong>Some aesthetics can only map to one of the two
+types</strong>. We saw this in the last class when we tried to map a
+continuous variable (degree) to the <strong>shape</strong> aesthetic.
+Unlike with colour, it’s not possible to have a continuous spectrum of
+shapes - something can only be one shape or another.</p>
+<p>An opposite example is the aesthetic <strong>alpha,</strong> which
+means <strong>transparency.</strong> Transparency cannot be categorical
+(at least in practical terms), so mapping alpha to a
+<strong>discrete</strong> variable doesn’t make any sense.</p>
+</div>
+<div id="other-aesthetics-colour-alpha" class="section level2">
+<h2>Other aesthetics: colour, alpha</h2>
+<p>Using the same data as yesterday, we’ll demonstrate some of the other
+aesthetics which can be mapped to values.</p>
+<p>We’ll also use <code>left_join</code> to add the table of node
+attributes used in week 4, which we can then visualise in the network.
+Using <code>left_join</code> means they are joined to the nodes table.
+Note that some of them are discrete and some are continuous
+variables.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5saWJyYXJ5KHRpZHlncmFwaClcbmxpYnJhcnkodGlkeXZlcnNlKVxubGlicmFyeShnZ3JhcGgpXG5sZXR0ZXJzID0gcmVhZF9jc3YoXCIuLi9hcHBseWluZy1uZXR3b3JrLWFuYWx5c2lzLXRvLWh1bWFuaXRpZXMvZGF0YS9sZXR0ZXJfZGF0YTE2NzAuY3N2XCIsIGNvbF90eXBlcyA9IGNvbHMoLmRlZmF1bHQgPSBcImNcIikpXG5cbm5vZGVfYXR0cmlidXRlcyA9IHJlYWRfY3N2KCcuLi9hcHBseWluZy1uZXR3b3JrLWFuYWx5c2lzLXRvLWh1bWFuaXRpZXMvZGF0YS9ub2RlX2F0dHJpYnV0ZXMuY3N2JylcblxuXG5lZGdlX2xpc3QgPSBsZXR0ZXJzICU+JSBcbiAgZ3JvdXBfYnkoZnJvbV9pZCwgdG9faWQpICU+JSBcbiAgdGFsbHkobmFtZSA9ICd3ZWlnaHQnKVxuXG5zYW1wbGVfdGJsX2dyYXBoID0gZWRnZV9saXN0ICU+JSBcbiAgYXNfdGJsX2dyYXBoKClcblxuc2FtcGxlX3RibF9ncmFwaCA9IHNhbXBsZV90YmxfZ3JhcGggJT4lIGxlZnRfam9pbihub2RlX2F0dHJpYnV0ZXMsIGJ5ID0gJ25hbWUnKVxuXG5zYW1wbGVfdGJsX2dyYXBoXG5gYGAifQ== -->
 <pre class="r"><code>
 library(tidygraph)
 library(tidyverse)
 library(ggraph)
 letters = read_csv(&quot;../applying-network-analysis-to-humanities/data/letter_data1670.csv&quot;, col_types = cols(.default = &quot;c&quot;))
+
+node_attributes = read_csv(&#39;../applying-network-analysis-to-humanities/data/node_attributes.csv&#39;)
+
 
 edge_list = letters %&gt;% 
   group_by(from_id, to_id) %&gt;% 
@@ -1798,282 +1870,319 @@ edge_list = letters %&gt;%
 
 sample_tbl_graph = edge_list %&gt;% 
   as_tbl_graph()
-</code></pre>
+
+sample_tbl_graph = sample_tbl_graph %&gt;% left_join(node_attributes, by = &#39;name&#39;)
+
+sample_tbl_graph</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<div id="the-ggraph-function" class="section level3">
-<h3>The ggraph function</h3>
-<p>To begin making the network diagram, we start with the
-<code>ggraph()</code> function. This tells R to begin drawing a graph.
-It has optional arguments: for example, you can set the layout to
-something other than the default using the argument
-<code>layout =</code>. There are a large number of layouts available to
-use, some of which will be shown below.</p>
+<p>First, we’ll calculate a degree score, and map this to colour, which
+is a continuous variable. We’ll also increase the size of all nodes
+(notice it is outside the <code>aes()</code> function) to make it easier
+to see the changes.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGdncmFwaCgpXG5gYGAifQ== -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  ggraph()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>For now, you’ll notice that it doesn’t draw anything other than a
-blank grey background.</p>
-<p>To draw the nodes and edges of the graph, we’ll use what are known as
-‘geoms’. These are a family of functions which map the data to relevant
-elements. They all begin with <code>geom_</code>. These are added as
-layers to the ggraph object using <code>+</code> followed by the
-relevant geom.</p>
-<ul>
-<li>First, adding <code>+ geom_node_point()</code> as a layer will draw
-the nodes of your network as points. The nodes are positioned according
-to the chosen (or default) layout algorithm:</li>
-</ul>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGdncmFwaCgpICsgXG4gIGdlb21fbm9kZV9wb2ludCgpXG5gYGAifQ== -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  ggraph() + 
-  geom_node_point()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<ul>
-<li>Next, <code>geom_edge_link()</code> will drawn the edges as
-connecting lines:</li>
-</ul>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGdncmFwaCgpICsgXG4gIGdlb21fbm9kZV9wb2ludCgpICsgXG4gIGdlb21fZWRnZV9saW5rKClcbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  ggraph() + 
-  geom_node_point() + 
-  geom_edge_link()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="adjusting-visual-attributes." class="section level3">
-<h3>Adjusting visual attributes.</h3>
-<p>There are many additional ways you can manipulate the visual
-appearance of your nodes and edges, by adding color, size, shape,
-arrows, and so forth.</p>
-<p>In ggraph (and ggplot), visual elements can be manipulated in two
-ways:</p>
-<ul>
-<li>You can specify an absolute value for an aesthetic, for example
-setting the size of all nodes to value 3</li>
-<li>You can specify that a value is mapped to a variable in your data.
-This could be some metric of your network calculated in a previous step,
-for example setting the size to be proportional to the degree score of a
-node, or it could be some external data, wuch as setting the colour to
-indicate the node’s occupation.</li>
-</ul>
-<p>This is all done within the relevant geom. We can check to see which
-aesthetics are recognised by a particular geom by typing <code>?</code>
-followed by the function in the console and pressing return, i.e
-<code>?geom_node_point()</code>. This tells us that it recognises
-<code>alpha, colour, fill, shape, size, stroke, and filter</code>.</p>
-<p>To set a one of these visual attributes (or aesthetic) to an absolute
-value, simply set it within the parentheses of
-<code>geom_node_point()</code>:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGdncmFwaCgpICsgXG4gIGdlb21fbm9kZV9wb2ludChzaXplID0gMykgKyAjIHdlIHNwZWNpZmllZCB0aGF0IHNpemUgc2hvdWxkIGJlIHNldCBhdCB0aGUgdmFsdWUgM1xuICBnZW9tX2VkZ2VfbGluaygpXG5cbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  ggraph() + 
-  geom_node_point(size = 3) + # we specified that size should be set at the value 3
-  geom_edge_link()
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>We can also map aesthetics to a particular <em>variable</em> in the
-data. To do this, the value should exist as a column in the nodes table
-of the <code>tbl_graph</code> object. For example, we can calculate the
-degree score for each node:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZShtb2RlID0gJ2FsbCcsIHdlaWdodHMgPSB3ZWlnaHQpKSBcbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  mutate(degree = centrality_degree(mode = &#39;all&#39;, weights = weight)) </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>And it is added as an additional column in the first table.</p>
-<p>To map this column to be proportional to the node size, we do so
-within the function <code>aes()</code>, within the relevant geom:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSgpKSAlPiUgIyBjYWxjdWxhdGUgYSB2YWx1ZSBmb3IgZGVncmVlXG4gIGdncmFwaCgpICsgXG4gIGdlb21fZWRnZV9saW5rKCkgKyAjIHN3aXRjaCBhcm91bmQgdGhlIG9yZGVyIG9mIHRoZSBub2RlcyBhbmQgZWRnZXMgYXMgaXQncyBlYXNpZXIgdG8gc2VlIHRoZSBub2RlIGNvbG9yXG4gIGdlb21fbm9kZV9wb2ludChhZXMoc2l6ZSA9IGRlZ3JlZSkpICMgbWFwIHNpemUgdG8gZGVncmVlIHNjb3JlXG5gYGAifQ== -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  mutate(degree = centrality_degree()) %&gt;% # calculate a value for degree
-  ggraph() + 
-  geom_edge_link() + # switch around the order of the nodes and edges as it&#39;s easier to see the node color
-  geom_node_point(aes(size = degree)) # map size to degree score</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>You’ll notice that ggraph has added a <strong>legend</strong>: a
-guide to help us read exactly how the various sizes of the nodes map to
-the degree score.</p>
-<p>You can experiment in the notebook with the other aesthetics,
-including <code>alpha</code> and <code>shape</code>, and other network
-metrics which we covered last week, such as
-<code>betweenness centrality</code> and
-<code>eigenvector centrality</code>.</p>
-<p>You might notice that some of these aesthetics cannot be mapped to a
-numerical (or continuous) variable. We’ll look into this in the next
-class.</p>
-</div>
-</div>
-<div id="adjusting-edge-aesthetics" class="section level2">
-<h2>Adjusting edge aesthetics</h2>
-<p>The visual appearance of the edges can also be adjusted, using the
-same syntax.</p>
-<p>We can set the thickness of the edges using the <code>width</code>
-aesthetic:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSgpKSAlPiUgXG4gIGdncmFwaCgnZnInKSArIFxuICBnZW9tX2VkZ2VfbGluayh3aWR0aCA9IDMpICsgXG4gIGdlb21fbm9kZV9wb2ludCgpXG5gYGAifQ== -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  mutate(degree = centrality_degree()) %&gt;% 
-  ggraph(&#39;fr&#39;) + 
-  geom_edge_link(width = 3) + 
-  geom_node_point()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>As with nodes, these aesthetics can be mapped to particular values.
-In this case, the variable to be mapped should exist as a column in the
-edges table in the <code>tbl_graph</code> object. If we look at the
-object, we can see that there is already a ‘weight’ column which we
-created when making the graph:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaFxuYGBgIn0= -->
-<pre class="r"><code>sample_tbl_graph</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Again, this can be mapped using the same syntax as with nodes. Set
-the <code>width</code> aesthetic to the <code>weight</code> variable
-within the <code>aes()</code> command:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSgpKSAlPiUgXG4gIGdncmFwaCgnZnInKSArIFxuICBnZW9tX2VkZ2VfbGluayhhZXMod2lkdGggPSB3ZWlnaHQpKSArIFxuICBnZW9tX25vZGVfcG9pbnQoKVxuYGBgIn0= -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  mutate(degree = centrality_degree()) %&gt;% 
-  ggraph(&#39;fr&#39;) + 
-  geom_edge_link(aes(width = weight)) + 
-  geom_node_point()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="layout-algorithms" class="section level2">
-<h2>Layout algorithms</h2>
-<p>Igraph has a large number of graph layouts. Depending on your network
-size and structure, different ones may be appropriate. Where possible,
-it is a good idea to add some other information, for example group
-membership or simply node names to your visualisation, at least
-temporarily. That way you can check to see if the visual structures,
-such as clusters, centre-periphery, and orientation, make any sense.
-Here are the most common graph layouts:</p>
-<div id="fruchterman-reingold" class="section level4">
-<h4>Fruchterman-Reingold</h4>
-<p>A popular ‘force-directed’ layout, which treats the connections
-between nodes as springs.</p>
-<p>Add to ggraph using <code>layout = &#39;fr&#39;</code>.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGdncmFwaChsYXlvdXQgPSAnZnInKSArIFxuICBnZW9tX2VkZ2VfbGluaygpICsgXG4gIGdlb21fbm9kZV9wb2ludCgpXG5gYGAifQ== -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5zYW1wbGVfdGJsX2dyYXBoICU+JSBcbiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKG1vZGUgPSAnYWxsJykpICU+JSBcbiAgZ2dyYXBoKGxheW91dCA9ICdmcicpICsgXG4gIGdlb21fZWRnZV9saW5rKCkgKyBcbiAgZ2VvbV9ub2RlX3BvaW50KHNpemUgPSAzLCBhZXMoY29sb3IgPSBkZWdyZWUpKVxuICBcbmBgYCJ9 -->
+<pre class="r"><code>
+sample_tbl_graph %&gt;% 
+  mutate(degree = centrality_degree(mode = &#39;all&#39;)) %&gt;% 
   ggraph(layout = &#39;fr&#39;) + 
   geom_edge_link() + 
-  geom_node_point()</code></pre>
+  geom_node_point(size = 3, aes(color = degree))
+  </code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-</div>
-<div id="drl" class="section level4">
-<h4>DRL</h4>
-<p>Another force-directed layout, often used with larger graphs.</p>
-<p>Add to ggraph using <code>layout = &#39;drl&#39;</code>.</p>
+<p>Next, we’ll map gender to the shape aesthetic, which (clearly this is
+a traditional, binary system) is coded as a discrete value:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGdncmFwaChsYXlvdXQgPSAnZHJsJykgKyBcbiAgZ2VvbV9lZGdlX2xpbmsoKSArIFxuICBnZW9tX25vZGVfcG9pbnQoKVxuYGBgIn0= -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  ggraph(layout = &#39;drl&#39;) + 
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5zYW1wbGVfdGJsX2dyYXBoICU+JSBcbiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKG1vZGUgPSAnYWxsJykpICU+JSBcbiAgZ2dyYXBoKGxheW91dCA9ICdmcicpICsgXG4gIGdlb21fZWRnZV9saW5rKCkgKyBcbiAgZ2VvbV9ub2RlX3BvaW50KHNpemUgPSAzLCBcbiAgICAgICAgICAgICAgICAgIGFlcyhjb2xvciA9IGRlZ3JlZSwgc2hhcGUgPSBnZW5kZXIpKVxuXG4gIFxuYGBgIn0= -->
+<pre class="r"><code>
+sample_tbl_graph %&gt;% 
+  mutate(degree = centrality_degree(mode = &#39;all&#39;)) %&gt;% 
+  ggraph(layout = &#39;fr&#39;) + 
   geom_edge_link() + 
-  geom_node_point()</code></pre>
+  geom_node_point(size = 3, 
+                  aes(color = degree, shape = gender))
+
+  </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Last, we’ll map the weight value in the edges table to the alpha
+aesthetic, which controls transparency. Note that the code for this is
+included within <code>geom_edge_link()</code> this time.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZShtb2RlID0gJ2FsbCcpKSAlPiUgXG4gIGdncmFwaChsYXlvdXQgPSAnZnInKSArIFxuICBnZW9tX2VkZ2VfbGluayhhZXMoYWxwaGEgPSB3ZWlnaHQpKSArIFxuICBnZW9tX25vZGVfcG9pbnQoc2l6ZSA9IDMsIGFlcyhjb2xvciA9IGRlZ3JlZSwgc2hhcGUgPSBnZW5kZXIpKVxuXG5gYGAifQ== -->
+<pre class="r"><code>sample_tbl_graph %&gt;% 
+  mutate(degree = centrality_degree(mode = &#39;all&#39;)) %&gt;% 
+  ggraph(layout = &#39;fr&#39;) + 
+  geom_edge_link(aes(alpha = weight)) + 
+  geom_node_point(size = 3, aes(color = degree, shape = gender))
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Try changing the mappings in the code above to see what works best,
+and to notice the difference between continuous and discreet variables:
+for example, map gender to colour, and degree to alpha.</p>
+</div>
+<div id="adding-node-labels" class="section level2">
+<h2>Adding node labels</h2>
+<p>To add text labels to your network, you need to add a separate geom
+layer to your network. The correct one to use is
+<code>geom_node_text()</code> or <code>geom_node_label</code>.</p>
+<p>To specify which data ggraph should use to draw the labels, map the
+label aesthetic to the required column. In this case, we will use
+<code>main_name</code>.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5zYW1wbGVfdGJsX2dyYXBoICU+JSBcbiAgZ2dyYXBoKCdmcicpICsgXG4gIGdlb21fbm9kZV9wb2ludCgpICsgXG4gIGdlb21fbm9kZV90ZXh0KGFlcyhsYWJlbCA9IG1haW5fbmFtZSkpICsgXG4gIGdlb21fZWRnZV9saW5rKGFscGhhID0gLjIpXG5cbmBgYCJ9 -->
+<pre class="r"><code>
+sample_tbl_graph %&gt;% 
+  ggraph(&#39;fr&#39;) + 
+  geom_node_point() + 
+  geom_node_text(aes(label = main_name)) + 
+  geom_edge_link(alpha = .2)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>You’ll notice that the text is unreadable because there are too many
+overlapping labels.</p>
+<p>In a larger network, it can be helpful to only show labels belonging
+to the most-connected nodes.</p>
+<p>It’s a little complicated to explain the syntax, but you can use copy
+and paste this example to your own network: just change the
+<code>main_name</code> to the correct column you wish to get the labels
+from in your own network.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5zYW1wbGVfdGJsX2dyYXBoICU+JSBcbiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKCkpICU+JSBcbiAgZ2dyYXBoKCdmcicpICsgXG4gIGdlb21fbm9kZV9wb2ludCgpICsgXG4gIGdlb21fbm9kZV90ZXh0KGFlcyhsYWJlbCA9IGlmX2Vsc2UoZGVncmVlID4xMCwgbWFpbl9uYW1lLCBOVUxMKSkpICsgXG4gIGdlb21fZWRnZV9saW5rKGFscGhhID0gLjIpXG5cbmBgYCJ9 -->
+<pre class="r"><code>
+sample_tbl_graph %&gt;% 
+  mutate(degree = centrality_degree()) %&gt;% 
+  ggraph(&#39;fr&#39;) + 
+  geom_node_point() + 
+  geom_node_text(aes(label = if_else(degree &gt;10, main_name, NULL))) + 
+  geom_edge_link(alpha = .2)
+</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="kamada-kawai" class="section level4">
-<h4>Kamada-Kawai</h4>
-<p>Another force-directed layout. This doesn’t work well with
-’disconnected graphs: below I have added a function to only include the
-main connected component of the network.</p>
-<p>Add using <code>layout = &#39;kk&#39;</code></p>
+<div id="some-other-things-you-can-change" class="section level2">
+<h2>Some other things you can change</h2>
+<p>We won’t go into detail with these, but it might be useful to have as
+a reference when you are building your own graph.</p>
+<div id="edge-types" class="section level4">
+<h4>Edge types</h4>
+<p>You can make extensive changes to the type of edge. In many cases,
+these may make the diagram more readable. Some have particular uses, for
+example <code>geom_edge_fan()</code> is used for a multigraph (where you
+have multiple different types of edges), and <code>geom_edge_arc</code>
+can be useful for when you want to visualise the difference between
+incoming and outgoing edges:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIG11dGF0ZShjb21wb25lbnQgPSBncm91cF9jb21wb25lbnRzKCkpICU+JSBcbiAgZmlsdGVyKGNvbXBvbmVudCA9PSAxKSAlPiUgXG4gIGdncmFwaCgna2snKSArIFxuICBnZW9tX2VkZ2VfbGluaygpICsgXG4gIGdlb21fbm9kZV9wb2ludCgpXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSgpKSAlPiUgXG4gIGdncmFwaCgnZnInKSArIFxuICBnZW9tX2VkZ2VfYmVuZCgpICsgXG4gIGdlb21fbm9kZV9wb2ludChzaXplID0gMywgYWVzKGNvbG9yID0gZGVncmVlKSlcbmBgYCJ9 -->
 <pre class="r"><code>sample_tbl_graph %&gt;% 
-  mutate(component = group_components()) %&gt;% 
-  filter(component == 1) %&gt;% 
-  ggraph(&#39;kk&#39;) + 
-  geom_edge_link() + 
-  geom_node_point()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="circle" class="section level4">
-<h4>Circle</h4>
-<p>Places nodes in a circle, in order:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGdncmFwaCgnY2lyY2xlJykgKyBcbiAgZ2VvbV9lZGdlX2xpbmsoKSArIFxuICBnZW9tX25vZGVfcG9pbnQoKVxuYGBgIn0= -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  ggraph(&#39;circle&#39;) + 
-  geom_edge_link() + 
-  geom_node_point()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="tree" class="section level4">
-<h4>Tree</h4>
-<p>For hierarchical graphs. Places nodes in a tree diagram, according to
-their hierarchy.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGdncmFwaCgndHJlZScpICsgXG4gIGdlb21fZWRnZV9iZW5kKCkgKyBcbiAgZ2VvbV9ub2RlX3BvaW50KClcbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  ggraph(&#39;tree&#39;) + 
+  mutate(degree = centrality_degree()) %&gt;% 
+  ggraph(&#39;fr&#39;) + 
   geom_edge_bend() + 
-  geom_node_point()</code></pre>
+  geom_node_point(size = 3, aes(color = degree))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSgpKSAlPiUgXG4gIGdncmFwaCgnZnInKSArIFxuICBnZW9tX2VkZ2VfYXJjKCkgKyBcbiAgZ2VvbV9ub2RlX3BvaW50KHNpemUgPSAzLCBhZXMoY29sb3IgPSBkZWdyZWUpKVxuYGBgIn0= -->
+<pre class="r"><code>sample_tbl_graph %&gt;% 
+  mutate(degree = centrality_degree()) %&gt;% 
+  ggraph(&#39;fr&#39;) + 
+  geom_edge_arc() + 
+  geom_node_point(size = 3, aes(color = degree))</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="bipartite" class="section level4">
-<h4>Bipartite</h4>
-<p>It is worth checking some of these out, particularly if you have a
-specific network structure, for example a hierarchy, or if you have a
-bipartite network.</p>
-<p>Also note there are lots of other ways to visualise a network, for
-example by making a heatmap from an adjacency matrix. It’s worth
-experimenting a bit with these (and explaining choices in your final
-project).</p>
+<div id="edge-linetype" class="section level4">
+<h4>Edge Linetype</h4>
+<p>You can change the line type, from solid to various dashes or dots.
+The codes for each can be found here: <a href="http://sape.inf.usi.ch/quick-reference/ggplot2/linetype" class="uri">http://sape.inf.usi.ch/quick-reference/ggplot2/linetype</a></p>
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSgpKSAlPiUgXG4gIGdncmFwaCgnZnInKSArIFxuICBnZW9tX2VkZ2VfYXJjKGxpbmV0eXBlID0gJ2RvdGRhc2gnKSArIFxuICBnZW9tX25vZGVfcG9pbnQoc2l6ZSA9IDMsIGFlcyhjb2xvciA9IGRlZ3JlZSkpXG5gYGAifQ== -->
+<pre class="r"><code>sample_tbl_graph %&gt;% 
+  mutate(degree = centrality_degree()) %&gt;% 
+  ggraph(&#39;fr&#39;) + 
+  geom_edge_arc(linetype = &#39;dotdash&#39;) + 
+  geom_node_point(size = 3, aes(color = degree))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 </div>
+<div id="arrows" class="section level4">
+<h4>Arrows</h4>
+<p>Add arrows with the following syntax. The <code>length</code> and
+<code>endcap</code> arguments control the appearance of the arrow, so
+you can experiment with changing those.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5zYW1wbGVfdGJsX2dyYXBoICU+JSBcbiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKCkpICU+JSBcbiAgZ2dyYXBoKCdmcicpICsgXG4gIGdlb21fZWRnZV9saW5rKGxpbmV0eXBlID0gNSxcbiAgICAgICAgICAgICAgICAgYXJyb3cgPSBhcnJvdyhsZW5ndGggPSB1bml0KDQsICdtbScpKSwgXG4gICAgICAgICAgICAgICAgICAgZW5kX2NhcCA9IGNpcmNsZSgzLCAnbW0nKSkgKyBcbiAgZ2VvbV9ub2RlX3BvaW50KHNpemUgPSAzLCBhZXMoY29sb3IgPSBkZWdyZWUpKVxuXG5gYGAifQ== -->
+<pre class="r"><code>
+sample_tbl_graph %&gt;% 
+  mutate(degree = centrality_degree()) %&gt;% 
+  ggraph(&#39;fr&#39;) + 
+  geom_edge_link(linetype = 5,
+                 arrow = arrow(length = unit(4, &#39;mm&#39;)), 
+                   end_cap = circle(3, &#39;mm&#39;)) + 
+  geom_node_point(size = 3, aes(color = degree))
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="calculating-and-coloring-by-community-detection" class="section level3">
+<h3>Calculating and coloring by community detection</h3>
+<p>One very common visualisation is colouring the various groups in the
+network, which might give us a clue as to its structure.</p>
+<p>This is an interesting case of where we need to be mindful of the
+differences between continuous and discrete values. The output for the
+community detection is a number: node 1 will be placed in group 1, node
+2 in group 2, node 3 in group 1, and so forth. By default, ggraph treats
+these numbers as continuous variables, and will map them to a colour
+scale as in the first example above. However, group membership should be
+considered a discrete value.</p>
+<p>In order to tell ggraph to treat it as a discete value, we wrap the
+value in the <code>as.character()</code> function. This tells R to treat
+the value as a character string instead of a number, and ggraph treats
+character strings as discrete variables.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gdG9fdW5kaXJlY3RlZCgpICU+JSAjIGNoYW5nZSB0aGUgZ3JhcGggdG8gdW5kaXJlY3RlZCwgaW4gb3JkZXIgdG8gbWFrZSB0aGUgY29tbXVuaXR5IGRldGVjdGlvbiB3b3JrLlxuICBtdXRhdGUoY29tbXVuaXR5ID0gZ3JvdXBfbG91dmFpbih3ZWlnaHRzID1OVUxMKSkgJT4lICMgY2FsY3VsYXRlIHRoZSBncm91cCBtZW1iZXJzaGlwc1xuICBmaWx0ZXIoY29tbXVuaXR5ICVpbiUgMTo0KSAlPiUgIyBmaWx0ZXIgdG8gb25seSBpbmNsdWRlIHRoZSBmaXJzdCBmb3VyIGdyb3Vwc1xuICBnZ3JhcGgoJ2ZyJykgICsgXG4gIGdlb21fZWRnZV9saW5rKGFscGhhID0gLjIpICsgICMgcmVkdWNlIHRoZSB0cmFuc3BhcmVuY3kgb2YgdGhlIGVkZ2VzIHRvIG1ha2UgaXQgZWFzaWVyIHRvIHNlZSB0aGUgY29sb3Vycy4rIFxuICBnZW9tX25vZGVfcG9pbnQoYWVzKGNvbG9yID0gYXMuY2hhcmFjdGVyKGNvbW11bml0eSkpKSAgIyBtYXAgdGhlIGNvbG91ciBhZXN0aGV0aWMgdG8gdGhlIGdyb3VwIGxhYmVsLiBVc2UgYXMuY2hhcmFjdGVyKCkgdG8gY2hhbmdlIGl0IHRvIGEgZGlzY3JldGUgdmFsdWVcblxuYGBgIn0= -->
+<pre class="r"><code>sample_tbl_graph %&gt;% 
+ to_undirected() %&gt;% # change the graph to undirected, in order to make the community detection work.
+  mutate(community = group_louvain(weights =NULL)) %&gt;% # calculate the group memberships
+  filter(community %in% 1:4) %&gt;% # filter to only include the first four groups
+  ggraph(&#39;fr&#39;)  + 
+  geom_edge_link(alpha = .2) +  # reduce the transparency of the edges to make it easier to see the colours.+ 
+  geom_node_point(aes(color = as.character(community)))  # map the colour aesthetic to the group label. Use as.character() to change it to a discrete value
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="themes-and-legends" class="section level2">
+<h2>Themes and legends</h2>
+<p>To change the grey background, add the layer
+<code>theme_void()</code> to the end of your plot:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSgpKSAlPiUgXG4gIGdncmFwaCgnZnInKSArIFxuICBnZW9tX2VkZ2VfbGluayhsaW5ldHlwZSA9IDUsXG4gICAgICAgICAgICAgICAgIGFycm93ID0gYXJyb3cobGVuZ3RoID0gdW5pdCg0LCAnbW0nKSksIFxuICAgICAgICAgICAgICAgICAgIGVuZF9jYXAgPSBjaXJjbGUoMywgJ21tJykpICsgXG4gIGdlb21fbm9kZV9wb2ludChzaXplID0gMywgYWVzKGNvbG9yID0gZGVncmVlKSkgKyB0aGVtZV92b2lkKClcblxuYGBgIn0= -->
+<pre class="r"><code>sample_tbl_graph %&gt;% 
+  mutate(degree = centrality_degree()) %&gt;% 
+  ggraph(&#39;fr&#39;) + 
+  geom_edge_link(linetype = 5,
+                 arrow = arrow(length = unit(4, &#39;mm&#39;)), 
+                   end_cap = circle(3, &#39;mm&#39;)) + 
+  geom_node_point(size = 3, aes(color = degree)) + theme_void()
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>To change or remove the legend, add the layer
+<code>+ theme(legend.position = &#39;bottom&#39;)</code> or
+<code>+ theme(legend.position = &#39;none&#39;)</code> to your plot:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSgpKSAlPiUgXG4gIGdncmFwaCgnZnInKSArIFxuICBnZW9tX2VkZ2VfbGluayhsaW5ldHlwZSA9IDUsXG4gICAgICAgICAgICAgICAgIGFycm93ID0gYXJyb3cobGVuZ3RoID0gdW5pdCg0LCAnbW0nKSksIFxuICAgICAgICAgICAgICAgICAgIGVuZF9jYXAgPSBjaXJjbGUoMywgJ21tJykpICsgXG4gIGdlb21fbm9kZV9wb2ludChzaXplID0gMywgYWVzKGNvbG9yID0gZGVncmVlKSkgKyB0aGVtZV92b2lkKCkgKyB0aGVtZShsZWdlbmQucG9zaXRpb24gPSAnYm90dG9tJylcblxuYGBgIn0= -->
+<pre class="r"><code>sample_tbl_graph %&gt;% 
+  mutate(degree = centrality_degree()) %&gt;% 
+  ggraph(&#39;fr&#39;) + 
+  geom_edge_link(linetype = 5,
+                 arrow = arrow(length = unit(4, &#39;mm&#39;)), 
+                   end_cap = circle(3, &#39;mm&#39;)) + 
+  geom_node_point(size = 3, aes(color = degree)) + theme_void() + theme(legend.position = &#39;bottom&#39;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="what-makes-a-good-network-visualisation" class="section level2">
+<h2>What makes a good network visualisation?</h2>
+<p>You will rarely be able to make a good network visualisation simply
+by pushing a button and using the default settings. You should think
+about what your network is trying to communicate and to what audience,
+and spend some time</p>
+<ul>
+<li><p>Treat the visualisation as carefully as you would an essay or
+other piece of text. Is it easy to understand?</p></li>
+<li><p>Make sure you really need a network graph, and that another
+method of communicating the information wouldn’t be better. For example,
+if your diagram is simply showing the most influential nodes, would a
+bar chart (or even a table) with their degree work just as
+well?</p></li>
+<li><p>Use colour/shape/size if you need to, but make sure you explain
+what each element is doing.</p></li>
+<li><p>Spend some time showing your readers how to ‘read’ the
+visualisation. What is interesting about the left/right/top/bottom of
+the diagram? What is the significance of nodes grouped together, and
+what about nodes in the centre versus nodes towards the edge? Are there
+obvious clusters and gaps, and do these show up in the
+visualisation?</p></li>
+</ul>
+</div>
+<div id="case-study-scientists-and-politicians" class="section level2">
+<h2>Case study: Scientists and Politicians</h2>
+<p>In this final section, I’ll demonstrate how these methods might be
+used to carry out exploratory data analysis on the sample letter
+dataset.</p>
+<p>The node attributes can used either to filter the network, or added
+as extra visual elements. Doing so helps us to understand a bit more
+about why the network might look the way it does.</p>
+<p>First, load the same node attributes table as before:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubm9kZV9hdHRyaWJ1dGVzID0gcmVhZF9jc3YoJ25vZGVfYXR0cmlidXRlcy5jc3YnKVxuYGBgIn0= -->
+<pre class="r"><code>node_attributes = read_csv(&#39;node_attributes.csv&#39;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>This external information might help us to make sense of the clusters
+found by the community detection algorithm used above. One of the fields
+in the data is whether that person is listed as a politician on
+Wikidata: the field is a simple flag of either <code>yes</code> or
+<code>no</code>.</p>
+<p>To check whether this might be a clue towards the structure of the
+network, we will set the <em>color</em> to the community detection
+results, and the <em>shape</em> to the politician flag, with the
+following code:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGlncmFwaDo6YXMudW5kaXJlY3RlZCgpICU+JSBcbiAgYXNfdGJsX2dyYXBoKCklPiUgXG4gIGFjdGl2YXRlKG5vZGVzKSAlPiUgXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZShtb2RlID0gJ3RvdGFsJykpICU+JSBcbiAgbGVmdF9qb2luKG5vZGVfYXR0cmlidXRlcykgJT4lIFxuICBtdXRhdGUoY29tbXVuaXR5ID0gZ3JvdXBfZWRnZV9iZXR3ZWVubmVzcyh3ZWlnaHRzID1OVUxMKSkgJT4lIFxuICBmaWx0ZXIoY29tbXVuaXR5ICVpbiUgMTo0KSAlPiUgXG4gIGdncmFwaCgnZnInKSArIFxuICBnZW9tX2VkZ2VfbGluayhhbHBoYSA9IC4yKSsgXG4gIGdlb21fbm9kZV9wb2ludChhZXMoc2l6ZSA9IGRlZ3JlZSwgY29sb3IgPSBhcy5jaGFyYWN0ZXIoY29tbXVuaXR5KSwgc2hhcGUgPSBwb2xpdGljaWFuKSkgICsgXG4gIGdlb21fbm9kZV90ZXh0KGFlcyhsYWJlbCA9IGlmZWxzZShkZWdyZWUgPjIsIG1haW5fbmFtZSwgTkEpKSwgc2l6ZSA9IDIuNSwgcmVwZWwgPSBUKSArIFxuICB0aGVtZShsZWdlbmQucG9zaXRpb24gPSAnbm9uZScpXG5gYGAifQ== -->
+<pre class="r"><code>sample_tbl_graph %&gt;% 
+  igraph::as.undirected() %&gt;% 
+  as_tbl_graph()%&gt;% 
+  activate(nodes) %&gt;% 
+  mutate(degree = centrality_degree(mode = &#39;total&#39;)) %&gt;% 
+  left_join(node_attributes) %&gt;% 
+  mutate(community = group_edge_betweenness(weights =NULL)) %&gt;% 
+  filter(community %in% 1:4) %&gt;% 
+  ggraph(&#39;fr&#39;) + 
+  geom_edge_link(alpha = .2)+ 
+  geom_node_point(aes(size = degree, color = as.character(community), shape = politician))  + 
+  geom_node_text(aes(label = ifelse(degree &gt;2, main_name, NA)), size = 2.5, repel = T) + 
+  theme(legend.position = &#39;none&#39;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKIyMgTmV0d29yayBWaXN1YWxpc2F0aW9ucyB3aXRoIFIgYW5kIGdncmFwaC4KClZpc3VhbGlzYXRpb25zIGxpa2UgdGhlIGV4YW1wbGVzIGFib3ZlIGNhbiBiZSBjcmVhdGVkIHdpdGggYW5vdGhlciBSIHBhY2thZ2UsIGNhbGxlZCBgZ2dyYXBoYC4gVGhpcyB1c2VzIHRoZSBzYW1lIGJhc2ljIHN5bnRheCBhcyB0aGUgcGxvdHRpbmcgbGlicmFyeSBgZ2dwbG90MmAsIHdlIHVzZWQgaW4gYW4gZWFybGllciBsZXNzb24sIGJ1dCBhZGRzIHNvbWUgc3BlY2lhbCBmdW5jdGlvbnMgdG8gdmlzdWFsaXNlIG5ldHdvcmtzLgoKV2UnbGwgc3BlbmQgdG9kYXkgYW5kIHRoZSBuZXh0IGNsYXNzIG9uIGxlYXJuaW5nIGhvdyB0byB2aXN1YWxpc2UgZ3JhcGhzIHdpdGggUiBhbmQgYGdncmFwaGAuIEZpcnN0LCB3ZSdsbCBsZWFybiBob3cgdG8gbWFrZSBhIGJhc2ljIG5ldHdvcmsgZGlhZ3JhbSBvZiBub2RlcyBhbmQgZWRnZXMsIGhvdyB0byBjaGFuZ2UgdGhlIGxheW91dCBhbGdvcml0aG0sIGFuZCBob3cgdG8gc2V0IHRoZSBub2RlIGFuZCBlZGdlIHNpemVzLiBJbiB0aGUgbmV4dCBjbGFzcywgd2UnbGwgY3VzdG9taXNlIGl0IHdpdGggY29sb3VyLCBhcnJvd3MsIHRleHQgbGFiZWxzLCBhbmQgc28gZm9ydGguIAoKVXNpbmcgdGhpcyBnZ3JhcGggd29ya2Zsb3csIGEgbmV0d29yayBkaWFncmFtIGNvbnNpc3RzIG9mIGEgbnVtYmVyIG9mIGVsZW1lbnRzOgoKLSAgIFRoZSBuZXR3b3JrIGl0c2VsZiwgaW4gdGhlIGZvcm0gb2YgYSBuZXR3b3JrIG9iamVjdCwgZWl0aGVyIGEgYHRibF9ncmFwaGAgb3IgYW4gYGlncmFwaGAgbmV0d29yay4KLSAgIFRoZSBgZ2dyYXBoYCBmdW5jdGlvbiwgd2hpY2ggdGVsbHMgUiB0byBzdGFydCBtYWtpbmcgYSBuZXR3b3JrIHBsb3QuIAotICAgVGhlIHJlbGV2YW50IGBnZW9tX2AgbGF5ZXJzLCB3aGljaCB0ZWxsIGdncmFwaCB0byBtYXAgdGhlIG5ldHdvcmsgdG8gbm9kZXMgYW5kIGVkZ2VzCi0gICBBZXN0aGV0aWNzLCB3aGljaCB0ZWxsIGdncmFwaCB0byBtYXAgcGFydGljdWxhciB2aXN1YWwgYXR0cmlidXRlcyAoc2l6ZSwgY29sb3VyIGFuZCBzbyBmb3J0aCkgdG8gc3BlY2lmaWVkIHZhbHVlcy4KClRvIGJlZ2luIHdpdGgsIGNyZWF0ZSBhIGB0YmxfZ3JhcGhgIG5ldHdvcmsgb2JqZWN0IGZyb20gYW4gZWRnZSBsaXN0LCB1c2luZyB0aGUgc2FtZSBkYXRhIGFuZCBjb2RlIGFzIGxhc3Qgd2VlazogIAoKYGBge3IgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0KCmxpYnJhcnkodGlkeWdyYXBoKQpsaWJyYXJ5KHRpZHl2ZXJzZSkKbGlicmFyeShnZ3JhcGgpCmxldHRlcnMgPSByZWFkX2NzdigiLi4vYXBwbHlpbmctbmV0d29yay1hbmFseXNpcy10by1odW1hbml0aWVzL2RhdGEvbGV0dGVyX2RhdGExNjcwLmNzdiIsIGNvbF90eXBlcyA9IGNvbHMoLmRlZmF1bHQgPSAiYyIpKQoKZWRnZV9saXN0ID0gbGV0dGVycyAlPiUgCiAgZ3JvdXBfYnkoZnJvbV9pZCwgdG9faWQpICU+JSAKICB0YWxseShuYW1lID0gJ3dlaWdodCcpCgpzYW1wbGVfdGJsX2dyYXBoID0gZWRnZV9saXN0ICU+JSAKICBhc190YmxfZ3JhcGgoKQoKCmBgYAoKIyMjIFRoZSBnZ3JhcGggZnVuY3Rpb24gIAoKVG8gYmVnaW4gbWFraW5nIHRoZSBuZXR3b3JrIGRpYWdyYW0sIHdlIHN0YXJ0IHdpdGggdGhlIGBnZ3JhcGgoKWAgZnVuY3Rpb24uIFRoaXMgdGVsbHMgUiB0byBiZWdpbiBkcmF3aW5nIGEgZ3JhcGguIEl0IGhhcyBvcHRpb25hbCBhcmd1bWVudHM6IGZvciBleGFtcGxlLCB5b3UgY2FuIHNldCB0aGUgbGF5b3V0IHRvIHNvbWV0aGluZyBvdGhlciB0aGFuIHRoZSBkZWZhdWx0IHVzaW5nIHRoZSBhcmd1bWVudCBgbGF5b3V0ID1gLiBUaGVyZSBhcmUgYSBsYXJnZSBudW1iZXIgb2YgbGF5b3V0cyBhdmFpbGFibGUgdG8gdXNlLCBzb21lIG9mIHdoaWNoIHdpbGwgYmUgc2hvd24gYmVsb3cuIAoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIGdncmFwaCgpCmBgYAoKRm9yIG5vdywgeW91J2xsIG5vdGljZSB0aGF0IGl0IGRvZXNuJ3QgZHJhdyBhbnl0aGluZyBvdGhlciB0aGFuIGEgYmxhbmsgZ3JleSBiYWNrZ3JvdW5kLiAKClRvIGRyYXcgdGhlIG5vZGVzIGFuZCBlZGdlcyBvZiB0aGUgZ3JhcGgsIHdlJ2xsIHVzZSB3aGF0IGFyZSBrbm93biBhcyAnZ2VvbXMnLiBUaGVzZSBhcmUgYSBmYW1pbHkgb2YgZnVuY3Rpb25zIHdoaWNoIG1hcCB0aGUgZGF0YSB0byByZWxldmFudCBlbGVtZW50cy4gVGhleSBhbGwgYmVnaW4gd2l0aCBgZ2VvbV9gLiBUaGVzZSBhcmUgYWRkZWQgYXMgbGF5ZXJzIHRvIHRoZSBnZ3JhcGggb2JqZWN0IHVzaW5nIGArYCBmb2xsb3dlZCBieSB0aGUgcmVsZXZhbnQgZ2VvbS4gCgotICAgRmlyc3QsIGFkZGluZyBgKyBnZW9tX25vZGVfcG9pbnQoKWAgYXMgYSBsYXllciB3aWxsIGRyYXcgdGhlIG5vZGVzIG9mIHlvdXIgbmV0d29yayBhcyBwb2ludHMuIFRoZSBub2RlcyBhcmUgcG9zaXRpb25lZCBhY2NvcmRpbmcgdG8gdGhlIGNob3NlbiAob3IgZGVmYXVsdCkgbGF5b3V0IGFsZ29yaXRobToKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBnZ3JhcGgoKSArIAogIGdlb21fbm9kZV9wb2ludCgpCmBgYAoKLSAgIE5leHQsIGBnZW9tX2VkZ2VfbGluaygpYCB3aWxsIGRyYXduIHRoZSBlZGdlcyBhcyBjb25uZWN0aW5nIGxpbmVzOgoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIGdncmFwaCgpICsgCiAgZ2VvbV9ub2RlX3BvaW50KCkgKyAKICBnZW9tX2VkZ2VfbGluaygpCmBgYAoKIyMjIEFkanVzdGluZyB2aXN1YWwgYXR0cmlidXRlcy4gCgoKVGhlcmUgYXJlIG1hbnkgYWRkaXRpb25hbCB3YXlzIHlvdSBjYW4gbWFuaXB1bGF0ZSB0aGUgdmlzdWFsIGFwcGVhcmFuY2Ugb2YgeW91ciBub2RlcyBhbmQgZWRnZXMsIGJ5IGFkZGluZyBjb2xvciwgc2l6ZSwgc2hhcGUsIGFycm93cywgYW5kIHNvIGZvcnRoLgoKSW4gZ2dyYXBoIChhbmQgZ2dwbG90KSwgdmlzdWFsIGVsZW1lbnRzIGNhbiBiZSBtYW5pcHVsYXRlZCBpbiB0d28gd2F5czoKCi0gICBZb3UgY2FuIHNwZWNpZnkgYW4gYWJzb2x1dGUgdmFsdWUgZm9yIGFuIGFlc3RoZXRpYywgZm9yIGV4YW1wbGUgc2V0dGluZyB0aGUgc2l6ZSBvZiBhbGwgbm9kZXMgdG8gdmFsdWUgMwotICAgWW91IGNhbiBzcGVjaWZ5IHRoYXQgYSB2YWx1ZSBpcyBtYXBwZWQgdG8gYSB2YXJpYWJsZSBpbiB5b3VyIGRhdGEuIFRoaXMgY291bGQgYmUgc29tZSBtZXRyaWMgb2YgeW91ciBuZXR3b3JrIGNhbGN1bGF0ZWQgaW4gYSBwcmV2aW91cyBzdGVwLCBmb3IgZXhhbXBsZSBzZXR0aW5nIHRoZSBzaXplIHRvIGJlIHByb3BvcnRpb25hbCB0byB0aGUgZGVncmVlIHNjb3JlIG9mIGEgbm9kZSwgb3IgaXQgY291bGQgYmUgc29tZSBleHRlcm5hbCBkYXRhLCB3dWNoIGFzIHNldHRpbmcgdGhlIGNvbG91ciB0byBpbmRpY2F0ZSB0aGUgbm9kZSdzIG9jY3VwYXRpb24uICAKClRoaXMgaXMgYWxsIGRvbmUgd2l0aGluIHRoZSByZWxldmFudCBnZW9tLiBXZSBjYW4gY2hlY2sgdG8gc2VlIHdoaWNoIGFlc3RoZXRpY3MgYXJlIHJlY29nbmlzZWQgYnkgYSBwYXJ0aWN1bGFyIGdlb20gYnkgdHlwaW5nICBgP2AgZm9sbG93ZWQgYnkgdGhlIGZ1bmN0aW9uIGluIHRoZSBjb25zb2xlIGFuZCBwcmVzc2luZyByZXR1cm4sIGkuZSBgP2dlb21fbm9kZV9wb2ludCgpYC4gVGhpcyB0ZWxscyB1cyB0aGF0IGl0IHJlY29nbmlzZXMgYGFscGhhLCBjb2xvdXIsIGZpbGwsIHNoYXBlLCBzaXplLCBzdHJva2UsIGFuZCBmaWx0ZXJgLiAKClRvIHNldCBhIG9uZSBvZiB0aGVzZSB2aXN1YWwgYXR0cmlidXRlcyAob3IgYWVzdGhldGljKSB0byBhbiBhYnNvbHV0ZSB2YWx1ZSwgc2ltcGx5IHNldCBpdCB3aXRoaW4gdGhlIHBhcmVudGhlc2VzIG9mIGBnZW9tX25vZGVfcG9pbnQoKWA6ICAKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBnZ3JhcGgoKSArIAogIGdlb21fbm9kZV9wb2ludChzaXplID0gMykgKyAjIHdlIHNwZWNpZmllZCB0aGF0IHNpemUgc2hvdWxkIGJlIHNldCBhdCB0aGUgdmFsdWUgMwogIGdlb21fZWRnZV9saW5rKCkKCmBgYAoKV2UgY2FuIGFsc28gbWFwIGFlc3RoZXRpY3MgdG8gYSBwYXJ0aWN1bGFyICp2YXJpYWJsZSogaW4gdGhlIGRhdGEuIFRvIGRvIHRoaXMsIHRoZSB2YWx1ZSBzaG91bGQgZXhpc3QgYXMgYSBjb2x1bW4gaW4gdGhlIG5vZGVzIHRhYmxlIG9mIHRoZSBgdGJsX2dyYXBoYCBvYmplY3QuIEZvciBleGFtcGxlLCB3ZSBjYW4gY2FsY3VsYXRlIHRoZSBkZWdyZWUgc2NvcmUgZm9yIGVhY2ggbm9kZToKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBtdXRhdGUoZGVncmVlID0gY2VudHJhbGl0eV9kZWdyZWUobW9kZSA9ICdhbGwnLCB3ZWlnaHRzID0gd2VpZ2h0KSkgCmBgYAoKQW5kIGl0IGlzIGFkZGVkIGFzIGFuIGFkZGl0aW9uYWwgY29sdW1uIGluIHRoZSBmaXJzdCB0YWJsZS4gCgpUbyBtYXAgdGhpcyBjb2x1bW4gdG8gYmUgcHJvcG9ydGlvbmFsIHRvIHRoZSBub2RlIHNpemUsIHdlIGRvIHNvIHdpdGhpbiB0aGUgZnVuY3Rpb24gYGFlcygpYCwgd2l0aGluIHRoZSByZWxldmFudCBnZW9tOiAKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBtdXRhdGUoZGVncmVlID0gY2VudHJhbGl0eV9kZWdyZWUoKSkgJT4lICMgY2FsY3VsYXRlIGEgdmFsdWUgZm9yIGRlZ3JlZQogIGdncmFwaCgpICsgCiAgZ2VvbV9lZGdlX2xpbmsoKSArICMgc3dpdGNoIGFyb3VuZCB0aGUgb3JkZXIgb2YgdGhlIG5vZGVzIGFuZCBlZGdlcyBhcyBpdCdzIGVhc2llciB0byBzZWUgdGhlIG5vZGUgY29sb3IKICBnZW9tX25vZGVfcG9pbnQoYWVzKHNpemUgPSBkZWdyZWUpKSAjIG1hcCBzaXplIHRvIGRlZ3JlZSBzY29yZQpgYGAKCllvdSdsbCBub3RpY2UgdGhhdCBnZ3JhcGggaGFzIGFkZGVkIGEgKipsZWdlbmQqKjogYSBndWlkZSB0byBoZWxwIHVzIHJlYWQgZXhhY3RseSBob3cgdGhlIHZhcmlvdXMgc2l6ZXMgb2YgdGhlIG5vZGVzIG1hcCB0byB0aGUgZGVncmVlIHNjb3JlLiAKCllvdSBjYW4gZXhwZXJpbWVudCBpbiB0aGUgbm90ZWJvb2sgd2l0aCB0aGUgb3RoZXIgYWVzdGhldGljcywgaW5jbHVkaW5nIGBhbHBoYWAgYW5kIGBzaGFwZWAsIGFuZCBvdGhlciBuZXR3b3JrIG1ldHJpY3Mgd2hpY2ggd2UgY292ZXJlZCBsYXN0IHdlZWssIHN1Y2ggYXMgYGJldHdlZW5uZXNzIGNlbnRyYWxpdHlgIGFuZCBgZWlnZW52ZWN0b3IgY2VudHJhbGl0eWAuCgpZb3UgbWlnaHQgbm90aWNlIHRoYXQgc29tZSBvZiB0aGVzZSBhZXN0aGV0aWNzIGNhbm5vdCBiZSBtYXBwZWQgdG8gYSBudW1lcmljYWwgKG9yIGNvbnRpbnVvdXMpIHZhcmlhYmxlLiBXZSdsbCBsb29rIGludG8gdGhpcyBpbiB0aGUgbmV4dCBjbGFzcy4gIAoKIyMgQWRqdXN0aW5nIGVkZ2UgYWVzdGhldGljcwoKVGhlIHZpc3VhbCBhcHBlYXJhbmNlIG9mIHRoZSBlZGdlcyBjYW4gYWxzbyBiZSBhZGp1c3RlZCwgdXNpbmcgdGhlIHNhbWUgc3ludGF4LiAKCldlIGNhbiBzZXQgdGhlIHRoaWNrbmVzcyBvZiB0aGUgZWRnZXMgdXNpbmcgdGhlIGB3aWR0aGAgYWVzdGhldGljOiAgCgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgCiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKCkpICU+JSAKICBnZ3JhcGgoJ2ZyJykgKyAKICBnZW9tX2VkZ2VfbGluayh3aWR0aCA9IDMpICsgCiAgZ2VvbV9ub2RlX3BvaW50KCkKYGBgCgpBcyB3aXRoIG5vZGVzLCB0aGVzZSBhZXN0aGV0aWNzIGNhbiBiZSBtYXBwZWQgdG8gcGFydGljdWxhciB2YWx1ZXMuIEluIHRoaXMgY2FzZSwgdGhlIHZhcmlhYmxlIHRvIGJlIG1hcHBlZCBzaG91bGQgZXhpc3QgYXMgYSBjb2x1bW4gaW4gdGhlIGVkZ2VzIHRhYmxlIGluIHRoZSBgdGJsX2dyYXBoYCBvYmplY3QuIElmIHdlIGxvb2sgYXQgdGhlIG9iamVjdCwgd2UgY2FuIHNlZSB0aGF0IHRoZXJlIGlzIGFscmVhZHkgYSAnd2VpZ2h0JyBjb2x1bW4gd2hpY2ggd2UgY3JlYXRlZCB3aGVuIG1ha2luZyB0aGUgZ3JhcGg6CgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaApgYGAKCkFnYWluLCB0aGlzIGNhbiBiZSBtYXBwZWQgdXNpbmcgdGhlIHNhbWUgc3ludGF4IGFzIHdpdGggbm9kZXMuIFNldCB0aGUgYHdpZHRoYCBhZXN0aGV0aWMgdG8gdGhlIGB3ZWlnaHRgIHZhcmlhYmxlIHdpdGhpbiB0aGUgYGFlcygpYCBjb21tYW5kOgoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSgpKSAlPiUgCiAgZ2dyYXBoKCdmcicpICsgCiAgZ2VvbV9lZGdlX2xpbmsoYWVzKHdpZHRoID0gd2VpZ2h0KSkgKyAKICBnZW9tX25vZGVfcG9pbnQoKQpgYGAKCiMjIExheW91dCBhbGdvcml0aG1zCgpJZ3JhcGggaGFzIGEgbGFyZ2UgbnVtYmVyIG9mIGdyYXBoIGxheW91dHMuIERlcGVuZGluZyBvbiB5b3VyIG5ldHdvcmsgc2l6ZSBhbmQgc3RydWN0dXJlLCBkaWZmZXJlbnQgb25lcyBtYXkgYmUgYXBwcm9wcmlhdGUuIFdoZXJlIHBvc3NpYmxlLCBpdCBpcyBhIGdvb2QgaWRlYSB0byBhZGQgc29tZSBvdGhlciBpbmZvcm1hdGlvbiwgZm9yIGV4YW1wbGUgZ3JvdXAgbWVtYmVyc2hpcCBvciBzaW1wbHkgbm9kZSBuYW1lcyB0byB5b3VyIHZpc3VhbGlzYXRpb24sIGF0IGxlYXN0IHRlbXBvcmFyaWx5LiBUaGF0IHdheSB5b3UgY2FuIGNoZWNrIHRvIHNlZSBpZiB0aGUgdmlzdWFsIHN0cnVjdHVyZXMsIHN1Y2ggYXMgY2x1c3RlcnMsIGNlbnRyZS1wZXJpcGhlcnksIGFuZCBvcmllbnRhdGlvbiwgbWFrZSBhbnkgc2Vuc2UuIEhlcmUgYXJlIHRoZSBtb3N0IGNvbW1vbiBncmFwaCBsYXlvdXRzOgoKIyMjIyBGcnVjaHRlcm1hbi1SZWluZ29sZAoKQSBwb3B1bGFyICdmb3JjZS1kaXJlY3RlZCcgbGF5b3V0LCB3aGljaCB0cmVhdHMgdGhlIGNvbm5lY3Rpb25zIGJldHdlZW4gbm9kZXMgYXMgc3ByaW5ncy4gCgpBZGQgdG8gZ2dyYXBoIHVzaW5nIGBsYXlvdXQgPSAnZnInYC4KCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBnZ3JhcGgobGF5b3V0ID0gJ2ZyJykgKyAKICBnZW9tX2VkZ2VfbGluaygpICsgCiAgZ2VvbV9ub2RlX3BvaW50KCkKYGBgCgoKIyMjIyBEUkwKCkFub3RoZXIgZm9yY2UtZGlyZWN0ZWQgbGF5b3V0LCBvZnRlbiB1c2VkIHdpdGggbGFyZ2VyIGdyYXBocy4gCgpBZGQgdG8gZ2dyYXBoIHVzaW5nIGBsYXlvdXQgPSAnZHJsJ2AuCgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgCiAgZ2dyYXBoKGxheW91dCA9ICdkcmwnKSArIAogIGdlb21fZWRnZV9saW5rKCkgKyAKICBnZW9tX25vZGVfcG9pbnQoKQpgYGAKCiMjIyMgIEthbWFkYS1LYXdhaQoKQW5vdGhlciBmb3JjZS1kaXJlY3RlZCBsYXlvdXQuIFRoaXMgZG9lc24ndCB3b3JrIHdlbGwgd2l0aCAnZGlzY29ubmVjdGVkIGdyYXBoczogYmVsb3cgSSBoYXZlIGFkZGVkIGEgZnVuY3Rpb24gdG8gb25seSBpbmNsdWRlIHRoZSBtYWluIGNvbm5lY3RlZCBjb21wb25lbnQgb2YgdGhlIG5ldHdvcmsuIAoKQWRkIHVzaW5nIGBsYXlvdXQgPSAna2snYAoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIG11dGF0ZShjb21wb25lbnQgPSBncm91cF9jb21wb25lbnRzKCkpICU+JSAKICBmaWx0ZXIoY29tcG9uZW50ID09IDEpICU+JSAKICBnZ3JhcGgoJ2trJykgKyAKICBnZW9tX2VkZ2VfbGluaygpICsgCiAgZ2VvbV9ub2RlX3BvaW50KCkKYGBgCgojIyMjIENpcmNsZQoKUGxhY2VzIG5vZGVzIGluIGEgY2lyY2xlLCBpbiBvcmRlcjogIAoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIGdncmFwaCgnY2lyY2xlJykgKyAKICBnZW9tX2VkZ2VfbGluaygpICsgCiAgZ2VvbV9ub2RlX3BvaW50KCkKYGBgCgojIyMjIFRyZWUKCkZvciBoaWVyYXJjaGljYWwgZ3JhcGhzLiBQbGFjZXMgbm9kZXMgaW4gYSB0cmVlIGRpYWdyYW0sIGFjY29yZGluZyB0byB0aGVpciBoaWVyYXJjaHkuIAoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIGdncmFwaCgndHJlZScpICsgCiAgZ2VvbV9lZGdlX2JlbmQoKSArIAogIGdlb21fbm9kZV9wb2ludCgpCmBgYAoKIyMjIyBCaXBhcnRpdGUgIAoKSXQgaXMgd29ydGggY2hlY2tpbmcgc29tZSBvZiB0aGVzZSBvdXQsIHBhcnRpY3VsYXJseSBpZiB5b3UgaGF2ZSBhIHNwZWNpZmljIG5ldHdvcmsgc3RydWN0dXJlLCBmb3IgZXhhbXBsZSBhIGhpZXJhcmNoeSwgb3IgaWYgeW91IGhhdmUgYSBiaXBhcnRpdGUgbmV0d29yay4gCgpBbHNvIG5vdGUgdGhlcmUgYXJlIGxvdHMgb2Ygb3RoZXIgd2F5cyB0byB2aXN1YWxpc2UgYSBuZXR3b3JrLCBmb3IgZXhhbXBsZSBieSBtYWtpbmcgYSBoZWF0bWFwIGZyb20gYW4gYWRqYWNlbmN5IG1hdHJpeC4gSXQncyB3b3J0aCBleHBlcmltZW50aW5nIGEgYml0IHdpdGggdGhlc2UgKGFuZCBleHBsYWluaW5nIGNob2ljZXMgaW4geW91ciBmaW5hbCBwcm9qZWN0KS4gCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiVmlzdWFsaXNpbmcgTmV0d29ya3Mgd2l0aCBnZ3JhcGgsIElJIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgojIyBEaXNjcmVldCB2ZXJzdXMgY29udGludW91cyB2YXJpYWJsZXMKCkEgdmVyeSBpbXBvcnRhbnQgY29uY2VwdCB0byBiZWFyIGluIG1pbmQgd2hlbiBtYWtpbmcgdmlzdWFsaXNhdGlvbnMgaXMgdGhlIGRpZmZlcmVuY2VzIGluIHRoZSB3YXkgKipkaXNjcmV0ZSoqIGFuZCAqKmNvbnRpbnVvdXMqKiB2YWx1ZSBhcmUgdHJlYXRlZC4gRm9yIHRoZSBwdXJwb3NlcyBvZiB2aXN1YWxpc2F0aW9uIHdlIGNhbiB0aGluayBvZiB0aGUgZGlmZmVyZW5jZXMgbGlrZSB0aGlzOgoKLSAgIEEgKipjb250aW51b3VzKiogdmFsdWUgaXMgc29tZXRoaW5nIHlvdSBjYW4gbWVhc3VyZSwgZm9yIGV4YW1wbGUgaGVpZ2h0LiBUaGVyZSBhcmUgaW5maW5pdGUgdmFsdWVzIHRoYXQgYSBoZWlnaHQgY2FuIGJlLgoKLSAgIEEgKipkaXNjcmV0ZSoqIHZhbHVlIGlzIG9uZSB3aGVyZSB0aGUgdmFsdWVzIGFyZSBvbmUgb2YgYSBsaW1pdGVkIHNldCBvZiBzZXQgdmFsdWVzLiBGb3IgZXhhbXBsZSwgb2NjdXBhdGlvbiwgb3IgY29sb3VyLiBBbm90aGVyIG5hbWUgZm9yIHRoaXMgaXMgKipjYXRlZ29yaWNhbCoqIHZhbHVlLgoKSXQgaXMgZWFzaWVyIHRvIHVuZGVyc3RhbmQgd2l0aCBhbiBleGFtcGxlIG9mIGhvdyB0aGlzIGFmZmVjdHMgaG93IHZpc3VhbCBlbGVtZW50cyAoYWVzdGhldGljcykgYXJlIG1hcHBlZCB0byB2YWx1ZXMuIEZpcnN0LCB3ZSdsbCBjcmVhdGUgYW4gZXhhbXBsZSBkYXRhc2V0IG9mIGZydWl0IHdpdGggdGhyZWUgdmFyaWFibGVzOiB0b3RhbCwgd2VpZ2h0LCBhbmQgZGVsaXZlcnkgKGRheSk6IAoKYGBge3J9CgpkZiA9IHRpYmJsZShmcnVpdCA9IGMoImJhbmFuYSIsICJhcHBsZSIsICJvcmFuZ2UiKSwgCiAgICAgICAgICAgIHRvdGFsID0gYygxMDAsIDIwMCwgMzAwKSAsCiAgICAgICB3ZWlnaHQgPSBjKDUwLjIsIDc1LjExLCAyMC41NDcpLCAKICAgICAgIGRlbGl2ZXJ5ID0gYygiTW9uZGF5IiwgIldlZG5lc2RheSIsICJTYXR1cmRheSIpKQoKZGYKYGBgCgotICAgSW4gdGhpcyBkYXRhLCBSIHRyZWF0cyAqZnJ1aXQqIGFzIGEgKipkaXNjcmV0ZSoqIHZhbHVlLCAqdG90YWwqIGFuZCAqd2VpZ2h0KiBhcyAqKmNvbnRpbnVvdXMqKiB2YWx1ZXMsIGFuZCAqZGVsaXZlcnkqIGFzIGEgKipkaXNjcmV0ZSoqIHZhbHVlLgoKVGhlIHR5cGUgb2YgZGF0YSBoYXMgYW4gaW1wb3J0YW50IHJvbGUgaW4gaG93IHRoZSBkYXRhIHdpbGwgYmUgdmlzdWFsaXNlZCBhbmQgaXMgd29ydGggdW5kZXJzdGFuZGluZy4gVG8gZGVtb25zdHJhdGUsIHdlJ2xsIGFzc2lnbiB0aGUgKipmaWxsKiogYWVzdGhldGljIGZpcnN0IG9mIGFsbCB0byBhIGNvbnRpbnVvdXMgdmFsdWUgKHdlaWdodCkgYW5kIHRoZW4gdG8gYSBkaXNjcmV0ZSB2YWx1ZSAoZGVsaXZlcnkpOgoKYGBge3J9CmRmICU+JSBnZ3Bsb3QoKSArIGdlb21fY29sKGFlcyh4ID0gZnJ1aXQsIHkgPSB0b3RhbCwgZmlsbCA9IHdlaWdodCkpCmBgYAoKR2dwbG90IChhbmQgZ2dyYXBoIHdpbGwgd29yayBpbiB0aGUgc2FtZSB3YXkpIGFzc2lnbnMgZWFjaCBiYXIgYSBjb2xvdXIgZnJvbSBhIHNwZWN0cnVtIHJ1bm5pbmcgZnJvbSBkYXJrIHRvIGxpZ2h0IGJsdWUsIGFjY29yZGluZyB0byBpdHMgdmFsdWUuIEluIHRoaXMgY2FzZSwgKip0aGUgbGFyZ2VyIHRoZSB3ZWlnaHQgdmFsdWUsIHRoZSBsaWdodGVyIHRoZSBjb2xvdXIgd2lsbCBiZS4qKiBUaGlzIHdvcmtzIHdlbGwgZm9yIGNvbnRpbnVvdXMgdmFsdWVzIGJlY2F1c2UgaXQgYWxsb3dzIG91ciBicmFpbiB0byBxdWlja2x5IHVuZGVyc3RhbmQgd2hpY2ggdmFsdWVzIGFyZSBoZWF2aWVyIGFuZCB3aGljaCBhcmUgbGlnaHRlciAtIHNvbWV0aGluZyB3aGljaCB3b3VsZCBiZSBwYXJ0aWN1bGFybHkgdXNlZnVsIGlmIHRoZSBkYXRhIHZpc3VhbGlzYXRpb24gd2FzIG11Y2ggbGFyZ2VyIGFuZCBoYWQgbWFueSBtb3JlIGJhcnMgKGluIHRoaXMgY2FzZSwgd2Ugd291bGQgYWxzbyBwcm9iYWJseSBsaWtlIHRvIHJldmVyc2UgdGhlIHNjYWxlIHNvIHRoYXQgbGlnaHRlciB3ZWlnaHRzIHdlcmUgYSBsaWdodGVyIGNvbG91ciwgYnV0IHRoYXQgaXMgYW4gZWFzeSBjaGFuZ2UgdG8gbWFrZSkuIAoKTm93IGlmIHdlIHBsb3Qgd2l0aCBhICoqZGlzY3JldGUqKiB2YWx1ZSwgKipkZWxpdmVyeToqKgoKYGBge3J9CmRmICU+JSBnZ3Bsb3QoKSArIGdlb21fY29sKGFlcyh4ID0gZnJ1aXQsIHkgPSB0b3RhbCwgZmlsbCA9IGRlbGl2ZXJ5KSkKYGBgCgpJbiB0aGlzIGNhc2UsIGdncGxvdCByZWNvZ25pc2VzIHRoYXQgdGhlIHZhbHVlcyBhcmUgZGlzY3JldGUsIGFuZCBjaGFuZ2VzIHRoZSBjb2xvdXIgc2NoZW1lIGFjY29yZGluZ2x5LiBSYXRoZXIgdGhhbiB0cnkgYW5kIG1hcCB0aGUgdmFsdWVzIGFjcm9zcyBhIGNvbG91ciBzY2FsZSwgaXQgcGlja3MgdGhyZWUgKipjb25zdHJhc3RpbmcqKiBjb2xvdXJzIHRvIGhpZ2hsaWdodCB0aGF0IGVhY2ggdmFsdWUgaXMgYSBzZXBhcmF0ZSBjYXRlZ29yeSwgYW5kIHRoZXkgYXJlIG5vdCBmcm9tIGFjcm9zcyBhIGNvbnRpbnVvdXMgcmFuZ2UsIGFzIHdpdGggd2VpZ2h0LgoKWW91IHdpbGwgbm90aWNlIHNpbWlsYXIgY2hhbmdlcyB3aGVuIHlvdSBtYXAgYWRkaXRpb25hbCBhZXN0aGV0aWNzIHRvIHlvdXIgbmV0d29yayB1c2luZyBnZ3JhcGguIERlcGVuZGluZyBvbiB3aGV0aGVyIHRoZSB2YWx1ZSB5b3UgdHJ5IHRvIG1hcCBpcyBjb250aW51b3VzIG9yIGRpc2NyZXRlLCB5b3Ugd2lsbCBzZWUgZGlmZmVyZW50IHJlc3VsdHMuCgoqKlNvbWUgYWVzdGhldGljcyBjYW4gb25seSBtYXAgdG8gb25lIG9mIHRoZSB0d28gdHlwZXMqKi4gV2Ugc2F3IHRoaXMgaW4gdGhlIGxhc3QgY2xhc3Mgd2hlbiB3ZSB0cmllZCB0byBtYXAgYSBjb250aW51b3VzIHZhcmlhYmxlIChkZWdyZWUpIHRvIHRoZSAqKnNoYXBlKiogYWVzdGhldGljLiBVbmxpa2Ugd2l0aCBjb2xvdXIsIGl0J3Mgbm90IHBvc3NpYmxlIHRvIGhhdmUgYSBjb250aW51b3VzIHNwZWN0cnVtIG9mIHNoYXBlcyAtIHNvbWV0aGluZyBjYW4gb25seSBiZSBvbmUgc2hhcGUgb3IgYW5vdGhlci4KCkFuIG9wcG9zaXRlIGV4YW1wbGUgaXMgdGhlIGFlc3RoZXRpYyAqKmFscGhhLCoqIHdoaWNoIG1lYW5zICoqdHJhbnNwYXJlbmN5LioqIFRyYW5zcGFyZW5jeSBjYW5ub3QgYmUgY2F0ZWdvcmljYWwgKGF0IGxlYXN0IGluIHByYWN0aWNhbCB0ZXJtcyksIHNvIG1hcHBpbmcgYWxwaGEgdG8gYSAqKmRpc2NyZXRlKiogdmFyaWFibGUgZG9lc24ndCBtYWtlIGFueSBzZW5zZS4KCiMjIE90aGVyIGFlc3RoZXRpY3M6IGNvbG91ciwgYWxwaGEKClVzaW5nIHRoZSBzYW1lIGRhdGEgYXMgeWVzdGVyZGF5LCB3ZSdsbCBkZW1vbnN0cmF0ZSBzb21lIG9mIHRoZSBvdGhlciBhZXN0aGV0aWNzIHdoaWNoIGNhbiBiZSBtYXBwZWQgdG8gdmFsdWVzLiAKCldlJ2xsIGFsc28gdXNlIGBsZWZ0X2pvaW5gIHRvIGFkZCB0aGUgdGFibGUgb2Ygbm9kZSBhdHRyaWJ1dGVzIHVzZWQgaW4gd2VlayA0LCB3aGljaCB3ZSBjYW4gdGhlbiB2aXN1YWxpc2UgaW4gdGhlIG5ldHdvcmsuIFVzaW5nIGBsZWZ0X2pvaW5gIG1lYW5zIHRoZXkgYXJlIGpvaW5lZCB0byB0aGUgbm9kZXMgdGFibGUuIE5vdGUgdGhhdCBzb21lIG9mIHRoZW0gYXJlIGRpc2NyZXRlIGFuZCBzb21lIGFyZSBjb250aW51b3VzIHZhcmlhYmxlcy4gCgpgYGB7ciBtZXNzYWdlPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQoKbGlicmFyeSh0aWR5Z3JhcGgpCmxpYnJhcnkodGlkeXZlcnNlKQpsaWJyYXJ5KGdncmFwaCkKbGV0dGVycyA9IHJlYWRfY3N2KCIuLi9hcHBseWluZy1uZXR3b3JrLWFuYWx5c2lzLXRvLWh1bWFuaXRpZXMvZGF0YS9sZXR0ZXJfZGF0YTE2NzAuY3N2IiwgY29sX3R5cGVzID0gY29scyguZGVmYXVsdCA9ICJjIikpCgpub2RlX2F0dHJpYnV0ZXMgPSByZWFkX2NzdignLi4vYXBwbHlpbmctbmV0d29yay1hbmFseXNpcy10by1odW1hbml0aWVzL2RhdGEvbm9kZV9hdHRyaWJ1dGVzLmNzdicpCgoKZWRnZV9saXN0ID0gbGV0dGVycyAlPiUgCiAgZ3JvdXBfYnkoZnJvbV9pZCwgdG9faWQpICU+JSAKICB0YWxseShuYW1lID0gJ3dlaWdodCcpCgpzYW1wbGVfdGJsX2dyYXBoID0gZWRnZV9saXN0ICU+JSAKICBhc190YmxfZ3JhcGgoKQoKc2FtcGxlX3RibF9ncmFwaCA9IHNhbXBsZV90YmxfZ3JhcGggJT4lIGxlZnRfam9pbihub2RlX2F0dHJpYnV0ZXMsIGJ5ID0gJ25hbWUnKQoKc2FtcGxlX3RibF9ncmFwaApgYGAKCkZpcnN0LCB3ZSdsbCBjYWxjdWxhdGUgYSBkZWdyZWUgc2NvcmUsIGFuZCBtYXAgdGhpcyB0byBjb2xvdXIsIHdoaWNoIGlzIGEgY29udGludW91cyB2YXJpYWJsZS4gV2UnbGwgYWxzbyBpbmNyZWFzZSB0aGUgc2l6ZSBvZiBhbGwgbm9kZXMgKG5vdGljZSBpdCBpcyBvdXRzaWRlIHRoZSBgYWVzKClgIGZ1bmN0aW9uKSB0byBtYWtlIGl0IGVhc2llciB0byBzZWUgdGhlIGNoYW5nZXMuCgpgYGB7cn0KCnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZShtb2RlID0gJ2FsbCcpKSAlPiUgCiAgZ2dyYXBoKGxheW91dCA9ICdmcicpICsgCiAgZ2VvbV9lZGdlX2xpbmsoKSArIAogIGdlb21fbm9kZV9wb2ludChzaXplID0gMywgYWVzKGNvbG9yID0gZGVncmVlKSkKICAKYGBgCgpOZXh0LCB3ZSdsbCBtYXAgZ2VuZGVyIHRvIHRoZSBzaGFwZSBhZXN0aGV0aWMsIHdoaWNoIChjbGVhcmx5IHRoaXMgaXMgYSB0cmFkaXRpb25hbCwgYmluYXJ5IHN5c3RlbSkgaXMgY29kZWQgYXMgYSBkaXNjcmV0ZSB2YWx1ZToKCmBgYHtyfQoKc2FtcGxlX3RibF9ncmFwaCAlPiUgCiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKG1vZGUgPSAnYWxsJykpICU+JSAKICBnZ3JhcGgobGF5b3V0ID0gJ2ZyJykgKyAKICBnZW9tX2VkZ2VfbGluaygpICsgCiAgZ2VvbV9ub2RlX3BvaW50KHNpemUgPSAzLCAKICAgICAgICAgICAgICAgICAgYWVzKGNvbG9yID0gZGVncmVlLCBzaGFwZSA9IGdlbmRlcikpCgogIApgYGAKCkxhc3QsIHdlJ2xsIG1hcCB0aGUgd2VpZ2h0IHZhbHVlIGluIHRoZSBlZGdlcyB0YWJsZSB0byB0aGUgYWxwaGEgYWVzdGhldGljLCB3aGljaCBjb250cm9scyB0cmFuc3BhcmVuY3kuIE5vdGUgdGhhdCB0aGUgY29kZSBmb3IgdGhpcyBpcyBpbmNsdWRlZCB3aXRoaW4gYGdlb21fZWRnZV9saW5rKClgIHRoaXMgdGltZS4gCgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgCiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKG1vZGUgPSAnYWxsJykpICU+JSAKICBnZ3JhcGgobGF5b3V0ID0gJ2ZyJykgKyAKICBnZW9tX2VkZ2VfbGluayhhZXMoYWxwaGEgPSB3ZWlnaHQpKSArIAogIGdlb21fbm9kZV9wb2ludChzaXplID0gMywgYWVzKGNvbG9yID0gZGVncmVlLCBzaGFwZSA9IGdlbmRlcikpCgpgYGAKClRyeSBjaGFuZ2luZyB0aGUgbWFwcGluZ3MgaW4gdGhlIGNvZGUgYWJvdmUgdG8gc2VlIHdoYXQgd29ya3MgYmVzdCwgYW5kIHRvIG5vdGljZSB0aGUgZGlmZmVyZW5jZSBiZXR3ZWVuIGNvbnRpbnVvdXMgYW5kIGRpc2NyZWV0IHZhcmlhYmxlczogZm9yIGV4YW1wbGUsIG1hcCBnZW5kZXIgdG8gY29sb3VyLCBhbmQgZGVncmVlIHRvIGFscGhhLiAKCgojIyBBZGRpbmcgbm9kZSBsYWJlbHMKClRvIGFkZCB0ZXh0IGxhYmVscyB0byB5b3VyIG5ldHdvcmssIHlvdSBuZWVkIHRvIGFkZCBhIHNlcGFyYXRlIGdlb20gbGF5ZXIgdG8geW91ciBuZXR3b3JrLiBUaGUgY29ycmVjdCBvbmUgdG8gdXNlIGlzIGBnZW9tX25vZGVfdGV4dCgpYCBvciBgZ2VvbV9ub2RlX2xhYmVsYC4gCgpUbyBzcGVjaWZ5IHdoaWNoIGRhdGEgZ2dyYXBoIHNob3VsZCB1c2UgdG8gZHJhdyB0aGUgbGFiZWxzLCBtYXAgdGhlIGxhYmVsIGFlc3RoZXRpYyB0byB0aGUgcmVxdWlyZWQgY29sdW1uLiBJbiB0aGlzIGNhc2UsIHdlIHdpbGwgdXNlIGBtYWluX25hbWVgLiAKCmBgYHtyfQoKc2FtcGxlX3RibF9ncmFwaCAlPiUgCiAgZ2dyYXBoKCdmcicpICsgCiAgZ2VvbV9ub2RlX3BvaW50KCkgKyAKICBnZW9tX25vZGVfdGV4dChhZXMobGFiZWwgPSBtYWluX25hbWUpKSArIAogIGdlb21fZWRnZV9saW5rKGFscGhhID0gLjIpCgpgYGAKCllvdSdsbCBub3RpY2UgdGhhdCB0aGUgdGV4dCBpcyB1bnJlYWRhYmxlIGJlY2F1c2UgdGhlcmUgYXJlIHRvbyBtYW55IG92ZXJsYXBwaW5nIGxhYmVscy4gCgpJbiBhIGxhcmdlciBuZXR3b3JrLCBpdCBjYW4gYmUgaGVscGZ1bCB0byBvbmx5IHNob3cgbGFiZWxzIGJlbG9uZ2luZyB0byB0aGUgbW9zdC1jb25uZWN0ZWQgbm9kZXMuCgpJdCdzIGEgbGl0dGxlIGNvbXBsaWNhdGVkIHRvIGV4cGxhaW4gdGhlIHN5bnRheCwgYnV0IHlvdSBjYW4gdXNlIGNvcHkgYW5kIHBhc3RlIHRoaXMgZXhhbXBsZSB0byB5b3VyIG93biBuZXR3b3JrOiBqdXN0IGNoYW5nZSB0aGUgYG1haW5fbmFtZWAgdG8gdGhlIGNvcnJlY3QgY29sdW1uIHlvdSB3aXNoIHRvIGdldCB0aGUgbGFiZWxzIGZyb20gaW4geW91ciBvd24gbmV0d29yay4gCgpgYGB7cn0KCnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSgpKSAlPiUgCiAgZ2dyYXBoKCdmcicpICsgCiAgZ2VvbV9ub2RlX3BvaW50KCkgKyAKICBnZW9tX25vZGVfdGV4dChhZXMobGFiZWwgPSBpZl9lbHNlKGRlZ3JlZSA+MTAsIG1haW5fbmFtZSwgTlVMTCkpKSArIAogIGdlb21fZWRnZV9saW5rKGFscGhhID0gLjIpCgpgYGAKCiMjIFNvbWUgb3RoZXIgdGhpbmdzIHlvdSBjYW4gY2hhbmdlCgpXZSB3b24ndCBnbyBpbnRvIGRldGFpbCB3aXRoIHRoZXNlLCBidXQgaXQgbWlnaHQgYmUgdXNlZnVsIHRvIGhhdmUgYXMgYSByZWZlcmVuY2Ugd2hlbiB5b3UgYXJlIGJ1aWxkaW5nIHlvdXIgb3duIGdyYXBoLiAKCiMjIyMgRWRnZSB0eXBlcwoKWW91IGNhbiBtYWtlIGV4dGVuc2l2ZSBjaGFuZ2VzIHRvIHRoZSB0eXBlIG9mIGVkZ2UuIEluIG1hbnkgY2FzZXMsIHRoZXNlIG1heSBtYWtlIHRoZSBkaWFncmFtIG1vcmUgcmVhZGFibGUuIFNvbWUgaGF2ZSBwYXJ0aWN1bGFyIHVzZXMsIGZvciBleGFtcGxlIGBnZW9tX2VkZ2VfZmFuKClgIGlzIHVzZWQgZm9yIGEgbXVsdGlncmFwaCAod2hlcmUgeW91IGhhdmUgbXVsdGlwbGUgZGlmZmVyZW50IHR5cGVzIG9mIGVkZ2VzKSwgYW5kIGBnZW9tX2VkZ2VfYXJjYCBjYW4gYmUgdXNlZnVsIGZvciB3aGVuIHlvdSB3YW50IHRvIHZpc3VhbGlzZSB0aGUgZGlmZmVyZW5jZSBiZXR3ZWVuIGluY29taW5nIGFuZCBvdXRnb2luZyBlZGdlczoKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBtdXRhdGUoZGVncmVlID0gY2VudHJhbGl0eV9kZWdyZWUoKSkgJT4lIAogIGdncmFwaCgnZnInKSArIAogIGdlb21fZWRnZV9iZW5kKCkgKyAKICBnZW9tX25vZGVfcG9pbnQoc2l6ZSA9IDMsIGFlcyhjb2xvciA9IGRlZ3JlZSkpCmBgYAoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSgpKSAlPiUgCiAgZ2dyYXBoKCdmcicpICsgCiAgZ2VvbV9lZGdlX2FyYygpICsgCiAgZ2VvbV9ub2RlX3BvaW50KHNpemUgPSAzLCBhZXMoY29sb3IgPSBkZWdyZWUpKQpgYGAKCiMjIyMgRWRnZSBMaW5ldHlwZQoKWW91IGNhbiBjaGFuZ2UgdGhlIGxpbmUgdHlwZSwgZnJvbSBzb2xpZCB0byB2YXJpb3VzIGRhc2hlcyBvciBkb3RzLiBUaGUgY29kZXMgZm9yIGVhY2ggY2FuIGJlIGZvdW5kIGhlcmU6IGh0dHA6Ly9zYXBlLmluZi51c2kuY2gvcXVpY2stcmVmZXJlbmNlL2dncGxvdDIvbGluZXR5cGUKCgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgCiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKCkpICU+JSAKICBnZ3JhcGgoJ2ZyJykgKyAKICBnZW9tX2VkZ2VfYXJjKGxpbmV0eXBlID0gJ2RvdGRhc2gnKSArIAogIGdlb21fbm9kZV9wb2ludChzaXplID0gMywgYWVzKGNvbG9yID0gZGVncmVlKSkKYGBgCgoKIyMjIyBBcnJvd3MKCkFkZCBhcnJvd3Mgd2l0aCB0aGUgZm9sbG93aW5nIHN5bnRheC4gVGhlIGBsZW5ndGhgIGFuZCBgZW5kY2FwYCBhcmd1bWVudHMgY29udHJvbCB0aGUgYXBwZWFyYW5jZSBvZiB0aGUgYXJyb3csIHNvIHlvdSBjYW4gZXhwZXJpbWVudCB3aXRoIGNoYW5naW5nIHRob3NlLiAKCmBgYHtyfQoKc2FtcGxlX3RibF9ncmFwaCAlPiUgCiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKCkpICU+JSAKICBnZ3JhcGgoJ2ZyJykgKyAKICBnZW9tX2VkZ2VfbGluayhsaW5ldHlwZSA9IDUsCiAgICAgICAgICAgICAgICAgYXJyb3cgPSBhcnJvdyhsZW5ndGggPSB1bml0KDQsICdtbScpKSwgCiAgICAgICAgICAgICAgICAgICBlbmRfY2FwID0gY2lyY2xlKDMsICdtbScpKSArIAogIGdlb21fbm9kZV9wb2ludChzaXplID0gMywgYWVzKGNvbG9yID0gZGVncmVlKSkKCmBgYAoKCiMjIyBDYWxjdWxhdGluZyBhbmQgY29sb3JpbmcgYnkgY29tbXVuaXR5IGRldGVjdGlvbgoKT25lIHZlcnkgY29tbW9uIHZpc3VhbGlzYXRpb24gaXMgY29sb3VyaW5nIHRoZSB2YXJpb3VzIGdyb3VwcyBpbiB0aGUgbmV0d29yaywgd2hpY2ggbWlnaHQgZ2l2ZSB1cyBhIGNsdWUgYXMgdG8gaXRzIHN0cnVjdHVyZS4KClRoaXMgaXMgYW4gaW50ZXJlc3RpbmcgY2FzZSBvZiB3aGVyZSB3ZSBuZWVkIHRvIGJlIG1pbmRmdWwgb2YgdGhlIGRpZmZlcmVuY2VzIGJldHdlZW4gY29udGludW91cyBhbmQgZGlzY3JldGUgdmFsdWVzLiBUaGUgb3V0cHV0IGZvciB0aGUgY29tbXVuaXR5IGRldGVjdGlvbiBpcyBhIG51bWJlcjogbm9kZSAxIHdpbGwgYmUgcGxhY2VkIGluIGdyb3VwIDEsIG5vZGUgMiBpbiBncm91cCAyLCBub2RlIDMgaW4gZ3JvdXAgMSwgYW5kIHNvIGZvcnRoLiBCeSBkZWZhdWx0LCBnZ3JhcGggdHJlYXRzIHRoZXNlIG51bWJlcnMgYXMgY29udGludW91cyB2YXJpYWJsZXMsIGFuZCB3aWxsIG1hcCB0aGVtIHRvIGEgY29sb3VyIHNjYWxlIGFzIGluIHRoZSBmaXJzdCBleGFtcGxlIGFib3ZlLiBIb3dldmVyLCBncm91cCBtZW1iZXJzaGlwIHNob3VsZCBiZSBjb25zaWRlcmVkIGEgZGlzY3JldGUgdmFsdWUuCgpJbiBvcmRlciB0byB0ZWxsIGdncmFwaCB0byB0cmVhdCBpdCBhcyBhIGRpc2NldGUgdmFsdWUsIHdlIHdyYXAgdGhlIHZhbHVlIGluIHRoZSBgYXMuY2hhcmFjdGVyKClgIGZ1bmN0aW9uLiBUaGlzIHRlbGxzIFIgdG8gdHJlYXQgdGhlIHZhbHVlIGFzIGEgY2hhcmFjdGVyIHN0cmluZyBpbnN0ZWFkIG9mIGEgbnVtYmVyLCBhbmQgZ2dyYXBoIHRyZWF0cyBjaGFyYWN0ZXIgc3RyaW5ncyBhcyBkaXNjcmV0ZSB2YXJpYWJsZXMuIAoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogdG9fdW5kaXJlY3RlZCgpICU+JSAjIGNoYW5nZSB0aGUgZ3JhcGggdG8gdW5kaXJlY3RlZCwgaW4gb3JkZXIgdG8gbWFrZSB0aGUgY29tbXVuaXR5IGRldGVjdGlvbiB3b3JrLgogIG11dGF0ZShjb21tdW5pdHkgPSBncm91cF9sb3V2YWluKHdlaWdodHMgPU5VTEwpKSAlPiUgIyBjYWxjdWxhdGUgdGhlIGdyb3VwIG1lbWJlcnNoaXBzCiAgZmlsdGVyKGNvbW11bml0eSAlaW4lIDE6NCkgJT4lICMgZmlsdGVyIHRvIG9ubHkgaW5jbHVkZSB0aGUgZmlyc3QgZm91ciBncm91cHMKICBnZ3JhcGgoJ2ZyJykgICsgCiAgZ2VvbV9lZGdlX2xpbmsoYWxwaGEgPSAuMikgKyAgIyByZWR1Y2UgdGhlIHRyYW5zcGFyZW5jeSBvZiB0aGUgZWRnZXMgdG8gbWFrZSBpdCBlYXNpZXIgdG8gc2VlIHRoZSBjb2xvdXJzLisgCiAgZ2VvbV9ub2RlX3BvaW50KGFlcyhjb2xvciA9IGFzLmNoYXJhY3Rlcihjb21tdW5pdHkpKSkgICMgbWFwIHRoZSBjb2xvdXIgYWVzdGhldGljIHRvIHRoZSBncm91cCBsYWJlbC4gVXNlIGFzLmNoYXJhY3RlcigpIHRvIGNoYW5nZSBpdCB0byBhIGRpc2NyZXRlIHZhbHVlCgpgYGAKCiMjIFRoZW1lcyBhbmQgbGVnZW5kcwoKVG8gY2hhbmdlIHRoZSBncmV5IGJhY2tncm91bmQsIGFkZCB0aGUgbGF5ZXIgYHRoZW1lX3ZvaWQoKWAgdG8gdGhlIGVuZCBvZiB5b3VyIHBsb3Q6CgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgCiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKCkpICU+JSAKICBnZ3JhcGgoJ2ZyJykgKyAKICBnZW9tX2VkZ2VfbGluayhsaW5ldHlwZSA9IDUsCiAgICAgICAgICAgICAgICAgYXJyb3cgPSBhcnJvdyhsZW5ndGggPSB1bml0KDQsICdtbScpKSwgCiAgICAgICAgICAgICAgICAgICBlbmRfY2FwID0gY2lyY2xlKDMsICdtbScpKSArIAogIGdlb21fbm9kZV9wb2ludChzaXplID0gMywgYWVzKGNvbG9yID0gZGVncmVlKSkgKyB0aGVtZV92b2lkKCkKCmBgYAoKVG8gY2hhbmdlIG9yIHJlbW92ZSB0aGUgbGVnZW5kLCBhZGQgdGhlIGxheWVyIGArIHRoZW1lKGxlZ2VuZC5wb3NpdGlvbiA9ICdib3R0b20nKWAgb3IgYCsgdGhlbWUobGVnZW5kLnBvc2l0aW9uID0gJ25vbmUnKWAgdG8geW91ciBwbG90OiAKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBtdXRhdGUoZGVncmVlID0gY2VudHJhbGl0eV9kZWdyZWUoKSkgJT4lIAogIGdncmFwaCgnZnInKSArIAogIGdlb21fZWRnZV9saW5rKGxpbmV0eXBlID0gNSwKICAgICAgICAgICAgICAgICBhcnJvdyA9IGFycm93KGxlbmd0aCA9IHVuaXQoNCwgJ21tJykpLCAKICAgICAgICAgICAgICAgICAgIGVuZF9jYXAgPSBjaXJjbGUoMywgJ21tJykpICsgCiAgZ2VvbV9ub2RlX3BvaW50KHNpemUgPSAzLCBhZXMoY29sb3IgPSBkZWdyZWUpKSArIHRoZW1lX3ZvaWQoKSArIHRoZW1lKGxlZ2VuZC5wb3NpdGlvbiA9ICdib3R0b20nKQoKYGBgCgojIyBXaGF0IG1ha2VzIGEgZ29vZCBuZXR3b3JrIHZpc3VhbGlzYXRpb24/CgpZb3Ugd2lsbCByYXJlbHkgYmUgYWJsZSB0byBtYWtlIGEgZ29vZCBuZXR3b3JrIHZpc3VhbGlzYXRpb24gc2ltcGx5IGJ5IHB1c2hpbmcgYSBidXR0b24gYW5kIHVzaW5nIHRoZSBkZWZhdWx0IHNldHRpbmdzLiBZb3Ugc2hvdWxkIHRoaW5rIGFib3V0IHdoYXQgeW91ciBuZXR3b3JrIGlzIHRyeWluZyB0byBjb21tdW5pY2F0ZSBhbmQgdG8gd2hhdCBhdWRpZW5jZSwgYW5kIHNwZW5kIHNvbWUgdGltZQoKLSAgIFRyZWF0IHRoZSB2aXN1YWxpc2F0aW9uIGFzIGNhcmVmdWxseSBhcyB5b3Ugd291bGQgYW4gZXNzYXkgb3Igb3RoZXIgcGllY2Ugb2YgdGV4dC4gSXMgaXQgZWFzeSB0byB1bmRlcnN0YW5kPwoKLSAgIE1ha2Ugc3VyZSB5b3UgcmVhbGx5IG5lZWQgYSBuZXR3b3JrIGdyYXBoLCBhbmQgdGhhdCBhbm90aGVyIG1ldGhvZCBvZiBjb21tdW5pY2F0aW5nIHRoZSBpbmZvcm1hdGlvbiB3b3VsZG4ndCBiZSBiZXR0ZXIuIEZvciBleGFtcGxlLCBpZiB5b3VyIGRpYWdyYW0gaXMgc2ltcGx5IHNob3dpbmcgdGhlIG1vc3QgaW5mbHVlbnRpYWwgbm9kZXMsIHdvdWxkIGEgYmFyIGNoYXJ0IChvciBldmVuIGEgdGFibGUpIHdpdGggdGhlaXIgZGVncmVlIHdvcmsganVzdCBhcyB3ZWxsPwoKLSAgIFVzZSBjb2xvdXIvc2hhcGUvc2l6ZSBpZiB5b3UgbmVlZCB0bywgYnV0IG1ha2Ugc3VyZSB5b3UgZXhwbGFpbiB3aGF0IGVhY2ggZWxlbWVudCBpcyBkb2luZy4KCi0gICBTcGVuZCBzb21lIHRpbWUgc2hvd2luZyB5b3VyIHJlYWRlcnMgaG93IHRvICdyZWFkJyB0aGUgdmlzdWFsaXNhdGlvbi4gV2hhdCBpcyBpbnRlcmVzdGluZyBhYm91dCB0aGUgbGVmdC9yaWdodC90b3AvYm90dG9tIG9mIHRoZSBkaWFncmFtPyBXaGF0IGlzIHRoZSBzaWduaWZpY2FuY2Ugb2Ygbm9kZXMgZ3JvdXBlZCB0b2dldGhlciwgYW5kIHdoYXQgYWJvdXQgbm9kZXMgaW4gdGhlIGNlbnRyZSB2ZXJzdXMgbm9kZXMgdG93YXJkcyB0aGUgZWRnZT8gQXJlIHRoZXJlIG9idmlvdXMgY2x1c3RlcnMgYW5kIGdhcHMsIGFuZCBkbyB0aGVzZSBzaG93IHVwIGluIHRoZSB2aXN1YWxpc2F0aW9uPwoKIyMgQ2FzZSBzdHVkeTogU2NpZW50aXN0cyBhbmQgUG9saXRpY2lhbnMKCkluIHRoaXMgZmluYWwgc2VjdGlvbiwgSSdsbCBkZW1vbnN0cmF0ZSBob3cgdGhlc2UgbWV0aG9kcyBtaWdodCBiZSB1c2VkIHRvIGNhcnJ5IG91dCBleHBsb3JhdG9yeSBkYXRhIGFuYWx5c2lzIG9uIHRoZSBzYW1wbGUgbGV0dGVyIGRhdGFzZXQuCgpUaGUgbm9kZSBhdHRyaWJ1dGVzIGNhbiB1c2VkIGVpdGhlciB0byBmaWx0ZXIgdGhlIG5ldHdvcmssIG9yIGFkZGVkIGFzIGV4dHJhIHZpc3VhbCBlbGVtZW50cy4gRG9pbmcgc28gaGVscHMgdXMgdG8gdW5kZXJzdGFuZCBhIGJpdCBtb3JlIGFib3V0IHdoeSB0aGUgbmV0d29yayBtaWdodCBsb29rIHRoZSB3YXkgaXQgZG9lcy4KCkZpcnN0LCBsb2FkIHRoZSBzYW1lIG5vZGUgYXR0cmlidXRlcyB0YWJsZSBhcyBiZWZvcmU6CgpgYGB7cn0Kbm9kZV9hdHRyaWJ1dGVzID0gcmVhZF9jc3YoJ25vZGVfYXR0cmlidXRlcy5jc3YnKQpgYGAKClRoaXMgZXh0ZXJuYWwgaW5mb3JtYXRpb24gbWlnaHQgaGVscCB1cyB0byBtYWtlIHNlbnNlIG9mIHRoZSBjbHVzdGVycyBmb3VuZCBieSB0aGUgY29tbXVuaXR5IGRldGVjdGlvbiBhbGdvcml0aG0gdXNlZCBhYm92ZS4gT25lIG9mIHRoZSBmaWVsZHMgaW4gdGhlIGRhdGEgaXMgd2hldGhlciB0aGF0IHBlcnNvbiBpcyBsaXN0ZWQgYXMgYSBwb2xpdGljaWFuIG9uIFdpa2lkYXRhOiB0aGUgZmllbGQgaXMgYSBzaW1wbGUgZmxhZyBvZiBlaXRoZXIgYHllc2Agb3IgYG5vYC4KClRvIGNoZWNrIHdoZXRoZXIgdGhpcyBtaWdodCBiZSBhIGNsdWUgdG93YXJkcyB0aGUgc3RydWN0dXJlIG9mIHRoZSBuZXR3b3JrLCB3ZSB3aWxsIHNldCB0aGUgKmNvbG9yKiB0byB0aGUgY29tbXVuaXR5IGRldGVjdGlvbiByZXN1bHRzLCBhbmQgdGhlICpzaGFwZSogdG8gdGhlIHBvbGl0aWNpYW4gZmxhZywgd2l0aCB0aGUgZm9sbG93aW5nIGNvZGU6CgpgYGB7ciBtZXNzYWdlPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBpZ3JhcGg6OmFzLnVuZGlyZWN0ZWQoKSAlPiUgCiAgYXNfdGJsX2dyYXBoKCklPiUgCiAgYWN0aXZhdGUobm9kZXMpICU+JSAKICBtdXRhdGUoZGVncmVlID0gY2VudHJhbGl0eV9kZWdyZWUobW9kZSA9ICd0b3RhbCcpKSAlPiUgCiAgbGVmdF9qb2luKG5vZGVfYXR0cmlidXRlcykgJT4lIAogIG11dGF0ZShjb21tdW5pdHkgPSBncm91cF9lZGdlX2JldHdlZW5uZXNzKHdlaWdodHMgPU5VTEwpKSAlPiUgCiAgZmlsdGVyKGNvbW11bml0eSAlaW4lIDE6NCkgJT4lIAogIGdncmFwaCgnZnInKSArIAogIGdlb21fZWRnZV9saW5rKGFscGhhID0gLjIpKyAKICBnZW9tX25vZGVfcG9pbnQoYWVzKHNpemUgPSBkZWdyZWUsIGNvbG9yID0gYXMuY2hhcmFjdGVyKGNvbW11bml0eSksIHNoYXBlID0gcG9saXRpY2lhbikpICArIAogIGdlb21fbm9kZV90ZXh0KGFlcyhsYWJlbCA9IGlmZWxzZShkZWdyZWUgPjIsIG1haW5fbmFtZSwgTkEpKSwgc2l6ZSA9IDIuNSwgcmVwZWwgPSBUKSArIAogIHRoZW1lKGxlZ2VuZC5wb3NpdGlvbiA9ICdub25lJykKYGBg</div>
 
 
 
@@ -2120,7 +2229,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("5-1_demonstration_nb.Rmd");
+  window.initializeSourceEmbed("5-2-demonstration.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>

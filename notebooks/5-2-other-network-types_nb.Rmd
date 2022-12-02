@@ -3,4 +3,51 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-Make a Spotify developer account. Use spotifyr to make an ego network of an artist you're interested in. Compare to another ego network. Comment on both, what do they tell us?
+In your group, design a network visualisation of one of the sets of network data we have used over the past few weeks.
+
+Designate one person as the coder. This person should share their screen with the group and enter the code for the network in the notebook below. 
+
+You can use the course book to find code examples to visualise different elements of your network data. 
+
+Think about how you can use ggraph to make the network more readable and communicate your desired information to the person viewing it. 
+
+-   Experiment with the layouts, taking into account your particular network
+-   Map values to aesthetics, such as size, shape and transparency
+-   Filter or pre-process your data - to make a large network more readable, for example. 
+
+Be prepared to present your network to the rest of the groups, and talk through briefly why you made your design decisions. 
+
+Run this cell to load libraries you'll need:
+
+```{r}
+library(tidyverse)
+library(tidygraph)
+library(igraph)
+library(ggraph)
+```
+
+
+Potential datasets - run the cell to load and use that particular one. 
+
+17th century letter data and related node attributes:  
+
+```{r}
+letter_data = read_csv('../data/letter_data1670.csv')
+
+node_attributes = read_csv('../data/node_attributes.csv')
+
+```
+
+Book publisher network, taken from the English Short Title Catalogue (ESTC):
+
+```{r}
+publisher_network = read_csv('../data/sample_publisher_network.csv')
+```
+
+Small sample of a twitter edge list, using Tweetsets: here, the tweets are from the 'Repeal the 8th' campaign in Ireland (https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/PYCLPE).
+
+```{r}
+repeal_edge_list = read_csv('../data/repeal_edge_list_sample.csv')
+```
+
+

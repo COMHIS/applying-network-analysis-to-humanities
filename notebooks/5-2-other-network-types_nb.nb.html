@@ -1758,322 +1758,145 @@ display: none;
 
 
 <!-- rnb-text-begin -->
-<div id="network-visualisations-with-r-and-ggraph." class="section level2">
-<h2>Network Visualisations with R and ggraph.</h2>
-<p>Visualisations like the examples above can be created with another R
-package, called <code>ggraph</code>. This uses the same basic syntax as
-the plotting library <code>ggplot2</code>, we used in an earlier lesson,
-but adds some special functions to visualise networks.</p>
-<p>We’ll spend today and the next class on learning how to visualise
-graphs with R and <code>ggraph</code>. First, we’ll learn how to make a
-basic network diagram of nodes and edges, how to change the layout
-algorithm, and how to set the node and edge sizes. In the next class,
-we’ll customise it with colour, arrows, text labels, and so forth.</p>
-<p>Using this ggraph workflow, a network diagram consists of a number of
-elements:</p>
+<p>In your group, design a network visualisation of one of the sets of
+network data we have used over the past few weeks.</p>
+<p>Designate one person as the coder. This person should share their
+screen with the group and enter the code for the network in the notebook
+below.</p>
+<p>You can use the course book to find code examples to visualise
+different elements of your network data.</p>
+<p>Think about how you can use ggraph to make the network more readable
+and communicate your desired information to the person viewing it.</p>
 <ul>
-<li>The network itself, in the form of a network object, either a
-<code>tbl_graph</code> or an <code>igraph</code> network.</li>
-<li>The <code>ggraph</code> function, which tells R to start making a
-network plot.</li>
-<li>The relevant <code>geom_</code> layers, which tell ggraph to map the
-network to nodes and edges</li>
-<li>Aesthetics, which tell ggraph to map particular visual attributes
-(size, colour and so forth) to specified values.</li>
+<li>Experiment with the layouts, taking into account your particular
+network</li>
+<li>Map values to aesthetics, such as size, shape and transparency</li>
+<li>Filter or pre-process your data - to make a large network more
+readable, for example.</li>
 </ul>
-<p>To begin with, create a <code>tbl_graph</code> network object from an
-edge list, using the same data and code as last week:</p>
+<p>Be prepared to present your network to the rest of the groups, and
+talk through briefly why you made your design decisions.</p>
+<p>Run this cell to load libraries you’ll need:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5saWJyYXJ5KHRpZHlncmFwaClcbmxpYnJhcnkodGlkeXZlcnNlKVxubGlicmFyeShnZ3JhcGgpXG5sZXR0ZXJzID0gcmVhZF9jc3YoXCIuLi9hcHBseWluZy1uZXR3b3JrLWFuYWx5c2lzLXRvLWh1bWFuaXRpZXMvZGF0YS9sZXR0ZXJfZGF0YTE2NzAuY3N2XCIsIGNvbF90eXBlcyA9IGNvbHMoLmRlZmF1bHQgPSBcImNcIikpXG5cbmVkZ2VfbGlzdCA9IGxldHRlcnMgJT4lIFxuICBncm91cF9ieShmcm9tX2lkLCB0b19pZCkgJT4lIFxuICB0YWxseShuYW1lID0gJ3dlaWdodCcpXG5cbnNhbXBsZV90YmxfZ3JhcGggPSBlZGdlX2xpc3QgJT4lIFxuICBhc190YmxfZ3JhcGgoKVxuXG5cbmBgYCJ9 -->
-<pre class="r"><code>
-library(tidygraph)
-library(tidyverse)
-library(ggraph)
-letters = read_csv(&quot;../applying-network-analysis-to-humanities/data/letter_data1670.csv&quot;, col_types = cols(.default = &quot;c&quot;))
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5saWJyYXJ5KHRpZHlncmFwaClcbmBgYCJ9 -->
+<pre class="r"><code>library(tidyverse)
+library(tidygraph)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog4oCYdGlkeWdyYXBo4oCZXG5cblRoZSBmb2xsb3dpbmcgb2JqZWN0IGlzIG1hc2tlZCBmcm9tIOKAmHBhY2thZ2U6c3RhdHPigJk6XG5cbiAgICBmaWx0ZXJcbiJ9 -->
+<pre><code>
+Attaching package: ‘tidygraph’
 
-edge_list = letters %&gt;% 
-  group_by(from_id, to_id) %&gt;% 
-  tally(name = &#39;weight&#39;)
+The following object is masked from ‘package:stats’:
 
-sample_tbl_graph = edge_list %&gt;% 
-  as_tbl_graph()
-</code></pre>
+    filter</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShpZ3JhcGgpXG5gYGAifQ== -->
+<pre class="r"><code>library(igraph)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<div id="the-ggraph-function" class="section level3">
-<h3>The ggraph function</h3>
-<p>To begin making the network diagram, we start with the
-<code>ggraph()</code> function. This tells R to begin drawing a graph.
-It has optional arguments: for example, you can set the layout to
-something other than the default using the argument
-<code>layout =</code>. There are a large number of layouts available to
-use, some of which will be shown below.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGdncmFwaCgpXG5gYGAifQ== -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  ggraph()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>For now, you’ll notice that it doesn’t draw anything other than a
-blank grey background.</p>
-<p>To draw the nodes and edges of the graph, we’ll use what are known as
-‘geoms’. These are a family of functions which map the data to relevant
-elements. They all begin with <code>geom_</code>. These are added as
-layers to the ggraph object using <code>+</code> followed by the
-relevant geom.</p>
-<ul>
-<li>First, adding <code>+ geom_node_point()</code> as a layer will draw
-the nodes of your network as points. The nodes are positioned according
-to the chosen (or default) layout algorithm:</li>
-</ul>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGdncmFwaCgpICsgXG4gIGdlb21fbm9kZV9wb2ludCgpXG5gYGAifQ== -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  ggraph() + 
-  geom_node_point()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<ul>
-<li>Next, <code>geom_edge_link()</code> will drawn the edges as
-connecting lines:</li>
-</ul>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGdncmFwaCgpICsgXG4gIGdlb21fbm9kZV9wb2ludCgpICsgXG4gIGdlb21fZWRnZV9saW5rKClcbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  ggraph() + 
-  geom_node_point() + 
-  geom_edge_link()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="adjusting-visual-attributes." class="section level3">
-<h3>Adjusting visual attributes.</h3>
-<p>There are many additional ways you can manipulate the visual
-appearance of your nodes and edges, by adding color, size, shape,
-arrows, and so forth.</p>
-<p>In ggraph (and ggplot), visual elements can be manipulated in two
-ways:</p>
-<ul>
-<li>You can specify an absolute value for an aesthetic, for example
-setting the size of all nodes to value 3</li>
-<li>You can specify that a value is mapped to a variable in your data.
-This could be some metric of your network calculated in a previous step,
-for example setting the size to be proportional to the degree score of a
-node, or it could be some external data, wuch as setting the colour to
-indicate the node’s occupation.</li>
-</ul>
-<p>This is all done within the relevant geom. We can check to see which
-aesthetics are recognised by a particular geom by typing <code>?</code>
-followed by the function in the console and pressing return, i.e
-<code>?geom_node_point()</code>. This tells us that it recognises
-<code>alpha, colour, fill, shape, size, stroke, and filter</code>.</p>
-<p>To set a one of these visual attributes (or aesthetic) to an absolute
-value, simply set it within the parentheses of
-<code>geom_node_point()</code>:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGdncmFwaCgpICsgXG4gIGdlb21fbm9kZV9wb2ludChzaXplID0gMykgKyAjIHdlIHNwZWNpZmllZCB0aGF0IHNpemUgc2hvdWxkIGJlIHNldCBhdCB0aGUgdmFsdWUgM1xuICBnZW9tX2VkZ2VfbGluaygpXG5cbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  ggraph() + 
-  geom_node_point(size = 3) + # we specified that size should be set at the value 3
-  geom_edge_link()
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>We can also map aesthetics to a particular <em>variable</em> in the
-data. To do this, the value should exist as a column in the nodes table
-of the <code>tbl_graph</code> object. For example, we can calculate the
-degree score for each node:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZShtb2RlID0gJ2FsbCcsIHdlaWdodHMgPSB3ZWlnaHQpKSBcbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  mutate(degree = centrality_degree(mode = &#39;all&#39;, weights = weight)) </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>And it is added as an additional column in the first table.</p>
-<p>To map this column to be proportional to the node size, we do so
-within the function <code>aes()</code>, within the relevant geom:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSgpKSAlPiUgIyBjYWxjdWxhdGUgYSB2YWx1ZSBmb3IgZGVncmVlXG4gIGdncmFwaCgpICsgXG4gIGdlb21fZWRnZV9saW5rKCkgKyAjIHN3aXRjaCBhcm91bmQgdGhlIG9yZGVyIG9mIHRoZSBub2RlcyBhbmQgZWRnZXMgYXMgaXQncyBlYXNpZXIgdG8gc2VlIHRoZSBub2RlIGNvbG9yXG4gIGdlb21fbm9kZV9wb2ludChhZXMoc2l6ZSA9IGRlZ3JlZSkpICMgbWFwIHNpemUgdG8gZGVncmVlIHNjb3JlXG5gYGAifQ== -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  mutate(degree = centrality_degree()) %&gt;% # calculate a value for degree
-  ggraph() + 
-  geom_edge_link() + # switch around the order of the nodes and edges as it&#39;s easier to see the node color
-  geom_node_point(aes(size = degree)) # map size to degree score</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>You’ll notice that ggraph has added a <strong>legend</strong>: a
-guide to help us read exactly how the various sizes of the nodes map to
-the degree score.</p>
-<p>You can experiment in the notebook with the other aesthetics,
-including <code>alpha</code> and <code>shape</code>, and other network
-metrics which we covered last week, such as
-<code>betweenness centrality</code> and
-<code>eigenvector centrality</code>.</p>
-<p>You might notice that some of these aesthetics cannot be mapped to a
-numerical (or continuous) variable. We’ll look into this in the next
-class.</p>
-</div>
-</div>
-<div id="adjusting-edge-aesthetics" class="section level2">
-<h2>Adjusting edge aesthetics</h2>
-<p>The visual appearance of the edges can also be adjusted, using the
-same syntax.</p>
-<p>We can set the thickness of the edges using the <code>width</code>
-aesthetic:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSgpKSAlPiUgXG4gIGdncmFwaCgnZnInKSArIFxuICBnZW9tX2VkZ2VfbGluayh3aWR0aCA9IDMpICsgXG4gIGdlb21fbm9kZV9wb2ludCgpXG5gYGAifQ== -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  mutate(degree = centrality_degree()) %&gt;% 
-  ggraph(&#39;fr&#39;) + 
-  geom_edge_link(width = 3) + 
-  geom_node_point()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>As with nodes, these aesthetics can be mapped to particular values.
-In this case, the variable to be mapped should exist as a column in the
-edges table in the <code>tbl_graph</code> object. If we look at the
-object, we can see that there is already a ‘weight’ column which we
-created when making the graph:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaFxuYGBgIn0= -->
-<pre class="r"><code>sample_tbl_graph</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Again, this can be mapped using the same syntax as with nodes. Set
-the <code>width</code> aesthetic to the <code>weight</code> variable
-within the <code>aes()</code> command:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSgpKSAlPiUgXG4gIGdncmFwaCgnZnInKSArIFxuICBnZW9tX2VkZ2VfbGluayhhZXMod2lkdGggPSB3ZWlnaHQpKSArIFxuICBnZW9tX25vZGVfcG9pbnQoKVxuYGBgIn0= -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  mutate(degree = centrality_degree()) %&gt;% 
-  ggraph(&#39;fr&#39;) + 
-  geom_edge_link(aes(width = weight)) + 
-  geom_node_point()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="layout-algorithms" class="section level2">
-<h2>Layout algorithms</h2>
-<p>Igraph has a large number of graph layouts. Depending on your network
-size and structure, different ones may be appropriate. Where possible,
-it is a good idea to add some other information, for example group
-membership or simply node names to your visualisation, at least
-temporarily. That way you can check to see if the visual structures,
-such as clusters, centre-periphery, and orientation, make any sense.
-Here are the most common graph layouts:</p>
-<div id="fruchterman-reingold" class="section level4">
-<h4>Fruchterman-Reingold</h4>
-<p>A popular ‘force-directed’ layout, which treats the connections
-between nodes as springs.</p>
-<p>Add to ggraph using <code>layout = &#39;fr&#39;</code>.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGdncmFwaChsYXlvdXQgPSAnZnInKSArIFxuICBnZW9tX2VkZ2VfbGluaygpICsgXG4gIGdlb21fbm9kZV9wb2ludCgpXG5gYGAifQ== -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  ggraph(layout = &#39;fr&#39;) + 
-  geom_edge_link() + 
-  geom_node_point()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="drl" class="section level4">
-<h4>DRL</h4>
-<p>Another force-directed layout, often used with larger graphs.</p>
-<p>Add to ggraph using <code>layout = &#39;drl&#39;</code>.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGdncmFwaChsYXlvdXQgPSAnZHJsJykgKyBcbiAgZ2VvbV9lZGdlX2xpbmsoKSArIFxuICBnZW9tX25vZGVfcG9pbnQoKVxuYGBgIn0= -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  ggraph(layout = &#39;drl&#39;) + 
-  geom_edge_link() + 
-  geom_node_point()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="kamada-kawai" class="section level4">
-<h4>Kamada-Kawai</h4>
-<p>Another force-directed layout. This doesn’t work well with
-’disconnected graphs: below I have added a function to only include the
-main connected component of the network.</p>
-<p>Add using <code>layout = &#39;kk&#39;</code></p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIG11dGF0ZShjb21wb25lbnQgPSBncm91cF9jb21wb25lbnRzKCkpICU+JSBcbiAgZmlsdGVyKGNvbXBvbmVudCA9PSAxKSAlPiUgXG4gIGdncmFwaCgna2snKSArIFxuICBnZW9tX2VkZ2VfbGluaygpICsgXG4gIGdlb21fbm9kZV9wb2ludCgpXG5gYGAifQ== -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  mutate(component = group_components()) %&gt;% 
-  filter(component == 1) %&gt;% 
-  ggraph(&#39;kk&#39;) + 
-  geom_edge_link() + 
-  geom_node_point()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="circle" class="section level4">
-<h4>Circle</h4>
-<p>Places nodes in a circle, in order:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGdncmFwaCgnY2lyY2xlJykgKyBcbiAgZ2VvbV9lZGdlX2xpbmsoKSArIFxuICBnZW9tX25vZGVfcG9pbnQoKVxuYGBgIn0= -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  ggraph(&#39;circle&#39;) + 
-  geom_edge_link() + 
-  geom_node_point()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="tree" class="section level4">
-<h4>Tree</h4>
-<p>For hierarchical graphs. Places nodes in a tree diagram, according to
-their hierarchy.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlX3RibF9ncmFwaCAlPiUgXG4gIGdncmFwaCgndHJlZScpICsgXG4gIGdlb21fZWRnZV9iZW5kKCkgKyBcbiAgZ2VvbV9ub2RlX3BvaW50KClcbmBgYCJ9 -->
-<pre class="r"><code>sample_tbl_graph %&gt;% 
-  ggraph(&#39;tree&#39;) + 
-  geom_edge_bend() + 
-  geom_node_point()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="bipartite" class="section level4">
-<h4>Bipartite</h4>
-<p>It is worth checking some of these out, particularly if you have a
-specific network structure, for example a hierarchy, or if you have a
-bipartite network.</p>
-<p>Also note there are lots of other ways to visualise a network, for
-example by making a heatmap from an adjacency matrix. It’s worth
-experimenting a bit with these (and explaining choices in your final
-project).</p>
-<!-- rnb-text-end -->
-</div>
-</div>
+<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog4oCYaWdyYXBo4oCZXG5cblRoZSBmb2xsb3dpbmcgb2JqZWN0IGlzIG1hc2tlZCBmcm9tIOKAmHBhY2thZ2U6dGlkeWdyYXBo4oCZOlxuXG4gICAgZ3JvdXBzXG5cblRoZSBmb2xsb3dpbmcgb2JqZWN0cyBhcmUgbWFza2VkIGZyb20g4oCYcGFja2FnZTpkcGx5cuKAmTpcblxuICAgIGFzX2RhdGFfZnJhbWUsIGdyb3VwcywgdW5pb25cblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOnB1cnJy4oCZOlxuXG4gICAgY29tcG9zZSwgc2ltcGxpZnlcblxuVGhlIGZvbGxvd2luZyBvYmplY3QgaXMgbWFza2VkIGZyb20g4oCYcGFja2FnZTp0aWR5cuKAmTpcblxuICAgIGNyb3NzaW5nXG5cblRoZSBmb2xsb3dpbmcgb2JqZWN0IGlzIG1hc2tlZCBmcm9tIOKAmHBhY2thZ2U6dGliYmxl4oCZOlxuXG4gICAgYXNfZGF0YV9mcmFtZVxuXG5UaGUgZm9sbG93aW5nIG9iamVjdHMgYXJlIG1hc2tlZCBmcm9tIOKAmHBhY2thZ2U6c3RhdHPigJk6XG5cbiAgICBkZWNvbXBvc2UsIHNwZWN0cnVtXG5cblRoZSBmb2xsb3dpbmcgb2JqZWN0IGlzIG1hc2tlZCBmcm9tIOKAmHBhY2thZ2U6YmFzZeKAmTpcblxuICAgIHVuaW9uXG4ifQ== -->
+<pre><code>
+Attaching package: ‘igraph’
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKIyMgTmV0d29yayBWaXN1YWxpc2F0aW9ucyB3aXRoIFIgYW5kIGdncmFwaC4KClZpc3VhbGlzYXRpb25zIGxpa2UgdGhlIGV4YW1wbGVzIGFib3ZlIGNhbiBiZSBjcmVhdGVkIHdpdGggYW5vdGhlciBSIHBhY2thZ2UsIGNhbGxlZCBgZ2dyYXBoYC4gVGhpcyB1c2VzIHRoZSBzYW1lIGJhc2ljIHN5bnRheCBhcyB0aGUgcGxvdHRpbmcgbGlicmFyeSBgZ2dwbG90MmAsIHdlIHVzZWQgaW4gYW4gZWFybGllciBsZXNzb24sIGJ1dCBhZGRzIHNvbWUgc3BlY2lhbCBmdW5jdGlvbnMgdG8gdmlzdWFsaXNlIG5ldHdvcmtzLgoKV2UnbGwgc3BlbmQgdG9kYXkgYW5kIHRoZSBuZXh0IGNsYXNzIG9uIGxlYXJuaW5nIGhvdyB0byB2aXN1YWxpc2UgZ3JhcGhzIHdpdGggUiBhbmQgYGdncmFwaGAuIEZpcnN0LCB3ZSdsbCBsZWFybiBob3cgdG8gbWFrZSBhIGJhc2ljIG5ldHdvcmsgZGlhZ3JhbSBvZiBub2RlcyBhbmQgZWRnZXMsIGhvdyB0byBjaGFuZ2UgdGhlIGxheW91dCBhbGdvcml0aG0sIGFuZCBob3cgdG8gc2V0IHRoZSBub2RlIGFuZCBlZGdlIHNpemVzLiBJbiB0aGUgbmV4dCBjbGFzcywgd2UnbGwgY3VzdG9taXNlIGl0IHdpdGggY29sb3VyLCBhcnJvd3MsIHRleHQgbGFiZWxzLCBhbmQgc28gZm9ydGguIAoKVXNpbmcgdGhpcyBnZ3JhcGggd29ya2Zsb3csIGEgbmV0d29yayBkaWFncmFtIGNvbnNpc3RzIG9mIGEgbnVtYmVyIG9mIGVsZW1lbnRzOgoKLSAgIFRoZSBuZXR3b3JrIGl0c2VsZiwgaW4gdGhlIGZvcm0gb2YgYSBuZXR3b3JrIG9iamVjdCwgZWl0aGVyIGEgYHRibF9ncmFwaGAgb3IgYW4gYGlncmFwaGAgbmV0d29yay4KLSAgIFRoZSBgZ2dyYXBoYCBmdW5jdGlvbiwgd2hpY2ggdGVsbHMgUiB0byBzdGFydCBtYWtpbmcgYSBuZXR3b3JrIHBsb3QuIAotICAgVGhlIHJlbGV2YW50IGBnZW9tX2AgbGF5ZXJzLCB3aGljaCB0ZWxsIGdncmFwaCB0byBtYXAgdGhlIG5ldHdvcmsgdG8gbm9kZXMgYW5kIGVkZ2VzCi0gICBBZXN0aGV0aWNzLCB3aGljaCB0ZWxsIGdncmFwaCB0byBtYXAgcGFydGljdWxhciB2aXN1YWwgYXR0cmlidXRlcyAoc2l6ZSwgY29sb3VyIGFuZCBzbyBmb3J0aCkgdG8gc3BlY2lmaWVkIHZhbHVlcy4KClRvIGJlZ2luIHdpdGgsIGNyZWF0ZSBhIGB0YmxfZ3JhcGhgIG5ldHdvcmsgb2JqZWN0IGZyb20gYW4gZWRnZSBsaXN0LCB1c2luZyB0aGUgc2FtZSBkYXRhIGFuZCBjb2RlIGFzIGxhc3Qgd2VlazogIAoKYGBge3IgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0KCmxpYnJhcnkodGlkeWdyYXBoKQpsaWJyYXJ5KHRpZHl2ZXJzZSkKbGlicmFyeShnZ3JhcGgpCmxldHRlcnMgPSByZWFkX2NzdigiLi4vYXBwbHlpbmctbmV0d29yay1hbmFseXNpcy10by1odW1hbml0aWVzL2RhdGEvbGV0dGVyX2RhdGExNjcwLmNzdiIsIGNvbF90eXBlcyA9IGNvbHMoLmRlZmF1bHQgPSAiYyIpKQoKZWRnZV9saXN0ID0gbGV0dGVycyAlPiUgCiAgZ3JvdXBfYnkoZnJvbV9pZCwgdG9faWQpICU+JSAKICB0YWxseShuYW1lID0gJ3dlaWdodCcpCgpzYW1wbGVfdGJsX2dyYXBoID0gZWRnZV9saXN0ICU+JSAKICBhc190YmxfZ3JhcGgoKQoKCmBgYAoKIyMjIFRoZSBnZ3JhcGggZnVuY3Rpb24gIAoKVG8gYmVnaW4gbWFraW5nIHRoZSBuZXR3b3JrIGRpYWdyYW0sIHdlIHN0YXJ0IHdpdGggdGhlIGBnZ3JhcGgoKWAgZnVuY3Rpb24uIFRoaXMgdGVsbHMgUiB0byBiZWdpbiBkcmF3aW5nIGEgZ3JhcGguIEl0IGhhcyBvcHRpb25hbCBhcmd1bWVudHM6IGZvciBleGFtcGxlLCB5b3UgY2FuIHNldCB0aGUgbGF5b3V0IHRvIHNvbWV0aGluZyBvdGhlciB0aGFuIHRoZSBkZWZhdWx0IHVzaW5nIHRoZSBhcmd1bWVudCBgbGF5b3V0ID1gLiBUaGVyZSBhcmUgYSBsYXJnZSBudW1iZXIgb2YgbGF5b3V0cyBhdmFpbGFibGUgdG8gdXNlLCBzb21lIG9mIHdoaWNoIHdpbGwgYmUgc2hvd24gYmVsb3cuIAoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIGdncmFwaCgpCmBgYAoKRm9yIG5vdywgeW91J2xsIG5vdGljZSB0aGF0IGl0IGRvZXNuJ3QgZHJhdyBhbnl0aGluZyBvdGhlciB0aGFuIGEgYmxhbmsgZ3JleSBiYWNrZ3JvdW5kLiAKClRvIGRyYXcgdGhlIG5vZGVzIGFuZCBlZGdlcyBvZiB0aGUgZ3JhcGgsIHdlJ2xsIHVzZSB3aGF0IGFyZSBrbm93biBhcyAnZ2VvbXMnLiBUaGVzZSBhcmUgYSBmYW1pbHkgb2YgZnVuY3Rpb25zIHdoaWNoIG1hcCB0aGUgZGF0YSB0byByZWxldmFudCBlbGVtZW50cy4gVGhleSBhbGwgYmVnaW4gd2l0aCBgZ2VvbV9gLiBUaGVzZSBhcmUgYWRkZWQgYXMgbGF5ZXJzIHRvIHRoZSBnZ3JhcGggb2JqZWN0IHVzaW5nIGArYCBmb2xsb3dlZCBieSB0aGUgcmVsZXZhbnQgZ2VvbS4gCgotICAgRmlyc3QsIGFkZGluZyBgKyBnZW9tX25vZGVfcG9pbnQoKWAgYXMgYSBsYXllciB3aWxsIGRyYXcgdGhlIG5vZGVzIG9mIHlvdXIgbmV0d29yayBhcyBwb2ludHMuIFRoZSBub2RlcyBhcmUgcG9zaXRpb25lZCBhY2NvcmRpbmcgdG8gdGhlIGNob3NlbiAob3IgZGVmYXVsdCkgbGF5b3V0IGFsZ29yaXRobToKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBnZ3JhcGgoKSArIAogIGdlb21fbm9kZV9wb2ludCgpCmBgYAoKLSAgIE5leHQsIGBnZW9tX2VkZ2VfbGluaygpYCB3aWxsIGRyYXduIHRoZSBlZGdlcyBhcyBjb25uZWN0aW5nIGxpbmVzOgoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIGdncmFwaCgpICsgCiAgZ2VvbV9ub2RlX3BvaW50KCkgKyAKICBnZW9tX2VkZ2VfbGluaygpCmBgYAoKIyMjIEFkanVzdGluZyB2aXN1YWwgYXR0cmlidXRlcy4gCgoKVGhlcmUgYXJlIG1hbnkgYWRkaXRpb25hbCB3YXlzIHlvdSBjYW4gbWFuaXB1bGF0ZSB0aGUgdmlzdWFsIGFwcGVhcmFuY2Ugb2YgeW91ciBub2RlcyBhbmQgZWRnZXMsIGJ5IGFkZGluZyBjb2xvciwgc2l6ZSwgc2hhcGUsIGFycm93cywgYW5kIHNvIGZvcnRoLgoKSW4gZ2dyYXBoIChhbmQgZ2dwbG90KSwgdmlzdWFsIGVsZW1lbnRzIGNhbiBiZSBtYW5pcHVsYXRlZCBpbiB0d28gd2F5czoKCi0gICBZb3UgY2FuIHNwZWNpZnkgYW4gYWJzb2x1dGUgdmFsdWUgZm9yIGFuIGFlc3RoZXRpYywgZm9yIGV4YW1wbGUgc2V0dGluZyB0aGUgc2l6ZSBvZiBhbGwgbm9kZXMgdG8gdmFsdWUgMwotICAgWW91IGNhbiBzcGVjaWZ5IHRoYXQgYSB2YWx1ZSBpcyBtYXBwZWQgdG8gYSB2YXJpYWJsZSBpbiB5b3VyIGRhdGEuIFRoaXMgY291bGQgYmUgc29tZSBtZXRyaWMgb2YgeW91ciBuZXR3b3JrIGNhbGN1bGF0ZWQgaW4gYSBwcmV2aW91cyBzdGVwLCBmb3IgZXhhbXBsZSBzZXR0aW5nIHRoZSBzaXplIHRvIGJlIHByb3BvcnRpb25hbCB0byB0aGUgZGVncmVlIHNjb3JlIG9mIGEgbm9kZSwgb3IgaXQgY291bGQgYmUgc29tZSBleHRlcm5hbCBkYXRhLCB3dWNoIGFzIHNldHRpbmcgdGhlIGNvbG91ciB0byBpbmRpY2F0ZSB0aGUgbm9kZSdzIG9jY3VwYXRpb24uICAKClRoaXMgaXMgYWxsIGRvbmUgd2l0aGluIHRoZSByZWxldmFudCBnZW9tLiBXZSBjYW4gY2hlY2sgdG8gc2VlIHdoaWNoIGFlc3RoZXRpY3MgYXJlIHJlY29nbmlzZWQgYnkgYSBwYXJ0aWN1bGFyIGdlb20gYnkgdHlwaW5nICBgP2AgZm9sbG93ZWQgYnkgdGhlIGZ1bmN0aW9uIGluIHRoZSBjb25zb2xlIGFuZCBwcmVzc2luZyByZXR1cm4sIGkuZSBgP2dlb21fbm9kZV9wb2ludCgpYC4gVGhpcyB0ZWxscyB1cyB0aGF0IGl0IHJlY29nbmlzZXMgYGFscGhhLCBjb2xvdXIsIGZpbGwsIHNoYXBlLCBzaXplLCBzdHJva2UsIGFuZCBmaWx0ZXJgLiAKClRvIHNldCBhIG9uZSBvZiB0aGVzZSB2aXN1YWwgYXR0cmlidXRlcyAob3IgYWVzdGhldGljKSB0byBhbiBhYnNvbHV0ZSB2YWx1ZSwgc2ltcGx5IHNldCBpdCB3aXRoaW4gdGhlIHBhcmVudGhlc2VzIG9mIGBnZW9tX25vZGVfcG9pbnQoKWA6ICAKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBnZ3JhcGgoKSArIAogIGdlb21fbm9kZV9wb2ludChzaXplID0gMykgKyAjIHdlIHNwZWNpZmllZCB0aGF0IHNpemUgc2hvdWxkIGJlIHNldCBhdCB0aGUgdmFsdWUgMwogIGdlb21fZWRnZV9saW5rKCkKCmBgYAoKV2UgY2FuIGFsc28gbWFwIGFlc3RoZXRpY3MgdG8gYSBwYXJ0aWN1bGFyICp2YXJpYWJsZSogaW4gdGhlIGRhdGEuIFRvIGRvIHRoaXMsIHRoZSB2YWx1ZSBzaG91bGQgZXhpc3QgYXMgYSBjb2x1bW4gaW4gdGhlIG5vZGVzIHRhYmxlIG9mIHRoZSBgdGJsX2dyYXBoYCBvYmplY3QuIEZvciBleGFtcGxlLCB3ZSBjYW4gY2FsY3VsYXRlIHRoZSBkZWdyZWUgc2NvcmUgZm9yIGVhY2ggbm9kZToKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBtdXRhdGUoZGVncmVlID0gY2VudHJhbGl0eV9kZWdyZWUobW9kZSA9ICdhbGwnLCB3ZWlnaHRzID0gd2VpZ2h0KSkgCmBgYAoKQW5kIGl0IGlzIGFkZGVkIGFzIGFuIGFkZGl0aW9uYWwgY29sdW1uIGluIHRoZSBmaXJzdCB0YWJsZS4gCgpUbyBtYXAgdGhpcyBjb2x1bW4gdG8gYmUgcHJvcG9ydGlvbmFsIHRvIHRoZSBub2RlIHNpemUsIHdlIGRvIHNvIHdpdGhpbiB0aGUgZnVuY3Rpb24gYGFlcygpYCwgd2l0aGluIHRoZSByZWxldmFudCBnZW9tOiAKCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBtdXRhdGUoZGVncmVlID0gY2VudHJhbGl0eV9kZWdyZWUoKSkgJT4lICMgY2FsY3VsYXRlIGEgdmFsdWUgZm9yIGRlZ3JlZQogIGdncmFwaCgpICsgCiAgZ2VvbV9lZGdlX2xpbmsoKSArICMgc3dpdGNoIGFyb3VuZCB0aGUgb3JkZXIgb2YgdGhlIG5vZGVzIGFuZCBlZGdlcyBhcyBpdCdzIGVhc2llciB0byBzZWUgdGhlIG5vZGUgY29sb3IKICBnZW9tX25vZGVfcG9pbnQoYWVzKHNpemUgPSBkZWdyZWUpKSAjIG1hcCBzaXplIHRvIGRlZ3JlZSBzY29yZQpgYGAKCllvdSdsbCBub3RpY2UgdGhhdCBnZ3JhcGggaGFzIGFkZGVkIGEgKipsZWdlbmQqKjogYSBndWlkZSB0byBoZWxwIHVzIHJlYWQgZXhhY3RseSBob3cgdGhlIHZhcmlvdXMgc2l6ZXMgb2YgdGhlIG5vZGVzIG1hcCB0byB0aGUgZGVncmVlIHNjb3JlLiAKCllvdSBjYW4gZXhwZXJpbWVudCBpbiB0aGUgbm90ZWJvb2sgd2l0aCB0aGUgb3RoZXIgYWVzdGhldGljcywgaW5jbHVkaW5nIGBhbHBoYWAgYW5kIGBzaGFwZWAsIGFuZCBvdGhlciBuZXR3b3JrIG1ldHJpY3Mgd2hpY2ggd2UgY292ZXJlZCBsYXN0IHdlZWssIHN1Y2ggYXMgYGJldHdlZW5uZXNzIGNlbnRyYWxpdHlgIGFuZCBgZWlnZW52ZWN0b3IgY2VudHJhbGl0eWAuCgpZb3UgbWlnaHQgbm90aWNlIHRoYXQgc29tZSBvZiB0aGVzZSBhZXN0aGV0aWNzIGNhbm5vdCBiZSBtYXBwZWQgdG8gYSBudW1lcmljYWwgKG9yIGNvbnRpbnVvdXMpIHZhcmlhYmxlLiBXZSdsbCBsb29rIGludG8gdGhpcyBpbiB0aGUgbmV4dCBjbGFzcy4gIAoKIyMgQWRqdXN0aW5nIGVkZ2UgYWVzdGhldGljcwoKVGhlIHZpc3VhbCBhcHBlYXJhbmNlIG9mIHRoZSBlZGdlcyBjYW4gYWxzbyBiZSBhZGp1c3RlZCwgdXNpbmcgdGhlIHNhbWUgc3ludGF4LiAKCldlIGNhbiBzZXQgdGhlIHRoaWNrbmVzcyBvZiB0aGUgZWRnZXMgdXNpbmcgdGhlIGB3aWR0aGAgYWVzdGhldGljOiAgCgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgCiAgbXV0YXRlKGRlZ3JlZSA9IGNlbnRyYWxpdHlfZGVncmVlKCkpICU+JSAKICBnZ3JhcGgoJ2ZyJykgKyAKICBnZW9tX2VkZ2VfbGluayh3aWR0aCA9IDMpICsgCiAgZ2VvbV9ub2RlX3BvaW50KCkKYGBgCgpBcyB3aXRoIG5vZGVzLCB0aGVzZSBhZXN0aGV0aWNzIGNhbiBiZSBtYXBwZWQgdG8gcGFydGljdWxhciB2YWx1ZXMuIEluIHRoaXMgY2FzZSwgdGhlIHZhcmlhYmxlIHRvIGJlIG1hcHBlZCBzaG91bGQgZXhpc3QgYXMgYSBjb2x1bW4gaW4gdGhlIGVkZ2VzIHRhYmxlIGluIHRoZSBgdGJsX2dyYXBoYCBvYmplY3QuIElmIHdlIGxvb2sgYXQgdGhlIG9iamVjdCwgd2UgY2FuIHNlZSB0aGF0IHRoZXJlIGlzIGFscmVhZHkgYSAnd2VpZ2h0JyBjb2x1bW4gd2hpY2ggd2UgY3JlYXRlZCB3aGVuIG1ha2luZyB0aGUgZ3JhcGg6CgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaApgYGAKCkFnYWluLCB0aGlzIGNhbiBiZSBtYXBwZWQgdXNpbmcgdGhlIHNhbWUgc3ludGF4IGFzIHdpdGggbm9kZXMuIFNldCB0aGUgYHdpZHRoYCBhZXN0aGV0aWMgdG8gdGhlIGB3ZWlnaHRgIHZhcmlhYmxlIHdpdGhpbiB0aGUgYGFlcygpYCBjb21tYW5kOgoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIG11dGF0ZShkZWdyZWUgPSBjZW50cmFsaXR5X2RlZ3JlZSgpKSAlPiUgCiAgZ2dyYXBoKCdmcicpICsgCiAgZ2VvbV9lZGdlX2xpbmsoYWVzKHdpZHRoID0gd2VpZ2h0KSkgKyAKICBnZW9tX25vZGVfcG9pbnQoKQpgYGAKCiMjIExheW91dCBhbGdvcml0aG1zCgpJZ3JhcGggaGFzIGEgbGFyZ2UgbnVtYmVyIG9mIGdyYXBoIGxheW91dHMuIERlcGVuZGluZyBvbiB5b3VyIG5ldHdvcmsgc2l6ZSBhbmQgc3RydWN0dXJlLCBkaWZmZXJlbnQgb25lcyBtYXkgYmUgYXBwcm9wcmlhdGUuIFdoZXJlIHBvc3NpYmxlLCBpdCBpcyBhIGdvb2QgaWRlYSB0byBhZGQgc29tZSBvdGhlciBpbmZvcm1hdGlvbiwgZm9yIGV4YW1wbGUgZ3JvdXAgbWVtYmVyc2hpcCBvciBzaW1wbHkgbm9kZSBuYW1lcyB0byB5b3VyIHZpc3VhbGlzYXRpb24sIGF0IGxlYXN0IHRlbXBvcmFyaWx5LiBUaGF0IHdheSB5b3UgY2FuIGNoZWNrIHRvIHNlZSBpZiB0aGUgdmlzdWFsIHN0cnVjdHVyZXMsIHN1Y2ggYXMgY2x1c3RlcnMsIGNlbnRyZS1wZXJpcGhlcnksIGFuZCBvcmllbnRhdGlvbiwgbWFrZSBhbnkgc2Vuc2UuIEhlcmUgYXJlIHRoZSBtb3N0IGNvbW1vbiBncmFwaCBsYXlvdXRzOgoKIyMjIyBGcnVjaHRlcm1hbi1SZWluZ29sZAoKQSBwb3B1bGFyICdmb3JjZS1kaXJlY3RlZCcgbGF5b3V0LCB3aGljaCB0cmVhdHMgdGhlIGNvbm5lY3Rpb25zIGJldHdlZW4gbm9kZXMgYXMgc3ByaW5ncy4gCgpBZGQgdG8gZ2dyYXBoIHVzaW5nIGBsYXlvdXQgPSAnZnInYC4KCmBgYHtyfQpzYW1wbGVfdGJsX2dyYXBoICU+JSAKICBnZ3JhcGgobGF5b3V0ID0gJ2ZyJykgKyAKICBnZW9tX2VkZ2VfbGluaygpICsgCiAgZ2VvbV9ub2RlX3BvaW50KCkKYGBgCgoKIyMjIyBEUkwKCkFub3RoZXIgZm9yY2UtZGlyZWN0ZWQgbGF5b3V0LCBvZnRlbiB1c2VkIHdpdGggbGFyZ2VyIGdyYXBocy4gCgpBZGQgdG8gZ2dyYXBoIHVzaW5nIGBsYXlvdXQgPSAnZHJsJ2AuCgpgYGB7cn0Kc2FtcGxlX3RibF9ncmFwaCAlPiUgCiAgZ2dyYXBoKGxheW91dCA9ICdkcmwnKSArIAogIGdlb21fZWRnZV9saW5rKCkgKyAKICBnZW9tX25vZGVfcG9pbnQoKQpgYGAKCiMjIyMgIEthbWFkYS1LYXdhaQoKQW5vdGhlciBmb3JjZS1kaXJlY3RlZCBsYXlvdXQuIFRoaXMgZG9lc24ndCB3b3JrIHdlbGwgd2l0aCAnZGlzY29ubmVjdGVkIGdyYXBoczogYmVsb3cgSSBoYXZlIGFkZGVkIGEgZnVuY3Rpb24gdG8gb25seSBpbmNsdWRlIHRoZSBtYWluIGNvbm5lY3RlZCBjb21wb25lbnQgb2YgdGhlIG5ldHdvcmsuIAoKQWRkIHVzaW5nIGBsYXlvdXQgPSAna2snYAoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIG11dGF0ZShjb21wb25lbnQgPSBncm91cF9jb21wb25lbnRzKCkpICU+JSAKICBmaWx0ZXIoY29tcG9uZW50ID09IDEpICU+JSAKICBnZ3JhcGgoJ2trJykgKyAKICBnZW9tX2VkZ2VfbGluaygpICsgCiAgZ2VvbV9ub2RlX3BvaW50KCkKYGBgCgojIyMjIENpcmNsZQoKUGxhY2VzIG5vZGVzIGluIGEgY2lyY2xlLCBpbiBvcmRlcjogIAoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIGdncmFwaCgnY2lyY2xlJykgKyAKICBnZW9tX2VkZ2VfbGluaygpICsgCiAgZ2VvbV9ub2RlX3BvaW50KCkKYGBgCgojIyMjIFRyZWUKCkZvciBoaWVyYXJjaGljYWwgZ3JhcGhzLiBQbGFjZXMgbm9kZXMgaW4gYSB0cmVlIGRpYWdyYW0sIGFjY29yZGluZyB0byB0aGVpciBoaWVyYXJjaHkuIAoKYGBge3J9CnNhbXBsZV90YmxfZ3JhcGggJT4lIAogIGdncmFwaCgndHJlZScpICsgCiAgZ2VvbV9lZGdlX2JlbmQoKSArIAogIGdlb21fbm9kZV9wb2ludCgpCmBgYAoKIyMjIyBCaXBhcnRpdGUgIAoKSXQgaXMgd29ydGggY2hlY2tpbmcgc29tZSBvZiB0aGVzZSBvdXQsIHBhcnRpY3VsYXJseSBpZiB5b3UgaGF2ZSBhIHNwZWNpZmljIG5ldHdvcmsgc3RydWN0dXJlLCBmb3IgZXhhbXBsZSBhIGhpZXJhcmNoeSwgb3IgaWYgeW91IGhhdmUgYSBiaXBhcnRpdGUgbmV0d29yay4gCgpBbHNvIG5vdGUgdGhlcmUgYXJlIGxvdHMgb2Ygb3RoZXIgd2F5cyB0byB2aXN1YWxpc2UgYSBuZXR3b3JrLCBmb3IgZXhhbXBsZSBieSBtYWtpbmcgYSBoZWF0bWFwIGZyb20gYW4gYWRqYWNlbmN5IG1hdHJpeC4gSXQncyB3b3J0aCBleHBlcmltZW50aW5nIGEgYml0IHdpdGggdGhlc2UgKGFuZCBleHBsYWluaW5nIGNob2ljZXMgaW4geW91ciBmaW5hbCBwcm9qZWN0KS4gCg==</div>
+The following object is masked from ‘package:tidygraph’:
+
+    groups
+
+The following objects are masked from ‘package:dplyr’:
+
+    as_data_frame, groups, union
+
+The following objects are masked from ‘package:purrr’:
+
+    compose, simplify
+
+The following object is masked from ‘package:tidyr’:
+
+    crossing
+
+The following object is masked from ‘package:tibble’:
+
+    as_data_frame
+
+The following objects are masked from ‘package:stats’:
+
+    decompose, spectrum
+
+The following object is masked from ‘package:base’:
+
+    union</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShnZ3JhcGgpXG5gYGAifQ== -->
+<pre class="r"><code>library(ggraph)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Potential datasets - run the cell to load and use that particular
+one.</p>
+<p>17th century letter data and related node attributes:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGV0dGVyX2RhdGEgPSByZWFkX2NzdignLi4vZGF0YS9sZXR0ZXJfZGF0YTE2NzAuY3N2JylcbmBgYCJ9 -->
+<pre class="r"><code>letter_data = read_csv(&#39;../data/letter_data1670.csv&#39;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUm93czogMTM3NCBDb2x1bW5zOiA24pSA4pSAIENvbHVtbiBzcGVjaWZpY2F0aW9uIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgFxuRGVsaW1pdGVyOiBcIixcIlxuY2hyICAoNCk6IGZyb21faWQsIGZyb21fbmFtZSwgdG9faWQsIHRvX25hbWVcbmRibCAgKDEpOiBsZXR0ZXJfaWRcbmRhdGUgKDEpOiBkYXRlXG7ihLkgVXNlIGBzcGVjKClgIHRvIHJldHJpZXZlIHRoZSBmdWxsIGNvbHVtbiBzcGVjaWZpY2F0aW9uIGZvciB0aGlzIGRhdGEuXG7ihLkgU3BlY2lmeSB0aGUgY29sdW1uIHR5cGVzIG9yIHNldCBgc2hvd19jb2xfdHlwZXMgPSBGQUxTRWAgdG8gcXVpZXQgdGhpcyBtZXNzYWdlLlxuIn0= -->
+<pre><code>Rows: 1374 Columns: 6── Column specification ──────────────────────────────────────────────────────────────────────────────────
+Delimiter: &quot;,&quot;
+chr  (4): from_id, from_name, to_id, to_name
+dbl  (1): letter_id
+date (1): date
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubm9kZV9hdHRyaWJ1dGVzID0gcmVhZF9jc3YoJy4uL2RhdGEvbm9kZV9hdHRyaWJ1dGVzLmNzdicpXG5gYGAifQ== -->
+<pre class="r"><code>node_attributes = read_csv(&#39;../data/node_attributes.csv&#39;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUm93czogMjQ4IENvbHVtbnM6IDEz4pSA4pSAIENvbHVtbiBzcGVjaWZpY2F0aW9uIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgFxuRGVsaW1pdGVyOiBcIixcIlxuY2hyICgxMSk6IG5hbWUsIG1haW5fbmFtZSwgYWxsX25hbWVzLCBsaW5rcywgZ2VuZGVyLCByb2xlc190aXRsZXMsIHdpa2lkYXRhX2l0ZW0sIG9jY3VwYXRpb25zLCBwbGFjZV9vLi4uXG5kYmwgICgyKTogYmlydGhfeWVhciwgZGVhdGhfeWVhclxu4oS5IFVzZSBgc3BlYygpYCB0byByZXRyaWV2ZSB0aGUgZnVsbCBjb2x1bW4gc3BlY2lmaWNhdGlvbiBmb3IgdGhpcyBkYXRhLlxu4oS5IFNwZWNpZnkgdGhlIGNvbHVtbiB0eXBlcyBvciBzZXQgYHNob3dfY29sX3R5cGVzID0gRkFMU0VgIHRvIHF1aWV0IHRoaXMgbWVzc2FnZS5cbiJ9 -->
+<pre><code>Rows: 248 Columns: 13── Column specification ──────────────────────────────────────────────────────────────────────────────────
+Delimiter: &quot;,&quot;
+chr (11): name, main_name, all_names, links, gender, roles_titles, wikidata_item, occupations, place_o...
+dbl  (2): birth_year, death_year
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Book publisher network, taken from the English Short Title Catalogue
+(ESTC):</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHVibGlzaGVyX25ldHdvcmsgPSByZWFkX2NzdignLi4vZGF0YS9zYW1wbGVfcHVibGlzaGVyX25ldHdvcmsuY3N2JylcbmBgYCJ9 -->
+<pre class="r"><code>publisher_network = read_csv(&#39;../data/sample_publisher_network.csv&#39;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUm93czogMTI3NCBDb2x1bW5zOiAz4pSA4pSAIENvbHVtbiBzcGVjaWZpY2F0aW9uIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgFxuRGVsaW1pdGVyOiBcIixcIlxuY2hyICgyKTogc291cmNlLCB0YXJnZXRcbmRibCAoMSk6IHdlaWdodFxu4oS5IFVzZSBgc3BlYygpYCB0byByZXRyaWV2ZSB0aGUgZnVsbCBjb2x1bW4gc3BlY2lmaWNhdGlvbiBmb3IgdGhpcyBkYXRhLlxu4oS5IFNwZWNpZnkgdGhlIGNvbHVtbiB0eXBlcyBvciBzZXQgYHNob3dfY29sX3R5cGVzID0gRkFMU0VgIHRvIHF1aWV0IHRoaXMgbWVzc2FnZS5cbiJ9 -->
+<pre><code>Rows: 1274 Columns: 3── Column specification ──────────────────────────────────────────────────────────────────────────────────
+Delimiter: &quot;,&quot;
+chr (2): source, target
+dbl (1): weight
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Small sample of a twitter edge list, using Tweetsets: here, the
+tweets are from the ‘Repeal the 8th’ campaign in Ireland (<a href="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/PYCLPE" class="uri">https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/PYCLPE</a>).</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVwZWFsX2VkZ2VfbGlzdCA9IHJlYWRfY3N2KCcuLi9kYXRhL3JlcGVhbF9lZGdlX2xpc3Rfc2FtcGxlLmNzdicpXG5gYGAifQ== -->
+<pre class="r"><code>repeal_edge_list = read_csv(&#39;../data/repeal_edge_list_sample.csv&#39;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUm93czogMTAwMCBDb2x1bW5zOiAz4pSA4pSAIENvbHVtbiBzcGVjaWZpY2F0aW9uIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgFxuRGVsaW1pdGVyOiBcIixcIlxuZGJsICgzKTogcXVvdGVfdXNlcl9pZCwgdXNlcl9pZCwgblxu4oS5IFVzZSBgc3BlYygpYCB0byByZXRyaWV2ZSB0aGUgZnVsbCBjb2x1bW4gc3BlY2lmaWNhdGlvbiBmb3IgdGhpcyBkYXRhLlxu4oS5IFNwZWNpZnkgdGhlIGNvbHVtbiB0eXBlcyBvciBzZXQgYHNob3dfY29sX3R5cGVzID0gRkFMU0VgIHRvIHF1aWV0IHRoaXMgbWVzc2FnZS5cbiJ9 -->
+<pre><code>Rows: 1000 Columns: 3── Column specification ──────────────────────────────────────────────────────────────────────────────────
+Delimiter: &quot;,&quot;
+dbl (3): quote_user_id, user_id, n
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKSW4geW91ciBncm91cCwgZGVzaWduIGEgbmV0d29yayB2aXN1YWxpc2F0aW9uIG9mIG9uZSBvZiB0aGUgc2V0cyBvZiBuZXR3b3JrIGRhdGEgd2UgaGF2ZSB1c2VkIG92ZXIgdGhlIHBhc3QgZmV3IHdlZWtzLgoKRGVzaWduYXRlIG9uZSBwZXJzb24gYXMgdGhlIGNvZGVyLiBUaGlzIHBlcnNvbiBzaG91bGQgc2hhcmUgdGhlaXIgc2NyZWVuIHdpdGggdGhlIGdyb3VwIGFuZCBlbnRlciB0aGUgY29kZSBmb3IgdGhlIG5ldHdvcmsgaW4gdGhlIG5vdGVib29rIGJlbG93LiAKCllvdSBjYW4gdXNlIHRoZSBjb3Vyc2UgYm9vayB0byBmaW5kIGNvZGUgZXhhbXBsZXMgdG8gdmlzdWFsaXNlIGRpZmZlcmVudCBlbGVtZW50cyBvZiB5b3VyIG5ldHdvcmsgZGF0YS4gCgpUaGluayBhYm91dCBob3cgeW91IGNhbiB1c2UgZ2dyYXBoIHRvIG1ha2UgdGhlIG5ldHdvcmsgbW9yZSByZWFkYWJsZSBhbmQgY29tbXVuaWNhdGUgeW91ciBkZXNpcmVkIGluZm9ybWF0aW9uIHRvIHRoZSBwZXJzb24gdmlld2luZyBpdC4gCgotICAgRXhwZXJpbWVudCB3aXRoIHRoZSBsYXlvdXRzLCB0YWtpbmcgaW50byBhY2NvdW50IHlvdXIgcGFydGljdWxhciBuZXR3b3JrCi0gICBNYXAgdmFsdWVzIHRvIGFlc3RoZXRpY3MsIHN1Y2ggYXMgc2l6ZSwgc2hhcGUgYW5kIHRyYW5zcGFyZW5jeQotICAgRmlsdGVyIG9yIHByZS1wcm9jZXNzIHlvdXIgZGF0YSAtIHRvIG1ha2UgYSBsYXJnZSBuZXR3b3JrIG1vcmUgcmVhZGFibGUsIGZvciBleGFtcGxlLiAKCkJlIHByZXBhcmVkIHRvIHByZXNlbnQgeW91ciBuZXR3b3JrIHRvIHRoZSByZXN0IG9mIHRoZSBncm91cHMsIGFuZCB0YWxrIHRocm91Z2ggYnJpZWZseSB3aHkgeW91IG1hZGUgeW91ciBkZXNpZ24gZGVjaXNpb25zLiAKClJ1biB0aGlzIGNlbGwgdG8gbG9hZCBsaWJyYXJpZXMgeW91J2xsIG5lZWQ6CgpgYGB7cn0KbGlicmFyeSh0aWR5dmVyc2UpCmxpYnJhcnkodGlkeWdyYXBoKQpsaWJyYXJ5KGlncmFwaCkKbGlicmFyeShnZ3JhcGgpCmBgYAoKClBvdGVudGlhbCBkYXRhc2V0cyAtIHJ1biB0aGUgY2VsbCB0byBsb2FkIGFuZCB1c2UgdGhhdCBwYXJ0aWN1bGFyIG9uZS4gCgoxN3RoIGNlbnR1cnkgbGV0dGVyIGRhdGEgYW5kIHJlbGF0ZWQgbm9kZSBhdHRyaWJ1dGVzOiAgCgpgYGB7cn0KbGV0dGVyX2RhdGEgPSByZWFkX2NzdignLi4vZGF0YS9sZXR0ZXJfZGF0YTE2NzAuY3N2JykKCm5vZGVfYXR0cmlidXRlcyA9IHJlYWRfY3N2KCcuLi9kYXRhL25vZGVfYXR0cmlidXRlcy5jc3YnKQoKYGBgCgpCb29rIHB1Ymxpc2hlciBuZXR3b3JrLCB0YWtlbiBmcm9tIHRoZSBFbmdsaXNoIFNob3J0IFRpdGxlIENhdGFsb2d1ZSAoRVNUQyk6CgpgYGB7cn0KcHVibGlzaGVyX25ldHdvcmsgPSByZWFkX2NzdignLi4vZGF0YS9zYW1wbGVfcHVibGlzaGVyX25ldHdvcmsuY3N2JykKYGBgCgpTbWFsbCBzYW1wbGUgb2YgYSB0d2l0dGVyIGVkZ2UgbGlzdCwgdXNpbmcgVHdlZXRzZXRzOiBoZXJlLCB0aGUgdHdlZXRzIGFyZSBmcm9tIHRoZSAnUmVwZWFsIHRoZSA4dGgnIGNhbXBhaWduIGluIElyZWxhbmQgKGh0dHBzOi8vZGF0YXZlcnNlLmhhcnZhcmQuZWR1L2RhdGFzZXQueGh0bWw/cGVyc2lzdGVudElkPWRvaToxMC43OTEwL0RWTi9QWUNMUEUpLgoKYGBge3J9CnJlcGVhbF9lZGdlX2xpc3QgPSByZWFkX2NzdignLi4vZGF0YS9yZXBlYWxfZWRnZV9saXN0X3NhbXBsZS5jc3YnKQpgYGAKCgo=</div>
 
 
 
@@ -2120,7 +1943,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("5-1_demonstration_nb.Rmd");
+  window.initializeSourceEmbed("5-2-other-network-types_nb.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>

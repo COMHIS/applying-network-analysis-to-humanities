@@ -97,7 +97,7 @@ g %>% ggraph('bipartite')+
 
 X and y axes contain each name in the network. A filled square is drawn for each edge, where they intersect.
 
-![From https://matthewlincoln.net/2014/12/20/adjacency-matrix-plots-with-r-and-ggplot2.html](images/paste-873426CE.png)
+![](images/paste-873426CE.png)
 
 ## Network Visualisations with R and ggraph.
 

@@ -64,6 +64,7 @@ sample_tbl_graph %>%
   geom_node_point() + 
   geom_edge_link()
 ```
+
 ### Adjusting visual attributes. 
 
 
