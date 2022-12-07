@@ -1,24 +1,210 @@
 ---
-title: "Other Network Types"
+title: "Asking and Answering Questions with Networks"
 format: revealjs
 editor: visual
 ---
 
-## Quarto
+## How to go about tackling humanities questions of networks?
 
-Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+-   Depends very much on your question and dataset.
 
-## Bullets
+-   Set of steps below are a good starting-point for developing a workflow which will allow you to understand and analyse humanities networks.
 
-When you click the **Render** button a document will be generated that includes:
+## Exploratory Analysis
 
--   Content authored with markdown
--   Output from executable code
+-   A good place to start is with an **exploratory analysis**.
+-   Calculate **global network metrics**, get the **size**, **density**, **clustering coefficients**.
+-   Try to interpret these, with your own data in mind.
+-   What does it mean for this particular network to be dense or sparse? What does the clustering mean?
 
-## Code
+## Network visualisations?
 
-When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+-   With this information, decide whether its worth making an exploratory **network visualisation**.
+-   Spend some time picking out the most **informative visualisation algorithm**, and **filter** the data if needed. **Interpret your visualisation**, with a critical eye.
+-   As this week's reading, think about what the orientation, the clustering, and the centre and peripheries says about this network.
 
-```{r}
-1 + 1
-```
+## What is your question?
+
+-   Armed with the information from your exploratory analysis, **formulate a question or hypothesis** for your network.
+-   Use **existing work** for inspiration if needed!
+
+## Look for structure
+
+-   Calculate basic network statistics, including the degree distribution plots we have worked with earlier.
+
+-   Run community detection algorithms. If you have additional node attributes from your data model, use these to summarise each group. Look for patterns amongst the nodes in each group.
+
+-   'Zoom in', and look closely at the groups, nodes, and their data from a humanities perspective. Are there any unusual or stand-out nodes?
+
+## 'Answer' your research question
+
+-   Use your additional **node attributes** and **network measurements** to **test your hypothesis**. Use **statistics** if you're comfortable with it, but don't be afraid to use more humanities-type methods such as **close reading**.
+
+-   **Write up your findings**. Justify the choices you've made with your data and methods. Think about how you can communicate your relevant network metrics and a network diagram, if needed. Work on making your plots and diagrams **readable**.
+
+## Case study: Tweets from the 'Repeal the 8th' Campaign
+
+-   What does a typical 'important' node look like in this network?
+-   Is there any change in the network profile over time?
+-   Can we detect polarisation in the network?
+
+## Simple data model - a retweet network
+
+![](images/paste-A5761B84.png){width="1203"}
+
+## Exploratory analysis of the retweet network
+
+-   Total network size: 743,000 edges, 252,000 nodes
+
+![](images/paste-EB73AAAE.png)
+
+## What does a typical 'important' tweeter look like?
+
+![](images/paste-9D46B936.png)
+
+## What does a typical 'important' tweeter look like?
+
+![](images/paste-29563AE2.png)
+
+## Does the network change over time?
+
+![](images/paste-C77185AA.png)
+
+## Does the network change over time?
+
+![](images/paste-22797B58.png)
+
+## Polarisation
+
+![](images/paste-4814D5F0.png)
+
+# Week 7: Final Project
+
+There are two stages to the final project:
+
+-   In the final week of the course, either December 14 or 16, you'll be assigned a 10-minute presentation slot, where you should outline your progress so far, including your research question, datasets used, any problems you encountered (or think you might). This is a chance to get feedback from your peers and course leaders.
+
+-   The final project itself is due on **Tuesday, January 17.**
+
+## Presentation:
+
+A good presentation should try and cover the following:
+
+-   Outline your research question
+
+-   What are the steps you need to carry out?
+
+-   How will you get your data? What size is the dataset, is it manageable with your resources, how long will it take to put together (for example if you are hydrating tweets, how long will this take?)
+
+## Presentation:
+
+-   What expertise do you need, what do you have and where will you find help if needed?
+
+-   Do you have any existing examples you'd like to emulate?
+
+-   What problems might arise and how are you going to deal with them?
+
+## What should the final project look like?
+
+-   The final project tasks you with using your network data and related data model to tackle an interesting research questions.
+-   The project should take the form of an R Markdown notebook, as you have learned to create in the first few weeks of the course.
+-   It should have substantial analysis (not just listing the most important nodes for example)
+-   The minimum word count is around 2000 words.
+
+### Practical steps
+
+-   Gather your datasets and make sure they are available.
+-   If you use a 'non standard' dataset, export a copy of the final dataset used and include it along with the knitted HTML file and the original R Markdown.
+
+### Project Aim
+
+-   The aim is to communicate to a reader the value of your project and its implications.
+
+-   To do this, the project should take the form of 'literate programming', meaning that it should contain code, visualisations, derived data, and text - it should read not just as a piece of code and its output, but as a report and discussion on your findings.
+
+-   Interpretation and discussion is essential.
+
+## R Markdown
+
+-   Think of this as a modern-day 'lab notebook', where you share the steps you carried out, but also:
+    -   what you were thinking when you did them,
+
+    -   the rationale behind them,
+
+    -   and the conclusions you came to.
+-   This allows you to communicate your findings, and others to reproduce your steps, but also understand your thought processes and why you took the decisions you did.
+
+## R Markdown
+
+-   We have already gone through R Markdown in detail, but it has a number of other features/packages you can use if you want to extend your final project.
+-   The packages [VisNetwork](https://datastorm-open.github.io/visNetwork/) and [Plotly](https://plotly.com/r/) allow you to include interactive visualisations within the report.
+-   The [DT](https://rstudio.github.io/DT/) package allows you to do the same for tables. These elements are not essential, but can help to communicate your results to the reader in some cases.
+-   You can use external sources and code/applications, but you should explain what you have used in detail, so that others can follow the steps you've carried out and (hopefully) reach the same conclusions.
+
+## Questions
+
+Your final project should be structured to answer the following questions:
+
+-   **Introduction** - what is your question/problem you're trying to solve?
+
+-   **Datasets** - what datasets are you using? Where did you get them? Is it openly-available? Do they have missing data? Did you need to do pre-processing such as data harmonisation?
+
+-   What is your **data model**? How does your data relate to itself?
+
+## Questions
+
+-   **Method** - How did you create the network? What subset of your data did you use and why did you choose it? What additional information about your network (attributes) did you use?
+
+-   What are the basic **network statistics** of this network? With your 'finished' network, how many nodes and edges are there? What is the density? Is it clustered or very dense?
+
+-   Outline the particular **network methods** you used - community detection, centrality, global network metrics, others?
+
+## Questions
+
+-   **Findings**. What are your conclusions? What has the data and network told you?
+
+-   **Discussion**. What are the implications for this research/method? What does it tell us? What didn't work? What are the pitfalls of looking at your data like this? What else did you try that didn't work? Were you able to use visualisations successfully?
+
+## Final Project Datasets
+
+-   You can use any network dataset you like.
+
+-   In every case, you should reflect critically on the dataset used, provide it in full for reproducibility, and make a note on what bias it might have and how this might affect your findings.
+
+-   Almost any humanities data can be represented as a network - particularly bipartite.
+
+-   Many of these datasets will require the extraction of structured data or cleaning before they are suitable for network analysis, so bear in mind the time and expertise that will take.
+
+## Available datasets
+
+Below are some other datasets or collections of datasets which might be useful. Important to note: don't just pick a dataset because you think it might make an interesting network graph. **Think of the research question you would like to tackle first.**
+
+## **Dataset collections:**
+
+[Stanford Large Network Dataset Collection](http://snap.stanford.edu/data/index.html)
+
+[UCIrvine Network Data Repository](https://networkdata.ics.uci.edu/)
+
+## **Correspondence data:**
+
+[Willem I van Oranje-Nassau: letters and network in 1572](https://dataverse.nl/dataset.xhtml?persistentId=doi:10.34894/ZSIKRI)
+
+[Correspondence of Daniel van der Meulen (1554 - 1600)](https://github.com/jessesadler/dvdm-correspondence)
+
+There is also another dataset of early modern correspondence available, from the State Papers - ask Yann for more details.
+
+## **Citation/Co-occurrence networks**
+
+[Citation network on Kaggle](https://www.kaggle.com/datasets/mathurinache/citation-network-dataset)
+
+[Marvel Universe Social Network](https://www.kaggle.com/datasets/csanhueza/the-marvel-universe-social-network) (a good example of a bimodal network, that should generally be projected to a unimodal one for analysis)
+
+[Game of Thrones Books Character Network](https://github.com/mathbeveridge/asoiaf) (and [series](https://github.com/mathbeveridge/gameofthrones))
+
+## **Other cultural data:**
+
+[Project Gutenberg](https://www.gutenberg.org/) (for full texts)
+
+[RECIRC Project](https://recirc.universityofgalway.ie/explore)(database of texts by female authors - individual searches can be exported as a .csv file for use in network analysis)
+
+[Spotify API](https://developer.spotify.com/documentation/web-api/) (as we used in a previous class)

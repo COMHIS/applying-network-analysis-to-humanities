@@ -7,9 +7,9 @@
 <link href="6-1-bipartite-networks_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="6-1-bipartite-networks_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="6-1-bipartite-networks_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.0.36">
+  <meta name="generator" content="quarto-1.1.189">
 
-  <title>Other Network Types</title>
+  <title>Asking and Answering Questions with Networks</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -18,10 +18,15 @@
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
   </style>
   <link rel="stylesheet" href="6-1-bipartite-networks_files/libs/revealjs/dist/theme/quarto.css" id="theme">
   <link href="6-1-bipartite-networks_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -318,33 +323,222 @@
     <div class="slides">
 
 <section id="title-slide" class="center">
-  <h1 class="title">Other Network Types</h1>
+  <h1 class="title">Asking and Answering Questions with Networks</h1>
 </section>
 
-<section id="quarto" class="slide level2">
-<h2>Quarto</h2>
-<p>Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <a href="https://quarto.org/docs/presentations/" class="uri">https://quarto.org/docs/presentations/</a>.</p>
-</section>
-<section id="bullets" class="slide level2">
-<h2>Bullets</h2>
-<p>When you click the <strong>Render</strong> button a document will be generated that includes:</p>
+<section id="how-to-go-about-tackling-humanities-questions-of-networks" class="slide level2">
+<h2>How to go about tackling humanities questions of networks?</h2>
 <ul>
-<li>Content authored with markdown</li>
-<li>Output from executable code</li>
+<li><p>Depends very much on your question and dataset.</p></li>
+<li><p>Set of steps below are a good starting-point for developing a workflow which will allow you to understand and analyse humanities networks.</p></li>
 </ul>
 </section>
-<section id="code" class="slide level2">
-<h2>Code</h2>
-<p>When you click the <strong>Render</strong> button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
-</div>
-</div>
+<section id="exploratory-analysis" class="slide level2">
+<h2>Exploratory Analysis</h2>
+<ul>
+<li>A good place to start is with an <strong>exploratory analysis</strong>.</li>
+<li>Calculate <strong>global network metrics</strong>, get the <strong>size</strong>, <strong>density</strong>, <strong>clustering coefficients</strong>.</li>
+<li>Try to interpret these, with your own data in mind.</li>
+<li>What does it mean for this particular network to be dense or sparse? What does the clustering mean?</li>
+</ul>
+</section>
+<section id="network-visualisations" class="slide level2">
+<h2>Network visualisations?</h2>
+<ul>
+<li>With this information, decide whether its worth making an exploratory <strong>network visualisation</strong>.</li>
+<li>Spend some time picking out the most <strong>informative visualisation algorithm</strong>, and <strong>filter</strong> the data if needed. <strong>Interpret your visualisation</strong>, with a critical eye.</li>
+<li>As this week’s reading, think about what the orientation, the clustering, and the centre and peripheries says about this network.</li>
+</ul>
+</section>
+<section id="what-is-your-question" class="slide level2">
+<h2>What is your question?</h2>
+<ul>
+<li>Armed with the information from your exploratory analysis, <strong>formulate a question or hypothesis</strong> for your network.</li>
+<li>Use <strong>existing work</strong> for inspiration if needed!</li>
+</ul>
+</section>
+<section id="look-for-structure" class="slide level2">
+<h2>Look for structure</h2>
+<ul>
+<li><p>Calculate basic network statistics, including the degree distribution plots we have worked with earlier.</p></li>
+<li><p>Run community detection algorithms. If you have additional node attributes from your data model, use these to summarise each group. Look for patterns amongst the nodes in each group.</p></li>
+<li><p>‘Zoom in’, and look closely at the groups, nodes, and their data from a humanities perspective. Are there any unusual or stand-out nodes?</p></li>
+</ul>
+</section>
+<section id="answer-your-research-question" class="slide level2">
+<h2>‘Answer’ your research question</h2>
+<ul>
+<li><p>Use your additional <strong>node attributes</strong> and <strong>network measurements</strong> to <strong>test your hypothesis</strong>. Use <strong>statistics</strong> if you’re comfortable with it, but don’t be afraid to use more humanities-type methods such as <strong>close reading</strong>.</p></li>
+<li><p><strong>Write up your findings</strong>. Justify the choices you’ve made with your data and methods. Think about how you can communicate your relevant network metrics and a network diagram, if needed. Work on making your plots and diagrams <strong>readable</strong>.</p></li>
+</ul>
+</section>
+<section id="case-study-tweets-from-the-repeal-the-8th-campaign" class="slide level2">
+<h2>Case study: Tweets from the ‘Repeal the 8th’ Campaign</h2>
+<ul>
+<li>What does a typical ‘important’ node look like in this network?</li>
+<li>Is there any change in the network profile over time?</li>
+<li>Can we detect polarisation in the network?</li>
+</ul>
+</section>
+<section id="simple-data-model---a-retweet-network" class="slide level2">
+<h2>Simple data model - a retweet network</h2>
+
+<img data-src="images/paste-A5761B84.png" width="1203" class="r-stretch"></section>
+<section id="exploratory-analysis-of-the-retweet-network" class="slide level2">
+<h2>Exploratory analysis of the retweet network</h2>
+<ul>
+<li>Total network size: 743,000 edges, 252,000 nodes</li>
+</ul>
+
+<img data-src="images/paste-EB73AAAE.png" class="r-stretch"></section>
+<section id="what-does-a-typical-important-tweeter-look-like" class="slide level2">
+<h2>What does a typical ‘important’ tweeter look like?</h2>
+
+<img data-src="images/paste-9D46B936.png" class="r-stretch"></section>
+<section id="what-does-a-typical-important-tweeter-look-like-1" class="slide level2">
+<h2>What does a typical ‘important’ tweeter look like?</h2>
+
+<img data-src="images/paste-29563AE2.png" class="r-stretch"></section>
+<section id="does-the-network-change-over-time" class="slide level2">
+<h2>Does the network change over time?</h2>
+
+<img data-src="images/paste-C77185AA.png" class="r-stretch"></section>
+<section id="does-the-network-change-over-time-1" class="slide level2">
+<h2>Does the network change over time?</h2>
+
+<img data-src="images/paste-22797B58.png" class="r-stretch"></section>
+<section id="polarisation" class="slide level2">
+<h2>Polarisation</h2>
+
+<img data-src="images/paste-4814D5F0.png" class="r-stretch"></section>
+<section>
+<section id="week-7-final-project" class="title-slide slide level1 center">
+<h1>Week 7: Final Project</h1>
+<p>There are two stages to the final project:</p>
+<ul>
+<li><p>In the final week of the course, either December 14 or 16, you’ll be assigned a 10-minute presentation slot, where you should outline your progress so far, including your research question, datasets used, any problems you encountered (or think you might). This is a chance to get feedback from your peers and course leaders.</p></li>
+<li><p>The final project itself is due on <strong>Tuesday, January 17.</strong></p></li>
+</ul>
+</section>
+<section id="presentation" class="slide level2">
+<h2>Presentation:</h2>
+<p>A good presentation should try and cover the following:</p>
+<ul>
+<li><p>Outline your research question</p></li>
+<li><p>What are the steps you need to carry out?</p></li>
+<li><p>How will you get your data? What size is the dataset, is it manageable with your resources, how long will it take to put together (for example if you are hydrating tweets, how long will this take?)</p></li>
+</ul>
+</section>
+<section id="presentation-1" class="slide level2">
+<h2>Presentation:</h2>
+<ul>
+<li><p>What expertise do you need, what do you have and where will you find help if needed?</p></li>
+<li><p>Do you have any existing examples you’d like to emulate?</p></li>
+<li><p>What problems might arise and how are you going to deal with them?</p></li>
+</ul>
+</section>
+<section id="what-should-the-final-project-look-like" class="slide level2">
+<h2>What should the final project look like?</h2>
+<ul>
+<li>The final project tasks you with using your network data and related data model to tackle an interesting research questions.</li>
+<li>The project should take the form of an R Markdown notebook, as you have learned to create in the first few weeks of the course.</li>
+<li>It should have substantial analysis (not just listing the most important nodes for example)</li>
+<li>The minimum word count is around 2000 words.</li>
+</ul>
+<h3 id="practical-steps">Practical steps</h3>
+<ul>
+<li>Gather your datasets and make sure they are available.</li>
+<li>If you use a ‘non standard’ dataset, export a copy of the final dataset used and include it along with the knitted HTML file and the original R Markdown.</li>
+</ul>
+<h3 id="project-aim">Project Aim</h3>
+<ul>
+<li><p>The aim is to communicate to a reader the value of your project and its implications.</p></li>
+<li><p>To do this, the project should take the form of ‘literate programming’, meaning that it should contain code, visualisations, derived data, and text - it should read not just as a piece of code and its output, but as a report and discussion on your findings.</p></li>
+</ul>
+<p>-Interpretation and discussion is essential.</p>
+</section>
+<section id="r-markdown" class="slide level2">
+<h2>R Markdown</h2>
+<ul>
+<li>Think of this as a modern-day ‘lab notebook’, where you share the steps you carried out, but also:</li>
+<li>what you were thinking when you did them,</li>
+<li>the rationale behind them,</li>
+<li>and the conclusions you came to.</li>
+<li>This allows you to communicate your findings, and others to reproduce your steps, but also understand your thought processes and why you took the decisions you did.</li>
+</ul>
+</section>
+<section id="r-markdown-1" class="slide level2">
+<h2>R Markdown</h2>
+<ul>
+<li>We have already gone through R Markdown in detail, but it has a number of other features/packages you can use if you want to extend your final project.</li>
+<li>The packages <a href="https://datastorm-open.github.io/visNetwork/">VisNetwork</a> and <a href="https://plotly.com/r/">Plotly</a> allow you to include interactive visualisations within the report.</li>
+<li>The <a href="https://rstudio.github.io/DT/">DT</a> package allows you to do the same for tables. These elements are not essential, but can help to communicate your results to the reader in some cases.</li>
+<li>You can use external sources and code/applications, but you should explain what you have used in detail, so that others can follow the steps you’ve carried out and (hopefully) reach the same conclusions.</li>
+</ul>
+</section>
+<section id="questions" class="slide level2">
+<h2>Questions</h2>
+<p>Your final project should be structured to answer the following questions:</p>
+<ul>
+<li><p><strong>Introduction</strong> - what is your question/problem you’re trying to solve?</p></li>
+<li><p><strong>Datasets</strong> - what datasets are you using? Where did you get them? Is it openly-available? Do they have missing data? Did you need to do pre-processing such as data harmonisation?</p></li>
+<li><p>What is your <strong>data model</strong>? How does your data relate to itself?</p></li>
+</ul>
+</section>
+<section id="questions-1" class="slide level2">
+<h2>Questions</h2>
+<ul>
+<li><p><strong>Method</strong> - How did you create the network? What subset of your data did you use and why did you choose it? What additional information about your network (attributes) did you use?</p></li>
+<li><p>What are the basic <strong>network statistics</strong> of this network? With your ‘finished’ network, how many nodes and edges are there? What is the density? Is it clustered or very dense?</p></li>
+<li><p>Outline the particular <strong>network methods</strong> you used - community detection, centrality, global network metrics, others?</p></li>
+</ul>
+</section>
+<section id="questions-2" class="slide level2">
+<h2>Questions</h2>
+<ul>
+<li><p><strong>Findings</strong>. What are your conclusions? What has the data and network told you?</p></li>
+<li><p><strong>Discussion</strong>. What are the implications for this research/method? What does it tell us? What didn’t work? What are the pitfalls of looking at your data like this? What else did you try that didn’t work? Were you able to use visualisations successfully?</p></li>
+</ul>
+</section>
+<section id="final-project-datasets" class="slide level2">
+<h2>Final Project Datasets</h2>
+<ul>
+<li><p>You can use any network dataset you like.</p></li>
+<li><p>In every case, you should reflect critically on the dataset used, provide it in full for reproducibility, and make a note on what bias it might have and how this might affect your findings.</p></li>
+<li><p>Almost any humanities data can be represented as a network - particularly bipartite.</p></li>
+<li><p>Many of these datasets will require the extraction of structured data or cleaning before they are suitable for network analysis, so bear in mind the time and expertise that will take.</p></li>
+</ul>
+</section>
+<section id="available-datasets" class="slide level2">
+<h2>Available datasets</h2>
+<p>Below are some other datasets or collections of datasets which might be useful. Important to note: don’t just pick a dataset because you think it might make an interesting network graph. <strong>Think of the research question you would like to tackle first.</strong></p>
+</section>
+<section id="dataset-collections" class="slide level2">
+<h2><strong>Dataset collections:</strong></h2>
+<p><a href="http://snap.stanford.edu/data/index.html">Stanford Large Network Dataset Collection</a></p>
+<p><a href="https://networkdata.ics.uci.edu/">UCIrvine Network Data Repository</a></p>
+</section>
+<section id="correspondence-data" class="slide level2">
+<h2><strong>Correspondence data:</strong></h2>
+<p><a href="https://dataverse.nl/dataset.xhtml?persistentId=doi:10.34894/ZSIKRI">Willem I van Oranje-Nassau: letters and network in 1572</a></p>
+<p><a href="https://github.com/jessesadler/dvdm-correspondence">Correspondence of Daniel van der Meulen (1554 - 1600)</a></p>
+<p>There is also another dataset of early modern correspondence available, from the State Papers - ask Yann for more details.</p>
+</section>
+<section id="citationco-occurrence-networks" class="slide level2">
+<h2><strong>Citation/Co-occurrence networks</strong></h2>
+<p><a href="https://www.kaggle.com/datasets/mathurinache/citation-network-dataset">Citation network on Kaggle</a></p>
+<p><a href="https://www.kaggle.com/datasets/csanhueza/the-marvel-universe-social-network">Marvel Universe Social Network</a> (a good example of a bimodal network, that should generally be projected to a unimodal one for analysis)</p>
+<p><a href="https://github.com/mathbeveridge/asoiaf">Game of Thrones Books Character Network</a> (and <a href="https://github.com/mathbeveridge/gameofthrones">series</a>)</p>
+</section>
+<section id="other-cultural-data" class="slide level2">
+<h2><strong>Other cultural data:</strong></h2>
+<p><a href="https://www.gutenberg.org/">Project Gutenberg</a> (for full texts)</p>
+<p><a href="https://recirc.universityofgalway.ie/explore">RECIRC Project</a>(database of texts by female authors - individual searches can be exported as a .csv file for use in network analysis)</p>
+<p><a href="https://developer.spotify.com/documentation/web-api/">Spotify API</a> (as we used in a previous class)</p>
 <div class="footer footer-default">
 
 </div>
-</section>
+</section></section>
     </div>
   </div>
 
@@ -556,48 +750,6 @@
         ]
       });
     </script>
-    
-    <script>
-      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
-      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
-      // slide changes (different for each slide format).
-      (function () {
-        function fireSlideChanged(previousSlide, currentSlide) {
-
-          // dispatch for htmlwidgets
-          const event = window.document.createEvent("Event");
-          event.initEvent("slideenter", true, true);
-          window.document.dispatchEvent(event);
-
-          // dispatch for shiny
-          if (window.jQuery) {
-            if (previousSlide) {
-              window.jQuery(previousSlide).trigger("hidden");
-            }
-            if (currentSlide) {
-              window.jQuery(currentSlide).trigger("shown");
-            }
-          }
-        }
-
-        // hookup for reveal
-        if (window.Reveal) {
-          window.Reveal.addEventListener("slidechanged", function(event) {
-            fireSlideChanged(event.previousSlide, event.currentSlide);
-          });
-        }
-
-        // hookup for slidy
-        if (window.w3c_slidy) {
-          window.w3c_slidy.add_observer(function (slide_num) {
-            // slide_num starts at position 1
-            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
-          });
-        }
-
-      })();
-    </script>
-
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {
@@ -666,7 +818,8 @@
       for (var i=0; i<noterefs.length; i++) {
         const ref = noterefs[i];
         tippyHover(ref, function() {
-          let href = ref.getAttribute('href');
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
           try { href = new URL(href).hash; } catch {}
           const id = href.replace(/^#\/?/, "");
           const note = window.document.getElementById(id);

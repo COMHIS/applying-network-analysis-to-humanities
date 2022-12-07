@@ -1,0 +1,268 @@
+---
+title: "Network Analysis with R"
+output:
+  html_document:
+    df_print: paged
+---
+
+## Exercises
+
+These exercises will be easiest to complete if you keep the chapter 'Week 4, Class 2: Network Analysis with R' from the course book open at the same time.
+
+The task is to practice loading and working with network data, by comparing two samples of historical letters taken from the same source. 
+
+## Importing Network Data
+
+Load the libraries required for these exercises: `tidyverse`, `igraph`, and `tidygraph`. Two of these have already been added to the code chunk. 
+
+Add the third library, `tidygraph`.
+
+```{r}
+library(tidyverse)
+library(igraph)
+library(tidygraph)
+```
+
+
+Next, load in the file `letter_data1670.csv`, found in the 'data folder, and save it as an object `df`. 
+
+The code chunk below contains the code to do this - you just need to add the correct path. 
+
+```{r}
+df = read_csv("../applying-network-analysis-to-humanities/data/letter_data1670.csv")
+```
+
+Summarise the data so that you it contains one instance of each edge, plus the weight, and save this as a new object called `edge_list`. 
+
+The basic commands to do this are added below, but you need to input the correct columns to the `group_by()` function, plus tell the `tally()` function to name the count column 'weight'.  
+
+```{r}
+edge_list = df %>% 
+  group_by(from_id, to_id) %>%  # fill in the correct column names here
+  tally(name = 'weight') # add an argument 'name = weight' 
+  
+```
+
+In the code chunk below, we turn the network object in to a directed `tbl_graph`, named `g1`. 
+
+```{r}
+
+g1 = edge_list %>% 
+  as_tbl_graph(directed = TRUE)
+
+```
+
+With your new graph object `g1`, calculate a number of global metric statistics and save them as R objects: *density*, called `d1`, *global clustering*, called `c1`, and *average path length*, called `p1`. The first is done for you - the commands to do the others can be found in the course book under the heading 'global metrics'.
+
+```{r}
+
+d1 = g1 %>% igraph::graph.density()
+c1 = g1 %>% transitivity(type = 'global') 
+p1 = g1 %>% igraph::average.path.length()
+
+```
+
+In the chunk below, follow the same steps as above, but this time load in the file `letter_data1680.csv` and turn it into a network object, called `g2`
+
+```{r}
+
+df2 = read_csv("../applying-network-analysis-to-humanities/data/letter_data1680.csv")
+
+# add further steps below here:
+g2 = df2
+edge_list = df2 %>% 
+  group_by(from_id, to_id) %>%  # fill in the correct column names here
+  tally(name = 'weight') # add an argument 'name = weight' 
+g2 = edge_list %>% 
+  as_tbl_graph(directed = TRUE)
+```
+
+Generate the same set of statistics and call them `d2`, `c2`, `p2` (copy and paste is your friend here)
+
+```{r}
+d2 = g2 %>% igraph::graph.density()
+c2 = g2 %>% transitivity(type = 'global')
+p2 = g2 %>% igraph::average.path.length()
+```
+
+
+Compare the two networks (if you have correctly created all the relevant statistics, running the code chunk below will result in a dataframe containing them, for easy comparison) 
+
+
+```{r}
+stats_df = tibble(names = c('density', 'global clustering', 'average path length'), stats_g1 = c(d1,c1,p1), stats_g2 = c(d2,c2,p2))
+
+stats_df
+```
+
+Open the `stats_df` dataframe in your environment. Based on the information from the lecture, how would you describe these two networks, and their differences and similarities?
+
+Network 1 is more densed and clustered, although its average path length is more than network 2.
+
+## Node-level statistics 
+
+Next, generate a table of your nodes with a number of node-level network statistics. The details on the code below can be found in the course book. Using the `mutate()` function, we create new columns in the network nodes with the relevant data. As a final step, we turn it from a network object into a regular dataframe, using `as_tibble()`. 
+
+A template has been done for you, but you need to make a number of changes:
+
+-   change the degree method from 'in' to 'all'.
+-   change the betweenness centrality measurement to 'undirected'
+-   add your weights column to the eigenvector centrality measurement
+-   Change the closeness centrality to only consider outgoing links.
+
+
+```{r}
+nodes_table = g1 %>%
+  mutate(degree = centrality_degree(mode = 'all')) %>% 
+  mutate(between = centrality_betweenness(directed = F)) %>% 
+  mutate(eigen = centrality_eigen(weights = NULL, directed = F)) %>% 
+  mutate(closeness = centrality_closeness(mode = 'in')) %>% 
+  as_tibble() # this command turns the nodes table of the network object into an ordinary dataframe.
+```
+
+We can use this table to graph the *degree distribution*, from yesterday's class. The code is done for you, but in order to make it readable, change the `binwidth` parameter to something appropriate for this network. 
+
+The binwidth controls how many values are represented by a single bar in the chart. 
+
+```{r}
+nodes_table %>% ggplot() + geom_histogram(aes(x = degree), binwidth = 10)
+```
+
+Below this, create a similar histogram for the `between` metric (hint, you can copy and paste, and just change the `x =` value):
+
+```{r}
+nodes_table %>% ggplot() + geom_histogram(aes(x = between), binwidth = 500)
+```
+
+The code to create a log-log plot is given below: just run the chunk and it will display the correct graph. We discussed this in yesterday's class (also look at the chapter in the course book). 
+
+What does this tell you about the structure of your particular network?
+Only a small number of nodes has a high degree of connections, and a large number of nodes have a few connections. This is a normal characteristics of a network.
+
+```{r}
+nodes_table %>% 
+  count(degree) %>% 
+  ggplot() + 
+  geom_point(aes(degree, n)) + 
+  labs(x = 'Number of nodes', y = 'Degree score') + scale_x_log10() + scale_y_log10()
+```
+
+## Joining attributes to the table
+
+The data in this network is very minimal, made up of unique IDs connected to other IDs. If we want to understand who or what makes up this network, we need to connect these IDs to additional data. 
+
+For the next series of tasks, you will merge additional information about the nodes to the 1670 network object, for example name, places of birth, gender, occupation, and so forth. This can then be used to interpret the network and make some guesses as to why it looks as it does.
+
+First, load a separate dataset, called `node_attributes.csv`, found in the `applying-network-analysis-to-humanities/data` folder:  
+
+```{r}
+nodes_df = read_csv('../applying-network-analysis-to-humanities/data/node_attributes.csv')
+```
+
+Next, merge this to your first network object using `left_join()`. 
+
+To do this, you'll need to fill in the `by = ` argument with the correct column names in the attributes dataset. The column for the node IDs in the network object is called `name`. 
+
+See the class chapter for more specifics if you get stuck. 
+
+```{r}
+g1 = g1 %>% 
+  left_join(nodes_df, by = "name")
+```
+
+
+Using the commands from week 1, `arrange` the table in descending order of degree score, and turn it into an ordinary dataframe using `as_tibble()`. Which nodes are at the top? Below the chunk, speculate why they might be the most 'central', and whether this is surprising. 
+
+It is not surprised that the nodes with the top number of degrees are politician.
+
+```{r}
+g1 %>% mutate(degree = centrality_degree(mode = 'all')) %>% 
+  as_tibble() %>%
+  arrange(desc(degree))
+```
+
+Next, calculate a column with betweenness centrality scores and use `arrange()` to sort by this value. Take a look at the top-ranked nodes. Are there any here which differ significantly from the top-ranked by degree score? What role might these nodes occupy?
+
+When using betweenness centrality measure, three persona came up to the top 10: Charas, Casimo, and Seth. It is understandable because their occupations are apothecary, statesperson, and scholar. They act as the link or a broker between people around them. They also live in big cities: Paris, Florence, and London respectively, so there is more chance for them to be a central connection among other people in the network.
+
+```{r}
+
+g1 %>% 
+  mutate(between = centrality_betweenness(weights = weight,directed = F)) %>% 
+  as_tibble() %>% 
+  arrange(desc(between))
+
+  
+```
+
+
+Another way to look at this is by plotting the `degree` metric against the `between` metric for all the nodes in the graph. The code for this is below. 
+
+```{r}
+
+nodes_table %>% 
+  ggplot() +
+  geom_point(aes(x = degree, y = between))+geom_smooth(aes(x = degree, y = between), method='lm')
+
+cor(nodes_table$degree, nodes_table$between)
+
+```
+
+What does this plot tell us about the relationship between degree and betweenness centrality? What implication does this have for the usefulness of the metrics?
+
+This graph shows that nodes with high degree also has high betweenness centrality. In other words, people with many connections are the ones who tend to be a center of contact of the people in the network to contact with each another.
+
+## Making a new network with network attributes. 
+
+As a final step, we want to generate a network from a subset of the data, using the node attributes. For example, we might want to focus on individuals of a particular occupation, and look at only their network.
+
+To do this, look at the `node_df` object to pick an attribute you would like to filter by. For example, you might filter to look at a network of only politicians using the command `filter(politician == 'yes')`. 
+
+
+Filter your network using an appropriate attribute *before* you calculate the relevant network statistics. Save this as a dataframe called `filtered_network_nodes`. 
+
+```{r}
+filtered_network_nodes = g1 %>% 
+  filter(politician == 'yes') %>% # fill in the relevant filtering rule here
+  mutate(degree = centrality_degree(mode = 'in')) %>% 
+  mutate(between = centrality_betweenness(directed = TRUE)) %>% 
+  mutate(eigen = centrality_eigen(weights = NULL, directed = F)) %>% 
+  mutate(closeness = centrality_closeness(mode = 'in')) %>% 
+  as_tibble() # this command turns the nodes table of the network object into an ordinary dataframe.
+
+```
+
+Here, rank by the highest degree using `arrange()`, as done above. Are there any major changes in rank in comparison to the network above, and what are they?
+
+The top politicians in this network in terms of degree have much more connections (35,17,9 compared to 8,8,8 respectively).
+
+```{r}
+filtered_network_nodes %>% 
+  arrange(desc(degree))
+```
+
+
+
+## Community detection  
+
+We can use tidygraph to calculate communities in your network - groups of nodes in the network which are particularly well connected to each other. 
+
+We'll use the Louvain algorithm, with the command `group_louvain`. As above, this is added as a new column to the nodes table with `mutate`.
+
+```{r}
+g1 %>% to_undirected() %>%
+  mutate(group = group_louvain()) 
+```
+
+In a final exercise, use ggplot to draw a bar chart of the count of nodes in each community. The function to generate the group labels is given, but you'll have to figure out the rest, adding commands using the `%>%` operator. The course book chapter for class 1, lesson 2, which introduces ggplot, should be helpful here. 
+
+```{r}
+g1 %>% to_undirected() %>%
+  mutate(group = group_louvain()) %>% 
+  as_tibble() %>% 
+  group_by(group) %>%
+  tally() %>%
+  ggplot() + geom_col(aes(x = group, y = n))
+
+```
+

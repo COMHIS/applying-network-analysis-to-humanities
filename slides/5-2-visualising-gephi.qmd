@@ -1,7 +1,7 @@
 ---
-title: "Other Network Types"
-subtitle: "Visualising with ggraph, II"
-author: "Yann Ryan"
+title: "Visualising with ggraph, II"
+subtitle: "Colour, shape, alpha etcetera"
+date: 2022-12-02
 format: revealjs
 editor: visual
 ---

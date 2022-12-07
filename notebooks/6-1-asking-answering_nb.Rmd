@@ -3,33 +3,50 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-Download the Fsample ESTC data
+The task for this week is to turn your chosen dataset into a network. 
+
+Make sure you use the appropriate steps and variables in your data. Select the correct 'source' and 'target' columns, and if you have multiple edges, add the count as a weight.
+
+If you have a 'regular' network, simply enter your code for this below. Remember to load any necessary libraries.
+
+If you have time, start an exploratory analysis of your network (this will be useful for the project presentation anyway). Use code from previous weeks to calculate the number of edges, nodes, degree distribution, clustering, and so forth.
+
+
+
+
+
+## Bipartite network
+
+Identify if you have a bipartite network. Remember from week X that a bipartite network is one where the edges go between nodes of different types. For example characters connected to scenes in a play, or directors connected to companies, and so forth.
+
+To work with a bipartite network, you should construct it in the same way, but there are a couple of extra steps in order for R to recognise it as bipartite. A bipartite network needs a 'type' column indicating whether it is the first or second node type. 
+
+For example, if you have a network object `g`, you would run the following code (remember to remove the # if you need to copy this for your own network):
 
 ```{r}
+# V(g)$type <- bipartite_mapping(g)$type
 
 ```
 
-Turn the raw data into a network:
+This adds a new 'type' column to your network, meaning it is recognised as bipartite. 
+
+## Biparite projection
+
+In order to use standard network measurements and metrics on a bipartite network, it is usual to **project** it to one of its two types. As we covered in week 1, we can 'collapse' a bipartite so that we directly connect one of the types of nodes together. For example instead of having characters in a play connected to scenes, we would project the network so that characters were connected together based on appearing in scences together. To do this, use the following code. 
+
+To make a projected network called `proj_g` on a network `g` which has already has had the bipartite mapping step above, use the following code: 
 
 ```{r}
+# proj_g = bipartite.projection(g, which = T)
 
 ```
 
-
-Calculate some basic network metrics:
-
-```{r}
-
-
-```
-
-Use the available data to make a subset of the full ESTC. Calculate group membership using `group_louvain()`. 
-
-Turn the network into a dataframe using `as_tibble()`. Summarise the data per group, and calculate the `document_type` and `gatherings` information using `summarise()`. 
+This `proj_g` object is actually a list containing two new networks: one for each of the projections. You can access this like this:
 
 ```{r}
+# proj_g[[1]]
+
+# proj_g[[2]]
 
 ```
-
-
 
